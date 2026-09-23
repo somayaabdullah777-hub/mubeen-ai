@@ -1,6 +1,6 @@
 """
-Mubeen AI (مُبين AI) — International Digital Atlas of the Prophetic Seerah
-Gemini + Groq — Sidebar built into the main page (no Streamlit sidebar).
+Mubeen AI (مُبين AI) — Smart platform for the Prophetic Seerah in world languages.
+Gemini + Groq — Smooth, fast, and reliable UI.
 """
 
 import os
@@ -243,7 +243,7 @@ LOCATIONS = [
          "es": "En el año 8 de la Hégira ocurrió la batalla de Mu'ta.",
          "ru": "В 8-м году хиджры произошла битва при Муте.",
          "zh": "迁徙第八年发生穆塔战役。",
-         "hi": "हिजरी के आठवें साल ग़ज़्वा-ए-मूता हुआ; तीनों सरदार शहीद हुए।",
+         "hi": "हिजरी के आठवें साल ग़ज़्वा-ए-मूता हुआ।",
      }},
     {"key": "tabuk", "name": {"ar": "تبوك", "en": "Tabuk", "ur": "تبوک", "id": "Tabuk",
                                "tr": "Tebük", "fr": "Tabouk", "es": "Tabuk", "ru": "Табук",
@@ -287,108 +287,168 @@ LOCATIONS = [
 ]
 
 # ---------------------------------------------------------------------------
-# 3. TRANSLATIONS
+# 3. TRANSLATIONS — مع النصوص المحدثة
 # ---------------------------------------------------------------------------
 UI_TEXT = {
-    "ar": {"app_name": "مُبين AI", "tagline": "الأطلس الرقمي العالمي للسيرة النبوية",
-           "select_lang": "اختر اللغة", "events_title": "أحداث السيرة والغزوات والمعارك",
-           "select_event": "اختر الحدث", "chat_title": "اسأل مُبين AI",
-           "chat_placeholder": "اكتب سؤالك حول السيرة النبوية...", "chat_button": "إرسال",
-           "spinner": "جارٍ البحث في كتاب «الرحيق المختوم»...", "about_title": "عن التطبيق",
-           "about_text": "مُبين AI تطبيق يعتمد على كتاب «الرحيق المختوم» للشيخ صفي الرحمن المباركفوري.",
+    "ar": {"app_name": "مُبين AI",
+           "tagline": "منصة ذكية تخدم السيرة النبوية بلغات العالم",
+           "select_lang": "اختر اللغة",
+           "events_title": "أحداث السيرة والغزوات والمعارك",
+           "select_event": "اختر الحدث",
+           "chat_title": "اسأل مُبين AI",
+           "chat_placeholder": "اكتب سؤالك حول السيرة النبوية...",
+           "chat_button": "إرسال",
+           "spinner": "جارٍ البحث في كتاب «الرحيق المختوم»...",
+           "about_title": "عن الموقع",
+           "about_text": "موقع يعتمد على كتاب «الرحيق المختوم» للشيخ صفي الرحمن المباركفوري، ويقدم تجربة تفاعلية لاستكشاف أحداث السيرة النبوية بلغات متعددة.",
            "events_hint": "اختر حدثاً من القائمة لقراءة نبذة عنه، أو اسأل مُبين AI مباشرة.",
            "suggestions": "💡 اقتراحات سريعة",
-           "menu": "القائمة", "close_menu": "إغلاق",
+           "menu": "القائمة",
+           "close_menu": "إغلاق",
            "rtl": True, "dir": "rtl"},
-    "en": {"app_name": "Mubeen AI", "tagline": "The International Digital Atlas of the Prophetic Seerah",
-           "select_lang": "Select Language", "events_title": "Seerah Events, Battles & Expeditions",
-           "select_event": "Select an event", "chat_title": "Ask Mubeen AI",
-           "chat_placeholder": "Type your question about the Seerah...", "chat_button": "Send",
-           "spinner": "Searching 'The Sealed Nectar'...", "about_title": "About",
-           "about_text": "Mubeen AI is grounded in 'The Sealed Nectar'.",
+    "en": {"app_name": "Mubeen AI",
+           "tagline": "A smart platform serving the Prophetic Seerah in world languages",
+           "select_lang": "Select Language",
+           "events_title": "Seerah Events, Battles & Expeditions",
+           "select_event": "Select an event",
+           "chat_title": "Ask Mubeen AI",
+           "chat_placeholder": "Type your question about the Seerah...",
+           "chat_button": "Send",
+           "spinner": "Searching 'The Sealed Nectar'...",
+           "about_title": "About the Site",
+           "about_text": "A site grounded in 'The Sealed Nectar' by Safiur Rahman Mubarakpuri, offering an interactive experience to explore the events of the Prophetic Seerah in multiple languages.",
            "events_hint": "Select an event to read an excerpt, or ask Mubeen AI directly.",
            "suggestions": "💡 Quick prompts",
-           "menu": "Menu", "close_menu": "Close",
+           "menu": "Menu",
+           "close_menu": "Close",
            "rtl": False, "dir": "ltr"},
-    "ur": {"app_name": "مبین AI", "tagline": "سیرت نبوی کا بین الاقوامی ڈیجیٹل اٹلس",
-           "select_lang": "زبان منتخب کریں", "events_title": "سیرت کے واقعات، غزوات اور معرکے",
-           "select_event": "واقعہ منتخب کریں", "chat_title": "مبین AI سے پوچھیں",
-           "chat_placeholder": "سیرت نبوی کے بارے میں اپنا سوال لکھیں...", "chat_button": "بھیجیں",
-           "spinner": "«الرحيق المختوم» میں تلاش ہو رہی ہے...", "about_title": "تعارف",
-           "about_text": "مبین AI شیخ صفی الرحمن مبارکپوری کی کتاب «الرحيق المختوم» پر مبنی ہے۔",
+    "ur": {"app_name": "مبین AI",
+           "tagline": "عالمی زبانوں میں سیرت نبوی کی خدمت کرنے والا ذہین پلیٹ فارم",
+           "select_lang": "زبان منتخب کریں",
+           "events_title": "سیرت کے واقعات، غزوات اور معرکے",
+           "select_event": "واقعہ منتخب کریں",
+           "chat_title": "مبین AI سے پوچھیں",
+           "chat_placeholder": "سیرت نبوی کے بارے میں اپنا سوال لکھیں...",
+           "chat_button": "بھیجیں",
+           "spinner": "«الرحيق المختوم» میں تلاش ہو رہی ہے...",
+           "about_title": "سائٹ کے بارے میں",
+           "about_text": "یہ سائٹ شیخ صفی الرحمن مبارکپوری کی کتاب «الرحيق المختوم» پر مبنی ہے، اور کثیر زبانوں میں سیرت نبوی کے واقعات کو دریافت کرنے کا ایک تفاعلی تجربہ پیش کرتی ہے۔",
            "events_hint": "کوئی واقعہ منتخب کریں یا مبین AI سے براہِ راست پوچھیں۔",
            "suggestions": "💡 فوری تجاویز",
-           "menu": "مینو", "close_menu": "بند کریں",
+           "menu": "مینو",
+           "close_menu": "بند کریں",
            "rtl": True, "dir": "rtl"},
-    "id": {"app_name": "Mubeen AI", "tagline": "Atlas Digital Internasional Sirah Nabawiyah",
-           "select_lang": "Pilih Bahasa", "events_title": "Peristiwa, Perang & Ekspedisi Sirah",
-           "select_event": "Pilih peristiwa", "chat_title": "Tanya Mubeen AI",
-           "chat_placeholder": "Tulis pertanyaan Anda tentang Sirah...", "chat_button": "Kirim",
-           "spinner": "Menelusuri 'The Sealed Nectar'...", "about_title": "Tentang",
-           "about_text": "Mubeen AI bersumber dari 'The Sealed Nectar'.",
+    "id": {"app_name": "Mubeen AI",
+           "tagline": "Platform cerdas yang melayani Sirah Nabawiyah dalam bahasa dunia",
+           "select_lang": "Pilih Bahasa",
+           "events_title": "Peristiwa, Perang & Ekspedisi Sirah",
+           "select_event": "Pilih peristiwa",
+           "chat_title": "Tanya Mubeen AI",
+           "chat_placeholder": "Tulis pertanyaan Anda tentang Sirah...",
+           "chat_button": "Kirim",
+           "spinner": "Menelusuri 'The Sealed Nectar'...",
+           "about_title": "Tentang Situs",
+           "about_text": "Situs yang bersumber dari 'The Sealed Nectar' karya Safiur Rahman Mubarakpuri, menawarkan pengalaman interaktif untuk menjelajahi peristiwa Sirah Nabawiyah dalam berbagai bahasa.",
            "events_hint": "Pilih peristiwa atau tanya Mubeen AI langsung.",
            "suggestions": "💡 Saran cepat",
-           "menu": "Menu", "close_menu": "Tutup",
+           "menu": "Menu",
+           "close_menu": "Tutup",
            "rtl": False, "dir": "ltr"},
-    "tr": {"app_name": "Mubeen AI", "tagline": "Uluslararası Siyer-i Nebi Dijital Atlası",
-           "select_lang": "Dil Seçin", "events_title": "Siyer Olayları, Savaşlar ve Seferler",
-           "select_event": "Bir olay seçin", "chat_title": "Mubeen AI'ya Sor",
-           "chat_placeholder": "Siyer hakkında sorunuzu yazın...", "chat_button": "Gönder",
-           "spinner": "'The Sealed Nectar' taranıyor...", "about_title": "Hakkında",
-           "about_text": "Mubeen AI, 'The Sealed Nectar' eserine dayanır.",
+    "tr": {"app_name": "Mubeen AI",
+           "tagline": "Siyer-i Nebi'ye dünya dillerinde hizmet eden akıllı platform",
+           "select_lang": "Dil Seçin",
+           "events_title": "Siyer Olayları, Savaşlar ve Seferler",
+           "select_event": "Bir olay seçin",
+           "chat_title": "Mubeen AI'ya Sor",
+           "chat_placeholder": "Siyer hakkında sorunuzu yazın...",
+           "chat_button": "Gönder",
+           "spinner": "'The Sealed Nectar' taranıyor...",
+           "about_title": "Site Hakkında",
+           "about_text": "Safiur Rahman Mubarakpuri'nin 'The Sealed Nectar' eserine dayanan, Siyer-i Nebi olaylarını birden çok dilde keşfetmek için etkileşimli deneyim sunan bir site.",
            "events_hint": "Bir olay seçin veya Mubeen AI'ya sorun.",
            "suggestions": "💡 Hızlı öneriler",
-           "menu": "Menü", "close_menu": "Kapat",
+           "menu": "Menü",
+           "close_menu": "Kapat",
            "rtl": False, "dir": "ltr"},
-    "fr": {"app_name": "Mubeen AI", "tagline": "Atlas Numérique International de la Sîra",
-           "select_lang": "Choisir la langue", "events_title": "Événements, Batailles & Expéditions",
-           "select_event": "Sélectionner un événement", "chat_title": "Demander à Mubeen AI",
-           "chat_placeholder": "Écrivez votre question sur la Sîra...", "chat_button": "Envoyer",
-           "spinner": "Recherche dans 'The Sealed Nectar'...", "about_title": "À propos",
-           "about_text": "Mubeen AI s'appuie sur 'The Sealed Nectar'.",
+    "fr": {"app_name": "Mubeen AI",
+           "tagline": "Plateforme intelligente au service de la Sîra dans les langues du monde",
+           "select_lang": "Choisir la langue",
+           "events_title": "Événements, Batailles & Expéditions de la Sîra",
+           "select_event": "Sélectionner un événement",
+           "chat_title": "Demander à Mubeen AI",
+           "chat_placeholder": "Écrivez votre question sur la Sîra...",
+           "chat_button": "Envoyer",
+           "spinner": "Recherche dans 'The Sealed Nectar'...",
+           "about_title": "À propos du site",
+           "about_text": "Un site basé sur 'The Sealed Nectar' de Safiur Rahman Mubarakpuri, offrant une expérience interactive pour explorer les événements de la Sîra en plusieurs langues.",
            "events_hint": "Sélectionnez un événement ou demandez à Mubeen AI.",
            "suggestions": "💡 Suggestions rapides",
-           "menu": "Menu", "close_menu": "Fermer",
+           "menu": "Menu",
+           "close_menu": "Fermer",
            "rtl": False, "dir": "ltr"},
-    "es": {"app_name": "Mubeen AI", "tagline": "Atlas Digital Internacional de la Sira",
-           "select_lang": "Seleccionar idioma", "events_title": "Eventos, Batallas y Expediciones",
-           "select_event": "Selecciona un evento", "chat_title": "Pregunta a Mubeen AI",
-           "chat_placeholder": "Escribe tu pregunta sobre la Sira...", "chat_button": "Enviar",
-           "spinner": "Buscando en 'The Sealed Nectar'...", "about_title": "Acerca de",
-           "about_text": "Mubeen AI se basa en 'The Sealed Nectar'.",
+    "es": {"app_name": "Mubeen AI",
+           "tagline": "Plataforma inteligente al servicio de la Sira en los idiomas del mundo",
+           "select_lang": "Seleccionar idioma",
+           "events_title": "Eventos, Batallas y Expediciones de la Sira",
+           "select_event": "Selecciona un evento",
+           "chat_title": "Pregunta a Mubeen AI",
+           "chat_placeholder": "Escribe tu pregunta sobre la Sira...",
+           "chat_button": "Enviar",
+           "spinner": "Buscando en 'The Sealed Nectar'...",
+           "about_title": "Acerca del sitio",
+           "about_text": "Un sitio basado en 'The Sealed Nectar' de Safiur Rahman Mubarakpuri, que ofrece una experiencia interactiva para explorar los eventos de la Sira en varios idiomas.",
            "events_hint": "Selecciona un evento o pregunta a Mubeen AI.",
            "suggestions": "💡 Sugerencias rápidas",
-           "menu": "Menú", "close_menu": "Cerrar",
+           "menu": "Menú",
+           "close_menu": "Cerrar",
            "rtl": False, "dir": "ltr"},
-    "ru": {"app_name": "Mubeen AI", "tagline": "Международный цифровой атлас Сиры",
-           "select_lang": "Выберите язык", "events_title": "События, битвы и походы Сиры",
-           "select_event": "Выберите событие", "chat_title": "Спросить Mubeen AI",
-           "chat_placeholder": "Напишите вопрос о Сире...", "chat_button": "Отправить",
-           "spinner": "Поиск в 'The Sealed Nectar'...", "about_title": "О приложении",
-           "about_text": "Mubeen AI основан на книге 'The Sealed Nectar'.",
+    "ru": {"app_name": "Mubeen AI",
+           "tagline": "Умная платформа, служащая Сире на языках мира",
+           "select_lang": "Выберите язык",
+           "events_title": "События, битвы и походы Сиры",
+           "select_event": "Выберите событие",
+           "chat_title": "Спросить Mubeen AI",
+           "chat_placeholder": "Напишите вопрос о Сире...",
+           "chat_button": "Отправить",
+           "spinner": "Поиск в 'The Sealed Nectar'...",
+           "about_title": "О сайте",
+           "about_text": "Сайт основан на книге 'The Sealed Nectar' Сафиура Рахмана Мубаракпури и предлагает интерактивный опыт изучения событий Сиры на разных языках.",
            "events_hint": "Выберите событие или спросите Mubeen AI.",
            "suggestions": "💡 Быстрые подсказки",
-           "menu": "Меню", "close_menu": "Закрыть",
+           "menu": "Меню",
+           "close_menu": "Закрыть",
            "rtl": False, "dir": "ltr"},
-    "zh": {"app_name": "Mubeen AI", "tagline": "国际先知传记数字地图",
-           "select_lang": "选择语言", "events_title": "先知传记事件、战役与远征",
-           "select_event": "选择事件", "chat_title": "询问 Mubeen AI",
-           "chat_placeholder": "请输入您关于先知传记的问题...", "chat_button": "发送",
-           "spinner": "正在检索《The Sealed Nectar》...", "about_title": "关于",
-           "about_text": "Mubeen AI 基于《The Sealed Nectar》。",
+    "zh": {"app_name": "Mubeen AI",
+           "tagline": "以世界多种语言服务先知传记的智能平台",
+           "select_lang": "选择语言",
+           "events_title": "先知传记事件、战役与远征",
+           "select_event": "选择事件",
+           "chat_title": "询问 Mubeen AI",
+           "chat_placeholder": "请输入您关于先知传记的问题...",
+           "chat_button": "发送",
+           "spinner": "正在检索《The Sealed Nectar》...",
+           "about_title": "关于本站",
+           "about_text": "本站基于 Safiur Rahman Mubarakpuri 的《The Sealed Nectar》，提供多语言互动体验，探索先知传记的事件。",
            "events_hint": "选择事件或直接询问 Mubeen AI。",
            "suggestions": "💡 快速提示",
-           "menu": "菜单", "close_menu": "关闭",
+           "menu": "菜单",
+           "close_menu": "关闭",
            "rtl": False, "dir": "ltr"},
-    "hi": {"app_name": "Mubeen AI", "tagline": "सीरत का अंतर्राष्ट्रीय डिजिटल एटलस",
-           "select_lang": "भाषा चुनें", "events_title": "सीरत की घटनाएँ, लड़ाइयाँ और अभियान",
-           "select_event": "घटना चुनें", "chat_title": "Mubeen AI से पूछें",
-           "chat_placeholder": "सीरत के बारे में अपना प्रश्न लिखें...", "chat_button": "भेजें",
-           "spinner": "'The Sealed Nectar' में खोज रहे हैं...", "about_title": "परिचय",
-           "about_text": "Mubeen AI, 'The Sealed Nectar' पर आधारित है।",
+    "hi": {"app_name": "Mubeen AI",
+           "tagline": "विश्व की भाषाओं में सीरत की सेवा करने वाला स्मार्ट प्लेटफ़ॉर्म",
+           "select_lang": "भाषा चुनें",
+           "events_title": "सीरत की घटनाएँ, लड़ाइयाँ और अभियान",
+           "select_event": "घटना चुनें",
+           "chat_title": "Mubeen AI से पूछें",
+           "chat_placeholder": "सीरत के बारे में अपना प्रश्न लिखें...",
+           "chat_button": "भेजें",
+           "spinner": "'The Sealed Nectar' में खोज रहे हैं...",
+           "about_title": "साइट के बारे में",
+           "about_text": "यह साइट सफ़ीउर रहमान मुबारकपुरी की 'The Sealed Nectar' पर आधारित है, और कई भाषाओं में सीरत की घटनाओं को जानने का इंटरैक्टिव अनुभव प्रदान करती है।",
            "events_hint": "कोई घटना चुनें या Mubeen AI से पूछें।",
            "suggestions": "💡 त्वरित सुझाव",
-           "menu": "मेनू", "close_menu": "बंद करें",
+           "menu": "मेनू",
+           "close_menu": "बंद करें",
            "rtl": False, "dir": "ltr"},
 }
 
@@ -680,27 +740,6 @@ def inject_css(lang_dir: str, rtl: bool):
             visibility: hidden !important;
         }}
 
-        /* زر فتح القائمة - تصغير الحجم */
-        div[data-testid="stButton"] button[kind="secondary"] {{
-            background-color: #1B4D3E !important;
-            color: #FFFFFF !important;
-            border: 2px solid #C5A059 !important;
-            border-radius: 10px !important;
-            font-weight: 700 !important;
-            padding: 0.5rem 1.2rem !important;
-            font-size: 1rem !important;
-            box-shadow: 0 4px 12px rgba(27, 77, 62, 0.2) !important;
-            transition: all 0.15s ease !important;
-        }}
-        div[data-testid="stButton"] button[kind="secondary"]:hover {{
-            background-color: #143a2e !important;
-            transform: translateY(-1px);
-        }}
-        div[data-testid="stButton"] button[kind="secondary"]:active {{
-            transform: translateY(0);
-            box-shadow: 0 2px 6px rgba(27, 77, 62, 0.3) !important;
-        }}
-
         .mubeen-card {{
             background: #FFFFFF;
             border: 1px solid #C5A059;
@@ -812,9 +851,20 @@ def inject_css(lang_dir: str, rtl: bool):
             text-align: {align};
         }}
 
-        /* أزرار النماذج والاقتراحات */
-        .stFormSubmitButton > button,
-        div[data-testid="stForm"] button {{
+        /* أزرار */
+        .stButton > button {{
+            background-color: #1B4D3E !important;
+            color: #FFFFFF !important;
+            border: 1px solid #C5A059 !important;
+            border-radius: 10px !important;
+            font-weight: 700 !important;
+            padding: 0.6rem 1rem !important;
+            width: 100%;
+        }}
+        .stButton > button:hover {{
+            background-color: #143a2e !important;
+        }}
+        .stFormSubmitButton > button {{
             background-color: #1B4D3E !important;
             color: #FFFFFF !important;
             border: 1px solid #C5A059 !important;
@@ -828,6 +878,13 @@ def inject_css(lang_dir: str, rtl: bool):
             border: 1px solid #C5A059 !important;
             border-radius: 10px !important;
             background-color: #FFFFFF !important;
+        }}
+
+        /* Checkbox تنسيق أنيق */
+        div[data-testid="stCheckbox"] label {{
+            color: #1B4D3E !important;
+            font-weight: 700 !important;
+            font-size: 1rem !important;
         }}
 
         @media (max-width: 900px) {{
@@ -847,78 +904,75 @@ def inject_css(lang_dir: str, rtl: bool):
 
 
 # ---------------------------------------------------------------------------
-# 9. SIDEBAR — قائمة مدمجة بأزرار منفصلة
+# 9. SIDEBAR — باستخدام checkbox (سريع، بدون rerun)
 # ---------------------------------------------------------------------------
 def render_inline_menu(t: dict):
-    """قائمة جانبية مدمجة بأزرار منفصلة للفتح والإغلاق."""
-    rtl = t["rtl"]
+    """قائمة مدمجة تستخدم checkbox للفتح/الإغلاق السريع (بدون rerun)."""
 
-    # ========== الحالة 1: القائمة مغلقة ==========
-    if not st.session_state.menu_open:
-        col_open, _ = st.columns([1, 5])
-        with col_open:
-            if st.button(f"☰  {t['menu']}", key="open_menu_btn",
-                         use_container_width=True, type="secondary"):
-                st.session_state.menu_open = True
+    # checkbox يعمل بدون st.rerun - سريع جداً
+    menu_open = st.checkbox(
+        f"☰  {t['menu']}" if not st.session_state.menu_open else f"✕  {t['close_menu']}",
+        value=st.session_state.menu_open,
+        key="menu_checkbox",
+    )
+
+    # تحديث الحالة (Streamlit يتعامل مع التغيير تلقائياً)
+    if menu_open != st.session_state.menu_open:
+        st.session_state.menu_open = menu_open
+
+    # إذا القائمة مفتوحة — نعرضها كعمود جانبي
+    if st.session_state.menu_open:
+        col_side, col_main = st.columns([1, 3], gap="large")
+
+        with col_side:
+            st.markdown(
+                f"""
+                <div style="background:#F5F2EB; border:3px solid #1B4D3E;
+                            border-radius:14px; padding:18px 16px; margin-top:12px;
+                            text-align:center;">
+                    <h1 style="color:#1B4D3E; font-family:'Amiri', serif;
+                               margin:0; font-size:1.5rem;">{t['app_name']}</h1>
+                    <p style="color:#C5A059; font-size:0.8rem; margin-top:4px;">{t['tagline']}</p>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+            st.markdown(
+                f"<label style='color:#1B4D3E; font-weight:700; font-size:0.95rem; margin-top:14px; display:block;'>{t['select_lang']}</label>",
+                unsafe_allow_html=True,
+            )
+            current_index = list(LANG_LABELS.keys()).index(st.session_state.lang)
+            chosen = st.selectbox(
+                label=t["select_lang"],
+                options=list(LANG_LABELS.keys()),
+                format_func=lambda code: LANG_LABELS[code],
+                index=current_index,
+                label_visibility="collapsed",
+                key="lang_selector",
+            )
+            if chosen != st.session_state.lang:
+                st.session_state.lang = chosen
+                st.session_state.chat_history = []
                 st.rerun()
-        return st.container()
 
-    # ========== الحالة 2: القائمة مفتوحة ==========
-    col_side, col_main = st.columns([1, 3], gap="large")
+            st.markdown(
+                "<hr style='border: 1px solid #C5A059; opacity:0.4; margin: 14px 0;'>",
+                unsafe_allow_html=True,
+            )
 
-    with col_side:
-        # زر إغلاق في أعلى القائمة
-        if st.button(f"✕  {t['close_menu']}", key="close_menu_btn",
-                     use_container_width=True, type="secondary"):
-            st.session_state.menu_open = False
-            st.rerun()
+            st.markdown(
+                f"<h4 style='color:#1B4D3E; font-family:Amiri, serif; font-size:1rem; margin-bottom:6px;'>{t['about_title']}</h4>",
+                unsafe_allow_html=True,
+            )
+            st.markdown(
+                f"<p style='font-size:0.82rem; color:#555; line-height:1.6; margin-top:0;'>{t['about_text']}</p>",
+                unsafe_allow_html=True,
+            )
 
-        st.markdown(
-            f"""
-            <div style="background:#F5F2EB; border:3px solid #1B4D3E;
-                        border-radius:14px; padding:18px 16px; margin-top:12px;
-                        text-align:center;">
-                <h1 style="color:#1B4D3E; font-family:'Amiri', serif;
-                           margin:0; font-size:1.5rem;">{t['app_name']}</h1>
-                <p style="color:#C5A059; font-size:0.8rem; margin-top:4px;">{t['tagline']}</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        return col_main
 
-        st.markdown(
-            f"<label style='color:#1B4D3E; font-weight:700; font-size:0.95rem; margin-top:14px; display:block;'>{t['select_lang']}</label>",
-            unsafe_allow_html=True,
-        )
-        current_index = list(LANG_LABELS.keys()).index(st.session_state.lang)
-        chosen = st.selectbox(
-            label=t["select_lang"],
-            options=list(LANG_LABELS.keys()),
-            format_func=lambda code: LANG_LABELS[code],
-            index=current_index,
-            label_visibility="collapsed",
-            key="lang_selector",
-        )
-        if chosen != st.session_state.lang:
-            st.session_state.lang = chosen
-            st.session_state.chat_history = []
-            st.rerun()
-
-        st.markdown(
-            "<hr style='border: 1px solid #C5A059; opacity:0.4; margin: 14px 0;'>",
-            unsafe_allow_html=True,
-        )
-
-        st.markdown(
-            f"<h4 style='color:#1B4D3E; font-family:Amiri, serif; font-size:1rem; margin-bottom:6px;'>{t['about_title']}</h4>",
-            unsafe_allow_html=True,
-        )
-        st.markdown(
-            f"<p style='font-size:0.82rem; color:#555; line-height:1.6; margin-top:0;'>{t['about_text']}</p>",
-            unsafe_allow_html=True,
-        )
-
-    return col_main
+    return st.container()
 
 
 # ---------------------------------------------------------------------------
@@ -956,7 +1010,7 @@ def main():
     rtl = t["rtl"]
     lang_dir = t["dir"]
 
-    inject_css(lang_dir, rtl)  # ty:ignore[invalid-argument-type]
+    inject_css(lang_dir, rtl)
 
     main_area = render_inline_menu(t)
 
@@ -996,7 +1050,7 @@ def main():
             format_func=lambda k: event_options[k],
             index=default_index,
             key="event_selector",
-        )  # ty:ignore[no-matching-overload]
+        )
         st.session_state.selected_key = chosen_key
 
         selected = next((loc for loc in LOCATIONS if loc["key"] == chosen_key), None)
@@ -1031,7 +1085,7 @@ def main():
             st.session_state.chat_history.append(
                 {"role": "user", "content": prompt_text}
             )
-            with st.spinner(t["spinner"]):  # ty:ignore[invalid-argument-type]
+            with st.spinner(t["spinner"]):
                 system_instruction = build_system_instruction(st.session_state.lang)
                 prompt = build_user_prompt(st.session_state.lang, prompt_text)
                 answer = call_ai(prompt, system_instruction)
@@ -1068,14 +1122,14 @@ def main():
                 t["chat_title"],
                 placeholder=t["chat_placeholder"],
                 label_visibility="collapsed",
-            )  # ty:ignore[no-matching-overload]
-            submitted = st.form_submit_button(t["chat_button"])  # ty:ignore[invalid-argument-type]
+            )
+            submitted = st.form_submit_button(t["chat_button"])
 
         if submitted and user_input.strip():
             st.session_state.chat_history.append(
                 {"role": "user", "content": user_input.strip()}
             )
-            with st.spinner(t["spinner"]):  # ty:ignore[invalid-argument-type]
+            with st.spinner(t["spinner"]):
                 system_instruction = build_system_instruction(st.session_state.lang)
                 prompt = build_user_prompt(st.session_state.lang, user_input.strip())
                 answer = call_ai(prompt, system_instruction)
