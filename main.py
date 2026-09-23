@@ -1,6 +1,6 @@
 """
 Mubeen AI (مُبين AI) — Smart platform for the Prophetic Seerah in world languages.
-Smooth expander menu at the top — clean textual branding inside the menu.
+AI Chat + Timeline + Interactive Quiz — all in one page with top expander menu.
 """
 
 import base64
@@ -31,7 +31,7 @@ st.set_page_config(
 )
 
 # ---------------------------------------------------------------------------
-# 2. LOGO LOADER (for banner only)
+# 2. LOGO LOADER
 # ---------------------------------------------------------------------------
 @st.cache_data(show_spinner=False)
 def get_logo_base64(path: str = "assets/logo.png") -> str:
@@ -512,7 +512,124 @@ SUGGESTIONS = {
 }
 
 # ---------------------------------------------------------------------------
-# 5. SESSION STATE
+# 5. QUIZ DATA
+# ---------------------------------------------------------------------------
+QUIZ_QUESTIONS = [
+    {
+        "q": "في أي سنة هجرية وقعت غزوة بدر الكبرى؟",
+        "options": ["السنة الأولى", "السنة الثانية", "السنة الثالثة", "السنة الرابعة"],
+        "answer": 1,
+        "explanation": "وقعت غزوة بدر في السنة الثانية للهجرة، وكانت أول معركة فاصلة في الإسلام وأُطلق عليها «يوم الفرقان».",
+    },
+    {
+        "q": "كم عدد القادة الثلاثة الذين استُشهدوا في غزوة مؤتة؟",
+        "options": ["قائدان", "ثلاثة قادة", "أربعة قادة", "خمسة قادة"],
+        "answer": 1,
+        "explanation": "استُشهد في غزوة مؤتة ثلاثة قادة: زيد بن حارثة، وجعفر بن أبي طالب، وعبد الله بن رواحة رضي الله عنهم.",
+    },
+    {
+        "q": "ما هو أول مسجد أُسِّس في الإسلام؟",
+        "options": ["المسجد النبوي", "المسجد الحرام", "مسجد قباء", "المسجد الأقصى"],
+        "answer": 2,
+        "explanation": "مسجد قباء هو أول مسجد أُسِّس في الإسلام، وقد أسّسه النبي ﷺ عند قدومه مهاجرًا.",
+    },
+    {
+        "q": "في أي غزوة حفر المسلمون الخندق حول المدينة؟",
+        "options": ["غزوة بدر", "غزوة أحد", "غزوة الخندق", "غزوة خيبر"],
+        "answer": 2,
+        "explanation": "في غزوة الخندق (الأحزاب) في السنة الخامسة للهجرة، حفر المسلمون خندقًا حول المدينة بأمر النبي ﷺ.",
+    },
+    {
+        "q": "ما اسم الصلح الذي سمّاه الله «فتحًا مبينًا»؟",
+        "options": ["صلح الحديبية", "صلح خيبر", "صلح تبوك", "صلح الطائف"],
+        "answer": 0,
+        "explanation": "صلح الحديبية في السنة السادسة للهجرة، وقد سمّاه الله في القرآن «فتحًا مبينًا».",
+    },
+    {
+        "q": "في أي سنة هجرية كانت حجة الوداع؟",
+        "options": ["السنة الثامنة", "السنة التاسعة", "السنة العاشرة", "السنة الحادية عشرة"],
+        "answer": 2,
+        "explanation": "حجّ النبي ﷺ حجة الوداع في السنة العاشرة للهجرة، وخطب في عرفة خطبةً جامعة، ونزلت آية إكمال الدين.",
+    },
+    {
+        "q": "ما اسم الغزوة التي استُشهد فيها سبعون من الصحابة؟",
+        "options": ["غزوة بدر", "غزوة أحد", "غزوة الخندق", "غزوة تبوك"],
+        "answer": 1,
+        "explanation": "غزوة أحد في السنة الثالثة للهجرة، وقد كانت درسًا عظيمًا في طاعة أوامر النبي ﷺ.",
+    },
+    {
+        "q": "في أي غزوة أعطى النبي ﷺ الراية لعلي بن أبي طالب رضي الله عنه؟",
+        "options": ["غزوة بدر", "غزوة أحد", "غزوة خيبر", "غزوة مؤتة"],
+        "answer": 2,
+        "explanation": "في غزوة خيبر (السنة السابعة للهجرة)، أعطى النبي ﷺ الراية لعلي بن أبي طالب رضي الله عنه.",
+    },
+    {
+        "q": "ما اسم الكهف الذي نزل فيه الوحي على النبي ﷺ أول مرة؟",
+        "options": ["غار ثور", "غار حراء", "كهف الرقيم", "غار الكهف"],
+        "answer": 1,
+        "explanation": "غار حراء هو المكان الذي نزل فيه جبريل عليه السلام على النبي ﷺ بأول آيات سورة العلق.",
+    },
+    {
+        "q": "كم كان عمر النبي ﷺ عندما نزل عليه الوحي أول مرة؟",
+        "options": ["ثلاثون سنة", "خمسة وثلاثون سنة", "أربعون سنة", "خمسة وأربعون سنة"],
+        "answer": 2,
+        "explanation": "كان عمر النبي ﷺ أربعين سنة عندما نزل عليه الوحي أول مرة في غار حراء.",
+    },
+]
+
+QUIZ_LABELS = {
+    "ar": {
+        "quiz_title": "🎴 اختبار السيرة النبوية",
+        "quiz_intro": "اختبر معرفتك بالسيرة النبوية عبر 10 أسئلة مختارة من «الرحيق المختوم».",
+        "question_of": "السؤال {current} من {total}",
+        "next_button": "السؤال التالي →",
+        "finish_button": "إظهار النتيجة",
+        "check_button": "تحقق من الإجابة",
+        "start_button": "▶️ ابدأ الاختبار",
+        "correct": "✅ إجابة صحيحة!",
+        "wrong": "❌ إجابة خاطئة!",
+        "explanation_label": "📖 التوضيح:",
+        "your_score": "نتيجتك النهائية",
+        "excellent": "🏆 ممتاز! أنت خبير في السيرة النبوية",
+        "very_good": "🌟 جيد جدًا! معرفتك بالسيرة قوية",
+        "good": "👍 جيد! تحتاج إلى مراجعة بعض الأحداث",
+        "try_again": "📚 حاول مرة أخرى! اقرأ المزيد من «الرحيق المختوم»",
+        "restart_button": "🔄 إعادة الاختبار",
+        "correct_answer": "الإجابة الصحيحة",
+        "select_answer": "اختر الإجابة الصحيحة",
+        "please_select": "⚠️ اختر إجابة أولاً",
+        "page_home": "🏠 الرئيسية",
+        "page_quiz": "🎴 اختبار السيرة",
+        "questions": "أسئلة",
+    },
+    "en": {
+        "quiz_title": "🎴 Seerah Quiz",
+        "quiz_intro": "Test your knowledge of the Seerah through 10 selected questions from 'The Sealed Nectar'.",
+        "question_of": "Question {current} of {total}",
+        "next_button": "Next Question →",
+        "finish_button": "Show Result",
+        "check_button": "Check Answer",
+        "start_button": "▶️ Start Quiz",
+        "correct": "✅ Correct!",
+        "wrong": "❌ Wrong!",
+        "explanation_label": "📖 Explanation:",
+        "your_score": "Your Final Score",
+        "excellent": "🏆 Excellent! You are a Seerah expert",
+        "very_good": "🌟 Very good! Your knowledge is strong",
+        "good": "👍 Good! You need to review some events",
+        "try_again": "📚 Try again! Read more from 'The Sealed Nectar'",
+        "restart_button": "🔄 Restart Quiz",
+        "correct_answer": "Correct Answer",
+        "select_answer": "Select the correct answer",
+        "please_select": "⚠️ Please select an answer",
+        "page_home": "🏠 Home",
+        "page_quiz": "🎴 Seerah Quiz",
+        "questions": "Questions",
+    },
+}
+
+# ---------------------------------------------------------------------------
+# 6. SESSION STATE
 # ---------------------------------------------------------------------------
 if "lang" not in st.session_state:
     st.session_state.lang = "ar"
@@ -522,9 +639,23 @@ if "selected_key" not in st.session_state:
     st.session_state.selected_key = LOCATIONS[0]["key"]
 if "pending_prompt" not in st.session_state:
     st.session_state.pending_prompt = None
+if "current_page" not in st.session_state:
+    st.session_state.current_page = "home"
+if "quiz_started" not in st.session_state:
+    st.session_state.quiz_started = False
+if "quiz_current" not in st.session_state:
+    st.session_state.quiz_current = 0
+if "quiz_score" not in st.session_state:
+    st.session_state.quiz_score = 0
+if "quiz_answered" not in st.session_state:
+    st.session_state.quiz_answered = False
+if "quiz_finished" not in st.session_state:
+    st.session_state.quiz_finished = False
+if "quiz_selected" not in st.session_state:
+    st.session_state.quiz_selected = None
 
 # ---------------------------------------------------------------------------
-# 6. HELPERS
+# 7. HELPERS
 # ---------------------------------------------------------------------------
 def location_name(loc: dict, lang: str) -> str:
     return loc["name"].get(lang, loc["name"]["en"])
@@ -552,7 +683,7 @@ def _get_secret(name: str) -> Optional[str]:
 
 
 # ---------------------------------------------------------------------------
-# 7. AI
+# 8. AI
 # ---------------------------------------------------------------------------
 @st.cache_resource(show_spinner=False)
 def get_gemini_client():
@@ -655,7 +786,7 @@ def call_ai(prompt: str, system_instruction: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# 8. SYSTEM INSTRUCTION
+# 9. SYSTEM INSTRUCTION
 # ---------------------------------------------------------------------------
 def build_system_instruction(lang_code: str) -> str:
     target_lang = LANG_NAMES_FOR_PROMPT.get(lang_code, "Arabic (العربية)")
@@ -699,7 +830,7 @@ def build_user_prompt(lang_code: str, question: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# 9. CSS
+# 10. CSS
 # ---------------------------------------------------------------------------
 def inject_css(lang_dir: str, rtl: bool):
     align = "right" if rtl else "left"
@@ -728,10 +859,7 @@ def inject_css(lang_dir: str, rtl: bool):
             font-family: 'Cairo', 'Amiri', sans-serif !important;
         }}
 
-        /* إخفاء الشريط الجانبي والهيدر */
-        section[data-testid="stSidebar"] {{
-            display: none !important;
-        }}
+        section[data-testid="stSidebar"] {{ display: none !important; }}
         header[data-testid="stHeader"] {{
             display: none !important;
             visibility: hidden !important;
@@ -743,17 +871,11 @@ def inject_css(lang_dir: str, rtl: bool):
         }}
         [data-testid="stSidebarCollapsedControl"],
         [data-testid="collapsedControl"],
-        [data-testid="stSidebarCollapseButton"] {{
-            display: none !important;
-        }}
+        [data-testid="stSidebarCollapseButton"] {{ display: none !important; }}
         #MainMenu, footer {{ visibility: hidden; }}
-        [data-testid="stDecoration"], [data-testid="stStatusWidget"] {{
-            display: none !important;
-        }}
+        [data-testid="stDecoration"], [data-testid="stStatusWidget"] {{ display: none !important; }}
 
-        /* =========================================================
-           st.expander — القائمة المنسدلة
-           ========================================================= */
+        /* ===== Expander ===== */
         div[data-testid="stExpander"] {{
             border: 2px solid #1B4D3E !important;
             border-radius: 14px !important;
@@ -762,7 +884,6 @@ def inject_css(lang_dir: str, rtl: bool):
             box-shadow: 0 6px 20px rgba(27, 77, 62, 0.12) !important;
             overflow: hidden !important;
         }}
-
         div[data-testid="stExpander"] summary {{
             background-color: #1B4D3E !important;
             color: #FFFFFF !important;
@@ -770,33 +891,36 @@ def inject_css(lang_dir: str, rtl: bool):
             font-size: 1.1rem !important;
             padding: 16px 22px !important;
             cursor: pointer !important;
-            border-radius: 0 !important;
         }}
-
-        div[data-testid="stExpander"] summary:hover {{
-            background-color: #143a2e !important;
-        }}
-
+        div[data-testid="stExpander"] summary:hover {{ background-color: #143a2e !important; }}
         div[data-testid="stExpander"] summary p {{
             color: #FFFFFF !important;
             font-weight: 700 !important;
             margin: 0 !important;
             font-size: 1.1rem !important;
-            letter-spacing: 0.3px !important;
         }}
-
         div[data-testid="stExpander"] svg {{
             fill: #FFFFFF !important;
             color: #FFFFFF !important;
         }}
+        div[data-testid="stExpander"] > div {{ padding: 20px !important; }}
 
-        div[data-testid="stExpander"] > div {{
-            padding: 20px !important;
+        /* إخفاء نص arrow في القوائم */
+        div[data-testid="stExpander"] summary span[data-testid*="stIcon"] {{
+            font-size: 0 !important;
+            color: transparent !important;
+        }}
+        div[data-testid="stExpander"] summary span[data-testid*="stIcon"]::after {{
+            content: "▼" !important;
+            font-size: 14px !important;
+            color: #FFFFFF !important;
+            font-weight: 700 !important;
+            display: inline-block !important;
+            margin-{('left' if not rtl else 'right')}: 8px !important;
+            vertical-align: middle !important;
         }}
 
-        /* =========================================================
-           البطاقات
-           ========================================================= */
+        /* ===== البطاقات ===== */
         .mubeen-card {{
             background: #FFFFFF;
             border: 1px solid #C5A059;
@@ -887,7 +1011,6 @@ def inject_css(lang_dir: str, rtl: bool):
             justify-content: center;
             min-height: 180px;
         }}
-
         .mubeen-header .mubeen-logo-banner {{
             height: 140px;
             width: auto;
@@ -928,18 +1051,31 @@ def inject_css(lang_dir: str, rtl: bool):
             background-color: #FFFFFF !important;
         }}
 
+        /* Radio buttons styling */
+        div[role="radiogroup"] label {{
+            background: #FDFBF7 !important;
+            border: 1px solid #E8D9B8 !important;
+            border-{('right' if rtl else 'left')}: 4px solid #C5A059 !important;
+            border-radius: 10px !important;
+            padding: 12px 16px !important;
+            margin-bottom: 8px !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            width: 100% !important;
+        }}
+        div[role="radiogroup"] label:hover {{
+            background: #F5F2EB !important;
+            border-color: #C5A059 !important;
+            transform: translateX({'-3px' if not rtl else '3px'}) !important;
+        }}
+
         @media (max-width: 900px) {{
             .block-container {{
                 padding-left: 0.7rem !important;
                 padding-right: 0.7rem !important;
             }}
-            .mubeen-header {{
-                padding: 18px 14px;
-                min-height: 130px;
-            }}
-            .mubeen-header .mubeen-logo-banner {{
-                height: 100px;
-            }}
+            .mubeen-header {{ padding: 18px 14px; min-height: 130px; }}
+            .mubeen-header .mubeen-logo-banner {{ height: 100px; }}
             h2 {{ font-size: 1.3rem !important; }}
             .mubeen-ai-answer .ai-body {{ font-size: 0.95rem; }}
         }}
@@ -950,7 +1086,7 @@ def inject_css(lang_dir: str, rtl: bool):
 
 
 # ---------------------------------------------------------------------------
-# 10. HELPER: تحويل Markdown
+# 11. HELPER: Markdown formatter
 # ---------------------------------------------------------------------------
 def format_answer_markdown(text: str) -> str:
     import html as html_lib
@@ -977,18 +1113,210 @@ def format_answer_markdown(text: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# 11. MAIN APP
+# 12. QUIZ RENDERER
+# ---------------------------------------------------------------------------
+def render_quiz(t: dict, rtl: bool, lang_dir: str, lang: str):
+    """يعرض الاختبار التفاعلي."""
+    ql = QUIZ_LABELS.get(lang, QUIZ_LABELS["en"])
+    total = len(QUIZ_QUESTIONS)
+
+    # ---- شاشة البداية ----
+    if not st.session_state.quiz_started and not st.session_state.quiz_finished:
+        st.markdown(
+            f"""
+            <div class="mubeen-card" dir="{lang_dir}" style="border-color:#1B4D3E; text-align:center; padding:30px;">
+                <div style="font-size:3rem; margin-bottom:14px;">🎴</div>
+                <h2 style="color:#1B4D3E; font-family:'Amiri', serif; margin:8px 0;">{ql['quiz_title']}</h2>
+                <p style="color:#555; font-size:1rem; line-height:1.8; margin-top:14px;">{ql['quiz_intro']}</p>
+                <p style="color:#C5A059; font-weight:700; margin-top:14px;">{total} {ql['questions']}</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        col_a, col_b, col_c = st.columns([1, 1, 1])
+        with col_b:
+            if st.button(ql["start_button"], key="start_quiz_btn", use_container_width=True):
+                st.session_state.quiz_started = True
+                st.session_state.quiz_current = 0
+                st.session_state.quiz_score = 0
+                st.session_state.quiz_answered = False
+                st.session_state.quiz_finished = False
+                st.session_state.quiz_selected = None
+                st.rerun()
+        return
+
+    # ---- شاشة النتيجة ----
+    if st.session_state.quiz_finished:
+        score = st.session_state.quiz_score
+        percentage = int((score / total) * 100)
+
+        if percentage >= 90:
+            feedback = ql["excellent"]
+            color = "#1B4D3E"
+            emoji = "🏆"
+        elif percentage >= 70:
+            feedback = ql["very_good"]
+            color = "#2c6a58"
+            emoji = "🌟"
+        elif percentage >= 50:
+            feedback = ql["good"]
+            color = "#C5A059"
+            emoji = "👍"
+        else:
+            feedback = ql["try_again"]
+            color = "#8B4513"
+            emoji = "📚"
+
+        st.markdown(
+            f"""
+            <div class="mubeen-card" dir="{lang_dir}" style="border-color:{color};
+                        text-align:center; padding:30px; margin-top:20px;">
+                <div style="font-size:4rem; margin-bottom:10px;">{emoji}</div>
+                <h2 style="color:{color}; font-family:'Amiri', serif;
+                           margin:8px 0; font-size:1.8rem;">{ql['your_score']}</h2>
+                <div style="font-size:3rem; font-weight:700; color:{color};
+                            font-family:'Amiri', serif; margin:14px 0;">
+                    {score} / {total}
+                </div>
+                <div style="font-size:1.3rem; color:#666; margin:8px 0;">
+                    ({percentage}%)
+                </div>
+                <p style="color:#555; font-size:1rem; line-height:1.8;
+                          margin-top:20px; font-weight:600;">{feedback}</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        col_x, col_y, col_z = st.columns([1, 1, 1])
+        with col_y:
+            if st.button(ql["restart_button"], key="restart_quiz_btn", use_container_width=True):
+                st.session_state.quiz_started = False
+                st.session_state.quiz_finished = False
+                st.session_state.quiz_current = 0
+                st.session_state.quiz_score = 0
+                st.session_state.quiz_selected = None
+                st.session_state.quiz_answered = False
+                st.rerun()
+        return
+
+    # ---- شاشة السؤال ----
+    idx = st.session_state.quiz_current
+    if idx >= total:
+        st.session_state.quiz_finished = True
+        st.rerun()
+
+    q = QUIZ_QUESTIONS[idx]
+    progress_pct = int(((idx) / total) * 100)
+
+    # شريط التقدم
+    st.markdown(
+        f"""
+        <div dir="{lang_dir}" style="margin-bottom:14px;">
+            <div style="color:#1B4D3E; font-weight:700; font-size:1rem; margin-bottom:8px;">
+                {ql['question_of'].format(current=idx + 1, total=total)}
+            </div>
+            <div style="background:#F5F2EB; border-radius:10px; height:14px;
+                        overflow:hidden; border:1px solid #C5A059;">
+                <div style="background:linear-gradient(90deg, #1B4D3E 0%, #C5A059 100%);
+                            height:100%; width:{progress_pct}%;
+                            transition: width 0.4s ease;"></div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # بطاقة السؤال
+    st.markdown(
+        f"""
+        <div class="mubeen-card" dir="{lang_dir}" style="border-color:#1B4D3E;
+                    padding:22px; margin-bottom:14px;">
+            <div style="color:#1B4D3E; font-family:'Amiri', serif;
+                        font-size:1.25rem; font-weight:700; line-height:1.7;">
+                {q['q']}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # الخيارات
+    selected = st.radio(
+        ql["select_answer"],
+        options=list(range(len(q["options"]))),
+        format_func=lambda i: f"{chr(65 + i)}. {q['options'][i]}",
+        index=None if st.session_state.quiz_selected is None else st.session_state.quiz_selected,
+        key=f"q_radio_{idx}",
+        label_visibility="collapsed",
+        disabled=st.session_state.quiz_answered,
+    )
+
+    if selected is not None and not st.session_state.quiz_answered:
+        st.session_state.quiz_selected = selected
+
+    # التحقق من الإجابة
+    if not st.session_state.quiz_answered:
+        col_a, col_b, col_c = st.columns([1, 1, 1])
+        with col_b:
+            if st.button(ql["check_button"], key=f"check_{idx}", use_container_width=True):
+                if st.session_state.quiz_selected is not None:
+                    st.session_state.quiz_answered = True
+                    if st.session_state.quiz_selected == q["answer"]:
+                        st.session_state.quiz_score += 1
+                    st.rerun()
+                else:
+                    st.warning(ql["please_select"])
+    else:
+        correct = st.session_state.quiz_selected == q["answer"]
+        if correct:
+            st.success(ql["correct"])
+        else:
+            st.error(ql["wrong"])
+            st.info(
+                f"**{ql['correct_answer']}**: "
+                f"{chr(65 + q['answer'])}. {q['options'][q['answer']]}"
+            )
+
+        st.markdown(
+            f"""
+            <div class="mubeen-card" dir="{lang_dir}"
+                 style="border-color:#C5A059; background:#FBF7EC; margin-top:14px;">
+                <div style="color:#C5A059; font-weight:700; font-size:1rem;
+                            margin-bottom:8px;">{ql['explanation_label']}</div>
+                <div style="color:#333; font-size:1rem; line-height:1.9;">
+                    {q['explanation']}
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        col_a, col_b, col_c = st.columns([1, 1, 1])
+        with col_b:
+            button_label = ql["finish_button"] if (idx + 1) >= total else ql["next_button"]
+            if st.button(button_label, key=f"next_{idx}", use_container_width=True):
+                st.session_state.quiz_current += 1
+                st.session_state.quiz_answered = False
+                st.session_state.quiz_selected = None
+                if st.session_state.quiz_current >= total:
+                    st.session_state.quiz_finished = True
+                st.rerun()
+
+
+# ---------------------------------------------------------------------------
+# 13. MAIN APP
 # ---------------------------------------------------------------------------
 def main():
     t = UI_TEXT[st.session_state.lang]
     rtl = t["rtl"]
     lang_dir = t["dir"]
 
-    inject_css(lang_dir, rtl)  # ty:ignore[invalid-argument-type]
+    inject_css(lang_dir, rtl)
 
     # ===== القائمة المنسدلة =====
-    with st.expander(t["menu"], expanded=False):  # ty:ignore[invalid-argument-type]
-        # الترحيب بالاسم - بدون صورة
+    with st.expander(t["menu"], expanded=False):
+        # الترحيب
         st.markdown(
             f"""
             <div style="background:#F5F2EB; border:2px solid #1B4D3E;
@@ -999,6 +1327,23 @@ def main():
                 <p style="color:#C5A059; font-size:0.9rem; margin-top:8px;">{t['tagline']}</p>
             </div>
             """,
+            unsafe_allow_html=True,
+        )
+
+        # ===== التنقل بين الصفحات =====
+        ql = QUIZ_LABELS.get(st.session_state.lang, QUIZ_LABELS["en"])
+        nav_col1, nav_col2 = st.columns(2)
+        with nav_col1:
+            if st.button(ql["page_home"], key="nav_home", use_container_width=True):
+                st.session_state.current_page = "home"
+                st.rerun()
+        with nav_col2:
+            if st.button(ql["page_quiz"], key="nav_quiz", use_container_width=True):
+                st.session_state.current_page = "quiz"
+                st.rerun()
+
+        st.markdown(
+            "<hr style='border: 1px solid #C5A059; opacity:0.4; margin: 14px 0;'>",
             unsafe_allow_html=True,
         )
 
@@ -1015,7 +1360,7 @@ def main():
             index=current_index,
             label_visibility="collapsed",
             key="lang_selector",
-        )  # ty:ignore[no-matching-overload]
+        )
         if chosen != st.session_state.lang:
             st.session_state.lang = chosen
             st.session_state.chat_history = []
@@ -1036,7 +1381,7 @@ def main():
             unsafe_allow_html=True,
         )
 
-    # ===== البانر الرئيسي - اللوقو =====
+    # ===== البانر الرئيسي =====
     _logo_b64 = get_logo_base64("assets/logo.png")
     _logo_banner_html = (
         f'<img class="mubeen-logo-banner" src="data:image/png;base64,{_logo_b64}" alt="Mubeen AI" />'
@@ -1052,6 +1397,12 @@ def main():
         unsafe_allow_html=True,
     )
 
+    # ===== عرض الصفحة حسب الاختيار =====
+    if st.session_state.current_page == "quiz":
+        render_quiz(t, rtl, lang_dir, st.session_state.lang)
+        return
+
+    # ===== الصفحة الرئيسية =====
     st.markdown(
         f"""<div class="mubeen-hint" dir="{lang_dir}">{t['events_hint']}</div>""",
         unsafe_allow_html=True,
@@ -1077,7 +1428,7 @@ def main():
         format_func=lambda k: event_options[k],
         index=default_index,
         key="event_selector",
-    )  # ty:ignore[no-matching-overload]
+    )
     st.session_state.selected_key = chosen_key
 
     selected = next((loc for loc in LOCATIONS if loc["key"] == chosen_key), None)
@@ -1112,7 +1463,7 @@ def main():
         st.session_state.chat_history.append(
             {"role": "user", "content": prompt_text}
         )
-        with st.spinner(t["spinner"]):  # ty:ignore[invalid-argument-type]
+        with st.spinner(t["spinner"]):
             system_instruction = build_system_instruction(st.session_state.lang)
             prompt = build_user_prompt(st.session_state.lang, prompt_text)
             answer = call_ai(prompt, system_instruction)
@@ -1149,14 +1500,14 @@ def main():
             t["chat_title"],
             placeholder=t["chat_placeholder"],
             label_visibility="collapsed",
-        )  # ty:ignore[no-matching-overload]
-        submitted = st.form_submit_button(t["chat_button"])  # ty:ignore[invalid-argument-type]
+        )
+        submitted = st.form_submit_button(t["chat_button"])
 
     if submitted and user_input.strip():
         st.session_state.chat_history.append(
             {"role": "user", "content": user_input.strip()}
         )
-        with st.spinner(t["spinner"]):  # ty:ignore[invalid-argument-type]
+        with st.spinner(t["spinner"]):
             system_instruction = build_system_instruction(st.session_state.lang)
             prompt = build_user_prompt(st.session_state.lang, user_input.strip())
             answer = call_ai(prompt, system_instruction)
