@@ -1,6 +1,6 @@
 """
 Mubeen AI (مُبين AI) — Smart platform for the Prophetic Seerah in world languages.
-AI Chat + Timeline + Interactive Quiz (100 questions, random selection, AI translation).
+Full 25-question bilingual quiz + Timeline + AI Chat + everything.
 """
 
 import base64
@@ -45,7 +45,802 @@ def get_logo_base64(path: str = "assets/logo.png") -> str:
 
 
 # ---------------------------------------------------------------------------
-# 3. LOCATIONS DATABASE
+# 3. QUIZ BANK — 25 questions × 10 languages (manually translated)
+# ---------------------------------------------------------------------------
+QUIZ_BANK = {
+    # ================= العربية =================
+    "ar": [
+        {"q": "في أي عام ميلادي وُلد النبي ﷺ؟",
+         "options": ["570م", "571م", "572م", "573م"], "answer": 1,
+         "explanation": "وُلد النبي ﷺ عام الفيل (571م) كما ورد في «الرحيق المختوم»."},
+        {"q": "ما اسم والدة النبي ﷺ؟",
+         "options": ["حليمة السعدية", "آمنة بنت وهب", "خديجة بنت خويلد", "فاطمة بنت أسد"], "answer": 1,
+         "explanation": "والدة النبي ﷺ هي آمنة بنت وهب بن عبد مناف."},
+        {"q": "في أي غار نزل الوحي على النبي ﷺ أول مرة؟",
+         "options": ["غار ثور", "غار حراء", "غار الكهف", "غار الرقيم"], "answer": 1,
+         "explanation": "نزل الوحي في غار حراء بجبل النور قرب مكة."},
+        {"q": "ما أول سورة نزلت من القرآن الكريم؟",
+         "options": ["الفاتحة", "العلق", "المدثر", "البقرة"], "answer": 1,
+         "explanation": "أول ما نزل قوله تعالى: ﴿اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ﴾ من سورة العلق."},
+        {"q": "كم كان عمر النبي ﷺ عند نزول الوحي؟",
+         "options": ["30 سنة", "35 سنة", "40 سنة", "45 سنة"], "answer": 2,
+         "explanation": "كان عمره ﷺ أربعين سنة عند بعثته."},
+        {"q": "من هي أول من آمن بالنبي ﷺ من النساء؟",
+         "options": ["عائشة", "خديجة", "فاطمة", "حفصة"], "answer": 1,
+         "explanation": "أول من آمن به ﷺ زوجته خديجة بنت خويلد رضي الله عنها."},
+        {"q": "من أول من أسلم من الرجال الأحرار؟",
+         "options": ["أبو بكر الصديق", "عمر بن الخطاب", "عثمان بن عفان", "علي بن أبي طالب"], "answer": 0,
+         "explanation": "أبو بكر الصديق رضي الله عنه أول من أسلم من الرجال الأحرار."},
+        {"q": "من الصحابي الذي رافق النبي ﷺ في هجرته؟",
+         "options": ["علي", "أبو بكر", "عمر", "عثمان"], "answer": 1,
+         "explanation": "رافقه أبو بكر الصديق رضي الله عنه."},
+        {"q": "ما أول مسجد أسسه النبي ﷺ عند وصوله إلى المدينة؟",
+         "options": ["المسجد النبوي", "مسجد قباء", "المسجد الأقصى", "مسجد القبلتين"], "answer": 1,
+         "explanation": "أسس مسجد قباء أول مسجد في الإسلام."},
+        {"q": "في أي سنة هجرية وقعت غزوة بدر؟",
+         "options": ["الأولى", "الثانية", "الثالثة", "الرابعة"], "answer": 1,
+         "explanation": "وقعت في السنة الثانية للهجرة، وتسمى يوم الفرقان."},
+        {"q": "كم كان عدد المسلمين في غزوة بدر؟",
+         "options": ["300", "313", "350", "400"], "answer": 1,
+         "explanation": "كان عددهم 313 رجلاً."},
+        {"q": "في أي سنة هجرية وقعت غزوة أحد؟",
+         "options": ["الثانية", "الثالثة", "الرابعة", "الخامسة"], "answer": 1,
+         "explanation": "وقعت غزوة أحد في السنة الثالثة للهجرة."},
+        {"q": "من هو سيد الشهداء في غزوة أحد؟",
+         "options": ["حمزة بن عبد المطلب", "مصعب بن عمير", "أنس بن النضر", "سعد بن الربيع"], "answer": 0,
+         "explanation": "حمزة بن عبد المطلب عم النبي ﷺ، لقّبه النبي ﷺ بسيد الشهداء."},
+        {"q": "في أي سنة هجرية وقعت غزوة الخندق؟",
+         "options": ["الثالثة", "الرابعة", "الخامسة", "السادسة"], "answer": 2,
+         "explanation": "وقعت في السنة الخامسة للهجرة."},
+        {"q": "من الذي اقترح حفر الخندق؟",
+         "options": ["أبو بكر", "عمر", "سلمان الفارسي", "علي"], "answer": 2,
+         "explanation": "سلمان الفارسي رضي الله عنه اقترح حفر الخندق."},
+        {"q": "في أي سنة هجرية وقع صلح الحديبية؟",
+         "options": ["الرابعة", "الخامسة", "السادسة", "السابعة"], "answer": 2,
+         "explanation": "وقع في السنة السادسة للهجرة."},
+        {"q": "بماذا وصف الله صلح الحديبية في القرآن؟",
+         "options": ["فتحاً عظيماً", "فتحاً مبيناً", "نصراً مؤزراً", "رحمة واسعة"], "answer": 1,
+         "explanation": "قال تعالى: ﴿إِنَّا فَتَحْنَا لَكَ فَتْحًا مُبِينًا﴾."},
+        {"q": "من الذي أعطاه النبي ﷺ الراية في خيبر؟",
+         "options": ["أبو بكر", "عمر", "علي بن أبي طالب", "عثمان"], "answer": 2,
+         "explanation": "أعطى النبي ﷺ الراية لعلي بن أبي طالب."},
+        {"q": "كم عدد القادة الثلاثة الذين استُشهدوا في مؤتة؟",
+         "options": ["قائدان", "ثلاثة قادة", "أربعة قادة", "خمسة قادة"], "answer": 1,
+         "explanation": "زيد بن حارثة، جعفر بن أبي طالب، وعبد الله بن رواحة."},
+        {"q": "في أي سنة هجرية كانت حجة الوداع؟",
+         "options": ["الثامنة", "التاسعة", "العاشرة", "الحادية عشرة"], "answer": 2,
+         "explanation": "حجّ النبي ﷺ حجة الوداع في السنة العاشرة للهجرة."},
+        {"q": "في أي سنة هجرية توفي النبي ﷺ؟",
+         "options": ["التاسعة", "العاشرة", "الحادية عشرة", "الثانية عشرة"], "answer": 2,
+         "explanation": "توفي النبي ﷺ في السنة الحادية عشرة للهجرة."},
+        {"q": "كم كان عمر النبي ﷺ عند وفاته؟",
+         "options": ["60 سنة", "62 سنة", "63 سنة", "65 سنة"], "answer": 2,
+         "explanation": "توفي ﷺ وعمره ثلاث وستون سنة."},
+        {"q": "من هي أصغر بنات النبي ﷺ؟",
+         "options": ["زينب", "رقية", "أم كلثوم", "فاطمة"], "answer": 3,
+         "explanation": "فاطمة الزهراء رضي الله عنها أصغر بنات النبي ﷺ."},
+        {"q": "ما لقب أبي بكر الصديق؟",
+         "options": ["الفاروق", "الصديق", "ذو النورين", "سيف الله"], "answer": 1,
+         "explanation": "لقّبه النبي ﷺ بالصديق لتصديقه بالإسراء."},
+        {"q": "ما لقب عمر بن الخطاب؟",
+         "options": ["الصديق", "الفاروق", "ذو النورين", "أمين الأمة"], "answer": 1,
+         "explanation": "لقّبه النبي ﷺ بالفاروق لأنه فرّق بين الحق والباطل."},
+    ],
+
+    # ================= English =================
+    "en": [
+        {"q": "In which Gregorian year was the Prophet ﷺ born?",
+         "options": ["570 AD", "571 AD", "572 AD", "573 AD"], "answer": 1,
+         "explanation": "The Prophet ﷺ was born in the Year of the Elephant (571 AD) as mentioned in 'The Sealed Nectar'."},
+        {"q": "What is the name of the Prophet's ﷺ mother?",
+         "options": ["Halimah al-Sa'diyah", "Aminah bint Wahb", "Khadijah bint Khuwaylid", "Fatimah bint Asad"], "answer": 1,
+         "explanation": "The Prophet's ﷺ mother is Aminah bint Wahb ibn Abd Manaf."},
+        {"q": "In which cave did the first revelation descend upon the Prophet ﷺ?",
+         "options": ["Cave of Thawr", "Cave of Hira", "Cave of Kahf", "Cave of Raqim"], "answer": 1,
+         "explanation": "The revelation descended in the Cave of Hira on Jabal al-Nur near Makkah."},
+        {"q": "What is the first Surah revealed of the Quran?",
+         "options": ["Al-Fatihah", "Al-Alaq", "Al-Muddathir", "Al-Baqarah"], "answer": 1,
+         "explanation": "The first verses revealed were 'Read in the name of your Lord who created' from Surah Al-Alaq."},
+        {"q": "How old was the Prophet ﷺ when the revelation first came?",
+         "options": ["30 years", "35 years", "40 years", "45 years"], "answer": 2,
+         "explanation": "He ﷺ was forty years old at the start of his prophethood."},
+        {"q": "Who was the first woman to believe in the Prophet ﷺ?",
+         "options": ["Aisha", "Khadijah", "Fatimah", "Hafsah"], "answer": 1,
+         "explanation": "The first to believe in him ﷺ was his wife Khadijah bint Khuwaylid (may Allah be pleased with her)."},
+        {"q": "Who was the first free man to embrace Islam?",
+         "options": ["Abu Bakr al-Siddiq", "Umar ibn al-Khattab", "Uthman ibn Affan", "Ali ibn Abi Talib"], "answer": 0,
+         "explanation": "Abu Bakr al-Siddiq (may Allah be pleased with him) was the first free man to embrace Islam."},
+        {"q": "Which Companion accompanied the Prophet ﷺ during the Hijrah?",
+         "options": ["Ali", "Abu Bakr", "Umar", "Uthman"], "answer": 1,
+         "explanation": "Abu Bakr al-Siddiq (may Allah be pleased with him) accompanied him."},
+        {"q": "What was the first mosque the Prophet ﷺ established upon arriving in Madinah?",
+         "options": ["The Prophet's Mosque", "Quba Mosque", "Al-Aqsa Mosque", "Qiblatayn Mosque"], "answer": 1,
+         "explanation": "He established Quba Mosque, the first mosque in Islam."},
+        {"q": "In which Hijri year did the Battle of Badr take place?",
+         "options": ["First", "Second", "Third", "Fourth"], "answer": 1,
+         "explanation": "It took place in the 2nd year after Hijrah, known as the Day of Distinction."},
+        {"q": "How many Muslims were at the Battle of Badr?",
+         "options": ["300", "313", "350", "400"], "answer": 1,
+         "explanation": "There were 313 men."},
+        {"q": "In which Hijri year did the Battle of Uhud take place?",
+         "options": ["Second", "Third", "Fourth", "Fifth"], "answer": 1,
+         "explanation": "The Battle of Uhud took place in the 3rd year after Hijrah."},
+        {"q": "Who is the Master of Martyrs in the Battle of Uhud?",
+         "options": ["Hamza ibn Abd al-Muttalib", "Mus'ab ibn Umayr", "Anas ibn al-Nadr", "Sa'd ibn al-Rabi"], "answer": 0,
+         "explanation": "Hamza ibn Abd al-Muttalib, the Prophet's ﷺ uncle, whom the Prophet ﷺ titled Master of Martyrs."},
+        {"q": "In which Hijri year did the Battle of the Trench take place?",
+         "options": ["Third", "Fourth", "Fifth", "Sixth"], "answer": 2,
+         "explanation": "It took place in the 5th year after Hijrah."},
+        {"q": "Who suggested digging the trench?",
+         "options": ["Abu Bakr", "Umar", "Salman al-Farisi", "Ali"], "answer": 2,
+         "explanation": "Salman al-Farisi (may Allah be pleased with him) suggested digging the trench."},
+        {"q": "In which Hijri year was the Treaty of Hudaybiyyah concluded?",
+         "options": ["Fourth", "Fifth", "Sixth", "Seventh"], "answer": 2,
+         "explanation": "It was concluded in the 6th year after Hijrah."},
+        {"q": "How did Allah describe the Treaty of Hudaybiyyah in the Quran?",
+         "options": ["A great victory", "A clear victory", "A mighty triumph", "Vast mercy"], "answer": 1,
+         "explanation": "Allah said: 'Indeed We have granted you a clear victory.'"},
+        {"q": "Whom did the Prophet ﷺ give the banner to at Khaybar?",
+         "options": ["Abu Bakr", "Umar", "Ali ibn Abi Talib", "Uthman"], "answer": 2,
+         "explanation": "The Prophet ﷺ gave the banner to Ali ibn Abi Talib."},
+        {"q": "How many commanders were martyred at Mu'tah?",
+         "options": ["Two", "Three", "Four", "Five"], "answer": 1,
+         "explanation": "Zayd ibn Harithah, Ja'far ibn Abi Talib, and Abdullah ibn Rawahah."},
+        {"q": "In which Hijri year was the Farewell Pilgrimage?",
+         "options": ["Eighth", "Ninth", "Tenth", "Eleventh"], "answer": 2,
+         "explanation": "The Prophet ﷺ performed the Farewell Pilgrimage in the 10th year after Hijrah."},
+        {"q": "In which Hijri year did the Prophet ﷺ pass away?",
+         "options": ["Ninth", "Tenth", "Eleventh", "Twelfth"], "answer": 2,
+         "explanation": "The Prophet ﷺ passed away in the 11th year after Hijrah."},
+        {"q": "How old was the Prophet ﷺ when he passed away?",
+         "options": ["60 years", "62 years", "63 years", "65 years"], "answer": 2,
+         "explanation": "He ﷺ passed away at the age of sixty-three."},
+        {"q": "Who was the youngest daughter of the Prophet ﷺ?",
+         "options": ["Zaynab", "Ruqayyah", "Umm Kulthum", "Fatimah"], "answer": 3,
+         "explanation": "Fatimah al-Zahra (may Allah be pleased with her) was the youngest daughter of the Prophet ﷺ."},
+        {"q": "What is the title of Abu Bakr al-Siddiq?",
+         "options": ["Al-Farooq", "Al-Siddiq", "Dhul-Nurayn", "Sword of Allah"], "answer": 1,
+         "explanation": "The Prophet ﷺ titled him Al-Siddiq for confirming the Israa."},
+        {"q": "What is the title of Umar ibn al-Khattab?",
+         "options": ["Al-Siddiq", "Al-Farooq", "Dhul-Nurayn", "Trustee of the Ummah"], "answer": 1,
+         "explanation": "The Prophet ﷺ titled him Al-Farooq for distinguishing truth from falsehood."},
+    ],
+
+    # ================= اُردو =================
+    "ur": [
+        {"q": "نبی ﷺ کی ولادت کس عیسوی سال میں ہوئی؟",
+         "options": ["570ء", "571ء", "572ء", "573ء"], "answer": 1,
+         "explanation": "نبی ﷺ کی ولادت عام الفیل (571ء) میں ہوئی جیسا کہ «الرحيق المختوم» میں مذکور ہے۔"},
+        {"q": "نبی ﷺ کی والدہ کا نام کیا ہے؟",
+         "options": ["حلیمہ سعدیہ", "آمنہ بنت وہب", "خدیجہ بنت خویلد", "فاطمہ بنت اسد"], "answer": 1,
+         "explanation": "نبی ﷺ کی والدہ آمنہ بنت وہب بن عبد مناف ہیں۔"},
+        {"q": "پہلی وحی نبی ﷺ پر کس غار میں نازل ہوئی؟",
+         "options": ["غار ثور", "غار حرا", "غار کہف", "غار رقیم"], "answer": 1,
+         "explanation": "وحی جبل النور کے غار حرا میں نازل ہوئی۔"},
+        {"q": "قرآن کریم کی پہلی نازل ہونے والی سورت کون سی ہے؟",
+         "options": ["الفاتحہ", "العلق", "المدثر", "البقرہ"], "answer": 1,
+         "explanation": "پہلی آیات ﴿اِقْرَاْ بِاسْمِ رَبِّكَ الَّذِيْ خَلَقَ﴾ سورۃ العلق سے نازل ہوئیں۔"},
+        {"q": "وحی کے نزول کے وقت نبی ﷺ کی عمر کتنی تھی؟",
+         "options": ["30 سال", "35 سال", "40 سال", "45 سال"], "answer": 2,
+         "explanation": "بعثت کے وقت آپ ﷺ کی عمر چالیس سال تھی۔"},
+        {"q": "عورتوں میں سب سے پہلے نبی ﷺ پر ایمان کس نے لایا؟",
+         "options": ["عائشہ", "خدیجہ", "فاطمہ", "حفصہ"], "answer": 1,
+         "explanation": "سب سے پہلے آپ ﷺ کی زوجہ خدیجہ بنت خویلد رضی اللہ عنہا نے ایمان لایا۔"},
+        {"q": "آزاد مردوں میں سب سے پہلے اسلام کس نے قبول کیا؟",
+         "options": ["ابو بکر صدیق", "عمر بن خطاب", "عثمان بن عفان", "علی بن ابی طالب"], "answer": 0,
+         "explanation": "ابو بکر صدیق رضی اللہ عنہ آزاد مردوں میں سب سے پہلے مسلمان ہوئے۔"},
+        {"q": "ہجرت کے سفر میں نبی ﷺ کے ساتھ کون تھا؟",
+         "options": ["علی", "ابو بکر", "عمر", "عثمان"], "answer": 1,
+         "explanation": "ابو بکر صدیق رضی اللہ عنہ آپ ﷺ کے ساتھ تھے۔"},
+        {"q": "مدینہ پہنچنے پر نبی ﷺ نے پہلی مسجد کون سی تعمیر کی؟",
+         "options": ["مسجد نبوی", "مسجد قباء", "مسجد اقصیٰ", "مسجد قبلتین"], "answer": 1,
+         "explanation": "آپ ﷺ نے مسجد قباء تعمیر کی، جو اسلام کی پہلی مسجد ہے۔"},
+        {"q": "غزوۂ بدر کس ہجری سال میں پیش آیا؟",
+         "options": ["پہلا", "دوسرا", "تیسرا", "چوتھا"], "answer": 1,
+         "explanation": "یہ دوسرے ہجری میں پیش آیا اور اسے یوم الفرقان کہا جاتا ہے۔"},
+        {"q": "غزوۂ بدر میں مسلمانوں کی تعداد کتنی تھی؟",
+         "options": ["300", "313", "350", "400"], "answer": 1,
+         "explanation": "ان کی تعداد 313 تھی۔"},
+        {"q": "غزوۂ اُحد کس ہجری سال میں پیش آیا؟",
+         "options": ["دوسرا", "تیسرا", "چوتھا", "پانچواں"], "answer": 1,
+         "explanation": "غزوۂ اُحد تیسرے ہجری میں پیش آیا۔"},
+        {"q": "غزوۂ اُحد میں سید الشہداء کون ہیں؟",
+         "options": ["حمزہ بن عبد المطلب", "مصعب بن عمیر", "انس بن النضر", "سعد بن ربیع"], "answer": 0,
+         "explanation": "حمزہ بن عبد المطلب، نبی ﷺ کے چچا، جنہیں نبی ﷺ نے سید الشہداء کا لقب دیا۔"},
+        {"q": "غزوۂ خندق کس ہجری سال میں پیش آیا؟",
+         "options": ["تیسرا", "چوتھا", "پانچواں", "چھٹا"], "answer": 2,
+         "explanation": "یہ پانچویں ہجری میں پیش آیا۔"},
+        {"q": "خندق کھودنے کی تجویز کس نے دی؟",
+         "options": ["ابو بکر", "عمر", "سلمان فارسی", "علی"], "answer": 2,
+         "explanation": "سلمان فارسی رضی اللہ عنہ نے خندق کھودنے کی تجویز دی۔"},
+        {"q": "صلح حدیبیہ کس ہجری سال میں ہوا؟",
+         "options": ["چوتھا", "پانچواں", "چھٹا", "ساتواں"], "answer": 2,
+         "explanation": "یہ چھٹے ہجری میں ہوا۔"},
+        {"q": "اللہ نے قرآن میں صلح حدیبیہ کو کیا کہا؟",
+         "options": ["عظیم فتح", "فتح مبین", "بڑی نصرت", "وسیع رحمت"], "answer": 1,
+         "explanation": "اللہ نے فرمایا: ﴿اِنَّا فَتَحْنَا لَكَ فَتْحًا مُّبِيْنًا﴾۔"},
+        {"q": "خیبر میں نبی ﷺ نے پرچم کس کو دیا؟",
+         "options": ["ابو بکر", "عمر", "علی بن ابی طالب", "عثمان"], "answer": 2,
+         "explanation": "نبی ﷺ نے پرچم علی بن ابی طالب کو دیا۔"},
+        {"q": "غزوۂ موتہ میں کتنے قائدین شہید ہوئے؟",
+         "options": ["دو", "تین", "چار", "پانچ"], "answer": 1,
+         "explanation": "زید بن حارثہ، جعفر بن ابی طالب، اور عبداللہ بن رواحہ۔"},
+        {"q": "حجۃ الوداع کس ہجری سال میں ادا کیا گیا؟",
+         "options": ["آٹھواں", "نواں", "دسواں", "گیارہواں"], "answer": 2,
+         "explanation": "نبی ﷺ نے حجۃ الوداع دسویں ہجری میں ادا کیا۔"},
+        {"q": "نبی ﷺ کی وفات کس ہجری سال میں ہوئی؟",
+         "options": ["نواں", "دسواں", "گیارہواں", "بارہواں"], "answer": 2,
+         "explanation": "نبی ﷺ کی وفات گیارہویں ہجری میں ہوئی۔"},
+        {"q": "وفات کے وقت نبی ﷺ کی عمر کتنی تھی؟",
+         "options": ["60 سال", "62 سال", "63 سال", "65 سال"], "answer": 2,
+         "explanation": "آپ ﷺ کی وفات ترسٹھ سال کی عمر میں ہوئی۔"},
+        {"q": "نبی ﷺ کی سب سے چھوٹی بیٹی کون ہیں؟",
+         "options": ["زینب", "رقیہ", "ام کلثوم", "فاطمہ"], "answer": 3,
+         "explanation": "فاطمہ زہراء رضی اللہ عنہا نبی ﷺ کی سب سے چھوٹی بیٹی ہیں۔"},
+        {"q": "ابو بکر صدیق کا لقب کیا ہے؟",
+         "options": ["فاروق", "صدیق", "ذو النورین", "سیف اللہ"], "answer": 1,
+         "explanation": "نبی ﷺ نے انہیں صدیق کا لقب دیا۔"},
+        {"q": "عمر بن خطاب کا لقب کیا ہے؟",
+         "options": ["صدیق", "فاروق", "ذو النورین", "امین امت"], "answer": 1,
+         "explanation": "نبی ﷺ نے انہیں فاروق کا لقب دیا۔"},
+    ],
+
+    # ================= Bahasa Indonesia =================
+    "id": [
+        {"q": "Pada tahun Masehi berapa Nabi ﷺ dilahirkan?",
+         "options": ["570 M", "571 M", "572 M", "573 M"], "answer": 1,
+         "explanation": "Nabi ﷺ dilahirkan pada Tahun Gajah (571 M) sebagaimana dalam 'The Sealed Nectar'."},
+        {"q": "Siapa nama ibu Nabi ﷺ?",
+         "options": ["Halimah as-Sa'diyah", "Aminah binti Wahb", "Khadijah binti Khuwailid", "Fatimah binti Asad"], "answer": 1,
+         "explanation": "Ibu Nabi ﷺ adalah Aminah binti Wahb bin Abd Manaf."},
+        {"q": "Di gua mana wahyu pertama turun kepada Nabi ﷺ?",
+         "options": ["Gua Tsur", "Gua Hira", "Gua Kahfi", "Gua Raqim"], "answer": 1,
+         "explanation": "Wahyu turun di Gua Hira di Jabal an-Nur dekat Makkah."},
+        {"q": "Surah pertama yang diturunkan dari Al-Quran?",
+         "options": ["Al-Fatihah", "Al-Alaq", "Al-Muddatstsir", "Al-Baqarah"], "answer": 1,
+         "explanation": "Ayat pertama yang turun adalah 'Bacalah dengan nama Tuhanmu yang menciptakan' dari Surah Al-Alaq."},
+        {"q": "Berapa usia Nabi ﷺ saat wahyu pertama turun?",
+         "options": ["30 tahun", "35 tahun", "40 tahun", "45 tahun"], "answer": 2,
+         "explanation": "Usia beliau ﷺ adalah empat puluh tahun saat kenabiannya."},
+        {"q": "Siapa wanita pertama yang beriman kepada Nabi ﷺ?",
+         "options": ["Aisyah", "Khadijah", "Fatimah", "Hafshah"], "answer": 1,
+         "explanation": "Orang pertama yang beriman kepadanya ﷺ adalah istrinya Khadijah binti Khuwailid ra."},
+        {"q": "Siapa orang merdeka pertama yang masuk Islam?",
+         "options": ["Abu Bakar ash-Shiddiq", "Umar bin al-Khaththab", "Utsman bin Affan", "Ali bin Abi Thalib"], "answer": 0,
+         "explanation": "Abu Bakar ash-Shiddiq ra. adalah orang merdeka pertama yang masuk Islam."},
+        {"q": "Sahabat yang menemani Nabi ﷺ dalam hijrah?",
+         "options": ["Ali", "Abu Bakar", "Umar", "Utsman"], "answer": 1,
+         "explanation": "Abu Bakar ash-Shiddiq ra. menemani beliau."},
+        {"q": "Masjid pertama yang dibangun Nabi ﷺ saat tiba di Madinah?",
+         "options": ["Masjid Nabawi", "Masjid Quba", "Masjid Aqsha", "Masjid Qiblatain"], "answer": 1,
+         "explanation": "Beliau membangun Masjid Quba, masjid pertama dalam Islam."},
+        {"q": "Pada tahun Hijriah keberapa Perang Badar terjadi?",
+         "options": ["Pertama", "Kedua", "Ketiga", "Keempat"], "answer": 1,
+         "explanation": "Terjadi pada tahun ke-2 Hijriah, disebut Yaumul Furqan."},
+        {"q": "Berapa jumlah kaum Muslimin dalam Perang Badar?",
+         "options": ["300", "313", "350", "400"], "answer": 1,
+         "explanation": "Jumlah mereka 313 orang."},
+        {"q": "Pada tahun Hijriah keberapa Perang Uhud terjadi?",
+         "options": ["Kedua", "Ketiga", "Keempat", "Kelima"], "answer": 1,
+         "explanation": "Perang Uhud terjadi pada tahun ke-3 Hijriah."},
+        {"q": "Siapa Sayyid Syuhada dalam Perang Uhud?",
+         "options": ["Hamzah bin Abdul Muththalib", "Mush'ab bin Umair", "Anas bin an-Nadhr", "Sa'd bin ar-Rabi'"], "answer": 0,
+         "explanation": "Hamzah bin Abdul Muththalib, paman Nabi ﷺ, yang diberi gelar Sayyid Syuhada."},
+        {"q": "Pada tahun Hijriah keberapa Perang Khandaq terjadi?",
+         "options": ["Ketiga", "Keempat", "Kelima", "Keenam"], "answer": 2,
+         "explanation": "Terjadi pada tahun ke-5 Hijriah."},
+        {"q": "Siapa yang mengusulkan penggalian parit?",
+         "options": ["Abu Bakar", "Umar", "Salman al-Farisi", "Ali"], "answer": 2,
+         "explanation": "Salman al-Farisi ra. mengusulkan penggalian parit."},
+        {"q": "Pada tahun Hijriah keberapa Perjanjian Hudaibiyah terjadi?",
+         "options": ["Keempat", "Kelima", "Keenam", "Ketujuh"], "answer": 2,
+         "explanation": "Terjadi pada tahun ke-6 Hijriah."},
+        {"q": "Bagaimana Allah menyebut Perjanjian Hudaibiyah dalam Al-Quran?",
+         "options": ["Kemenangan besar", "Kemenangan nyata", "Kemenangan perkasa", "Rahmat luas"], "answer": 1,
+         "explanation": "Allah berfirman: 'Sesungguhnya Kami telah memberikan kepadamu kemenangan yang nyata.'"},
+        {"q": "Kepada siapa Nabi ﷺ memberikan panji di Khaibar?",
+         "options": ["Abu Bakar", "Umar", "Ali bin Abi Thalib", "Utsman"], "answer": 2,
+         "explanation": "Nabi ﷺ memberikan panji kepada Ali bin Abi Thalib."},
+        {"q": "Berapa komandan yang syahid di Mu'tah?",
+         "options": ["Dua", "Tiga", "Empat", "Lima"], "answer": 1,
+         "explanation": "Zaid bin Haritsah, Ja'far bin Abi Thalib, dan Abdullah bin Rawahah."},
+        {"q": "Pada tahun Hijriah keberapa Haji Wada' dilaksanakan?",
+         "options": ["Kedelapan", "Kesembilan", "Kesepuluh", "Kesebelas"], "answer": 2,
+         "explanation": "Nabi ﷺ melaksanakan Haji Wada' pada tahun ke-10 Hijriah."},
+        {"q": "Pada tahun Hijriah keberapa Nabi ﷺ wafat?",
+         "options": ["Kesembilan", "Kesepuluh", "Kesebelas", "Kedua belas"], "answer": 2,
+         "explanation": "Nabi ﷺ wafat pada tahun ke-11 Hijriah."},
+        {"q": "Berapa usia Nabi ﷺ saat wafat?",
+         "options": ["60 tahun", "62 tahun", "63 tahun", "65 tahun"], "answer": 2,
+         "explanation": "Beliau ﷺ wafat pada usia enam puluh tiga tahun."},
+        {"q": "Siapa putri termuda Nabi ﷺ?",
+         "options": ["Zainab", "Ruqayyah", "Ummu Kultsum", "Fatimah"], "answer": 3,
+         "explanation": "Fatimah az-Zahra ra. adalah putri termuda Nabi ﷺ."},
+        {"q": "Apa gelar Abu Bakar ash-Shiddiq?",
+         "options": ["Al-Faruq", "Ash-Shiddiq", "Dzun Nurain", "Pedang Allah"], "answer": 1,
+         "explanation": "Nabi ﷺ memberinya gelar ash-Shiddiq karena membenarkan Isra'."},
+        {"q": "Apa gelar Umar bin al-Khaththab?",
+         "options": ["Ash-Shiddiq", "Al-Faruq", "Dzun Nurain", "Aminul Ummah"], "answer": 1,
+         "explanation": "Nabi ﷺ memberinya gelar al-Faruq."},
+    ],
+
+    # ================= Türkçe =================
+    "tr": [
+        {"q": "Hz. Peygamber ﷺ hangi miladi yılda doğdu?",
+         "options": ["570", "571", "572", "573"], "answer": 1,
+         "explanation": "Hz. Peygamber ﷺ Fil Yılı'nda (571) doğdu, 'The Sealed Nectar'da belirtildiği gibi."},
+        {"q": "Hz. Peygamber'in ﷺ annesinin adı nedir?",
+         "options": ["Halime es-Sa'diyye", "Âmine bint Vehb", "Hatice bint Huveylid", "Fatıma bint Esed"], "answer": 1,
+         "explanation": "Hz. Peygamber'in ﷺ annesi Âmine bint Vehb bint Abd Menaf'tır."},
+        {"q": "İlk vahiy hangi mağarada nazil oldu?",
+         "options": ["Sevr Mağarası", "Hira Mağarası", "Kehf Mağarası", "Rakîm Mağarası"], "answer": 1,
+         "explanation": "Vahiy, Mekke yakınlarındaki Nur Dağı'ndaki Hira Mağarası'nda nazil oldu."},
+        {"q": "Kur'an-ı Kerim'in ilk inen suresi hangisidir?",
+         "options": ["Fatiha", "Alak", "Müddessir", "Bakara"], "answer": 1,
+         "explanation": "İlk inen ayetler Alak suresinden 'Yaratan Rabbinin adıyla oku' idi."},
+        {"q": "Vahyin ilk geldiğinde Hz. Peygamber kaç yaşındaydı?",
+         "options": ["30", "35", "40", "45"], "answer": 2,
+         "explanation": "Peygamberlik başlangıcında ﷺ kırk yaşındaydı."},
+        {"q": "Hz. Peygamber'e ﷺ ilk iman eden kadın kimdir?",
+         "options": ["Aişe", "Hatice", "Fatıma", "Hafsa"], "answer": 1,
+         "explanation": "Ona ﷺ ilk iman eden, eşi Hatice bint Huveylid (r.a.) idi."},
+        {"q": "Özgür erkeklerden İslam'ı ilk kabul eden kimdir?",
+         "options": ["Ebû Bekir es-Sıddîk", "Ömer b. Hattâb", "Osman b. Affân", "Ali b. Ebû Tâlib"], "answer": 0,
+         "explanation": "Ebû Bekir es-Sıddîk (r.a.) özgür erkeklerden İslam'ı ilk kabul edendir."},
+        {"q": "Hicret sırasında Hz. Peygamber'e ﷺ kim eşlik etti?",
+         "options": ["Ali", "Ebû Bekir", "Ömer", "Osman"], "answer": 1,
+         "explanation": "Ebû Bekir es-Sıddîk (r.a.) ona eşlik etti."},
+        {"q": "Hz. Peygamber ﷺ Medine'ye vardığında ilk hangi mescidi inşa etti?",
+         "options": ["Mescid-i Nebevî", "Kuba Mescidi", "Mescid-i Aksâ", "Kıbleteyn Mescidi"], "answer": 1,
+         "explanation": "İslam'ın ilk mescidi olan Kuba Mescidi'ni inşa etti."},
+        {"q": "Bedir Savaşı hangi hicri yılda oldu?",
+         "options": ["Birinci", "İkinci", "Üçüncü", "Dördüncü"], "answer": 1,
+         "explanation": "Hicretin 2. yılında oldu ve Furkan Günü olarak bilinir."},
+        {"q": "Bedir Savaşı'nda kaç Müslüman vardı?",
+         "options": ["300", "313", "350", "400"], "answer": 1,
+         "explanation": "Sayıları 313 kişiydi."},
+        {"q": "Uhud Savaşı hangi hicri yılda oldu?",
+         "options": ["İkinci", "Üçüncü", "Dördüncü", "Beşinci"], "answer": 1,
+         "explanation": "Uhud Savaşı hicretin 3. yılında oldu."},
+        {"q": "Uhud'da şehitlerin efendisi kimdir?",
+         "options": ["Hamza b. Abdülmuttalib", "Mus'ab b. Umeyr", "Enes b. Nadr", "Sa'd b. Rebî"], "answer": 0,
+         "explanation": "Hamza b. Abdülmuttalib, Hz. Peygamber'in ﷺ amcası, kendisine Şehitlerin Efendisi denildi."},
+        {"q": "Hendek Savaşı hangi hicri yılda oldu?",
+         "options": ["Üçüncü", "Dördüncü", "Beşinci", "Altıncı"], "answer": 2,
+         "explanation": "Hicretin 5. yılında oldu."},
+        {"q": "Hendek kazma fikrini kim ortaya attı?",
+         "options": ["Ebû Bekir", "Ömer", "Selman-ı Fârisî", "Ali"], "answer": 2,
+         "explanation": "Selman-ı Fârisî (r.a.) hendek kazma fikrini ortaya attı."},
+        {"q": "Hudeybiye Antlaşması hangi hicri yılda yapıldı?",
+         "options": ["Dördüncü", "Beşinci", "Altıncı", "Yedinci"], "answer": 2,
+         "explanation": "Hicretin 6. yılında yapıldı."},
+        {"q": "Allah, Kur'an'da Hudeybiye Antlaşması'nı nasıl nitelendirdi?",
+         "options": ["Büyük bir fetih", "Apaçık bir fetih", "Muhteşem bir zafer", "Geniş bir rahmet"], "answer": 1,
+         "explanation": "Allah şöyle buyurdu: 'Şüphesiz sana apaçık bir fetih verdik.'"},
+        {"q": "Hayber'de Hz. Peygamber ﷺ sancağı kime verdi?",
+         "options": ["Ebû Bekir", "Ömer", "Ali b. Ebû Tâlib", "Osman"], "answer": 2,
+         "explanation": "Hz. Peygamber ﷺ sancağı Ali b. Ebû Tâlib'e verdi."},
+        {"q": "Mute'de kaç komutan şehit oldu?",
+         "options": ["İki", "Üç", "Dört", "Beş"], "answer": 1,
+         "explanation": "Zeyd b. Hârise, Ca'fer b. Ebû Tâlib ve Abdullah b. Revâha."},
+        {"q": "Veda Haccı hangi hicri yılda yapıldı?",
+         "options": ["Sekizinci", "Dokuzuncu", "Onuncu", "On birinci"], "answer": 2,
+         "explanation": "Hz. Peygamber ﷺ Veda Haccı'nı hicretin 10. yılında yaptı."},
+        {"q": "Hz. Peygamber ﷺ hangi hicri yılda vefat etti?",
+         "options": ["Dokuzuncu", "Onuncu", "On birinci", "On ikinci"], "answer": 2,
+         "explanation": "Hz. Peygamber ﷺ hicretin 11. yılında vefat etti."},
+        {"q": "Vefat ettiğinde Hz. Peygamber kaç yaşındaydı?",
+         "options": ["60", "62", "63", "65"], "answer": 2,
+         "explanation": "O ﷺ altmış üç yaşında vefat etti."},
+        {"q": "Hz. Peygamber'in ﷺ en küçük kızı kimdir?",
+         "options": ["Zeyneb", "Rukiyye", "Ümmü Gülsüm", "Fâtıma"], "answer": 3,
+         "explanation": "Fâtıma ez-Zehrâ (r.a.) Hz. Peygamber'in ﷺ en küçük kızıdır."},
+        {"q": "Ebû Bekir es-Sıddîk'ın lakabı nedir?",
+         "options": ["el-Fârûk", "es-Sıddîk", "Zinnûreyn", "Allah'ın Kılıcı"], "answer": 1,
+         "explanation": "Hz. Peygamber ﷺ ona İsrâ'yı tasdik ettiği için es-Sıddîk lakabını verdi."},
+        {"q": "Ömer b. Hattâb'ın lakabı nedir?",
+         "options": ["es-Sıddîk", "el-Fârûk", "Zinnûreyn", "Ümmetin Emini"], "answer": 1,
+         "explanation": "Hz. Peygamber ﷺ ona hakkı batıldan ayırdığı için el-Fârûk lakabını verdi."},
+    ],
+
+    # ================= Français =================
+    "fr": [
+        {"q": "En quelle année grégorienne le Prophète ﷺ est-il né ?",
+         "options": ["570 ap. J.-C.", "571 ap. J.-C.", "572 ap. J.-C.", "573 ap. J.-C."], "answer": 1,
+         "explanation": "Le Prophète ﷺ est né l'Année de l'Éléphant (571) comme mentionné dans 'The Sealed Nectar'."},
+        {"q": "Quel est le nom de la mère du Prophète ﷺ ?",
+         "options": ["Halimah al-Sa'diyah", "Aminah bint Wahb", "Khadijah bint Khuwaylid", "Fatimah bint Asad"], "answer": 1,
+         "explanation": "La mère du Prophète ﷺ est Aminah bint Wahb ibn Abd Manaf."},
+        {"q": "Dans quelle grotte la première révélation est-elle descendue ?",
+         "options": ["Grotte de Thawr", "Grotte de Hira", "Grotte de Kahf", "Grotte de Raqim"], "answer": 1,
+         "explanation": "La révélation descendit dans la grotte de Hira sur le mont al-Nur près de La Mecque."},
+        {"q": "Quelle est la première sourate révélée du Coran ?",
+         "options": ["Al-Fatihah", "Al-Alaq", "Al-Muddathir", "Al-Baqarah"], "answer": 1,
+         "explanation": "Les premiers versets révélés furent « Lis au nom de ton Seigneur qui a créé » de la sourate Al-Alaq."},
+        {"q": "Quel âge avait le Prophète ﷺ lors de la première révélation ?",
+         "options": ["30 ans", "35 ans", "40 ans", "45 ans"], "answer": 2,
+         "explanation": "Il ﷺ avait quarante ans au début de sa prophétie."},
+        {"q": "Qui fut la première femme à croire au Prophète ﷺ ?",
+         "options": ["Aïcha", "Khadijah", "Fatimah", "Hafsah"], "answer": 1,
+         "explanation": "La première à croire en lui ﷺ fut son épouse Khadijah bint Khuwaylid (qu'Allah l'agrée)."},
+        {"q": "Qui fut le premier homme libre à embrasser l'islam ?",
+         "options": ["Abu Bakr al-Siddiq", "Umar ibn al-Khattab", "Uthman ibn Affan", "Ali ibn Abi Talib"], "answer": 0,
+         "explanation": "Abu Bakr al-Siddiq (qu'Allah l'agrée) fut le premier homme libre à embrasser l'islam."},
+        {"q": "Quel Compagnon a accompagné le Prophète ﷺ lors de l'Hégire ?",
+         "options": ["Ali", "Abu Bakr", "Umar", "Uthman"], "answer": 1,
+         "explanation": "Abu Bakr al-Siddiq (qu'Allah l'agrée) l'a accompagné."},
+        {"q": "Quelle fut la première mosquée établie par le Prophète ﷺ à son arrivée à Médine ?",
+         "options": ["La mosquée du Prophète", "La mosquée de Quba", "La mosquée al-Aqsa", "La mosquée des Deux Qiblas"], "answer": 1,
+         "explanation": "Il établit la mosquée de Quba, la première mosquée de l'islam."},
+        {"q": "En quelle année hégirienne eut lieu la bataille de Badr ?",
+         "options": ["Première", "Deuxième", "Troisième", "Quatrième"], "answer": 1,
+         "explanation": "Elle eut lieu en 2e année de l'Hégire, connue comme le Jour du Discernement."},
+        {"q": "Combien de musulmans y avait-il à la bataille de Badr ?",
+         "options": ["300", "313", "350", "400"], "answer": 1,
+         "explanation": "Ils étaient 313 hommes."},
+        {"q": "En quelle année hégirienne eut lieu la bataille d'Uhud ?",
+         "options": ["Deuxième", "Troisième", "Quatrième", "Cinquième"], "answer": 1,
+         "explanation": "La bataille d'Uhud eut lieu en 3e année de l'Hégire."},
+        {"q": "Qui est le Maître des Martyrs à la bataille d'Uhud ?",
+         "options": ["Hamza ibn Abd al-Muttalib", "Mus'ab ibn Umayr", "Anas ibn al-Nadr", "Sa'd ibn al-Rabi"], "answer": 0,
+         "explanation": "Hamza ibn Abd al-Muttalib, l'oncle du Prophète ﷺ, que le Prophète ﷺ a appelé Maître des Martyrs."},
+        {"q": "En quelle année hégirienne eut lieu la bataille de la Tranchée ?",
+         "options": ["Troisième", "Quatrième", "Cinquième", "Sixième"], "answer": 2,
+         "explanation": "Elle eut lieu en 5e année de l'Hégire."},
+        {"q": "Qui a suggéré de creuser la tranchée ?",
+         "options": ["Abu Bakr", "Umar", "Salman al-Farisi", "Ali"], "answer": 2,
+         "explanation": "Salman al-Farisi (qu'Allah l'agrée) a suggéré de creuser la tranchée."},
+        {"q": "En quelle année hégirienne le traité de Hudaybiyya fut-il conclu ?",
+         "options": ["Quatrième", "Cinquième", "Sixième", "Septième"], "answer": 2,
+         "explanation": "Il fut conclu en 6e année de l'Hégire."},
+        {"q": "Comment Allah a-t-Il décrit le traité de Hudaybiyya dans le Coran ?",
+         "options": ["Une grande victoire", "Une victoire éclatante", "Un triomphe puissant", "Une vaste miséricorde"], "answer": 1,
+         "explanation": "Allah a dit : « Nous t'avons accordé une victoire éclatante. »"},
+        {"q": "À qui le Prophète ﷺ a-t-il remis l'étendard à Khaybar ?",
+         "options": ["Abu Bakr", "Umar", "Ali ibn Abi Talib", "Uthman"], "answer": 2,
+         "explanation": "Le Prophète ﷺ remit l'étendard à Ali ibn Abi Talib."},
+        {"q": "Combien de commandants furent martyrisés à Mu'ta ?",
+         "options": ["Deux", "Trois", "Quatre", "Cinq"], "answer": 1,
+         "explanation": "Zayd ibn Harithah, Ja'far ibn Abi Talib, et Abdullah ibn Rawahah."},
+        {"q": "En quelle année hégirienne eut lieu le Pèlerinage d'adieu ?",
+         "options": ["Huitième", "Neuvième", "Dixième", "Onzième"], "answer": 2,
+         "explanation": "Le Prophète ﷺ accomplit le Pèlerinage d'adieu en 10e année de l'Hégire."},
+        {"q": "En quelle année hégirienne le Prophète ﷺ est-il décédé ?",
+         "options": ["Neuvième", "Dixième", "Onzième", "Douzième"], "answer": 2,
+         "explanation": "Le Prophète ﷺ est décédé en 11e année de l'Hégire."},
+        {"q": "Quel âge avait le Prophète ﷺ lors de son décès ?",
+         "options": ["60 ans", "62 ans", "63 ans", "65 ans"], "answer": 2,
+         "explanation": "Il ﷺ est décédé à l'âge de soixante-trois ans."},
+        {"q": "Qui était la plus jeune fille du Prophète ﷺ ?",
+         "options": ["Zaynab", "Ruqayyah", "Umm Kulthum", "Fatimah"], "answer": 3,
+         "explanation": "Fatimah al-Zahra (qu'Allah l'agrée) était la plus jeune fille du Prophète ﷺ."},
+        {"q": "Quel est le titre d'Abu Bakr al-Siddiq ?",
+         "options": ["Al-Farooq", "Al-Siddiq", "Dhul-Nurayn", "L'Épée d'Allah"], "answer": 1,
+         "explanation": "Le Prophète ﷺ lui a donné le titre d'Al-Siddiq pour avoir confirmé l'Israa."},
+        {"q": "Quel est le titre d'Umar ibn al-Khattab ?",
+         "options": ["Al-Siddiq", "Al-Farooq", "Dhul-Nurayn", "Le Confident de la Umma"], "answer": 1,
+         "explanation": "Le Prophète ﷺ lui a donné le titre d'Al-Farooq pour avoir distingué le vrai du faux."},
+    ],
+
+    # ================= Español =================
+    "es": [
+        {"q": "¿En qué año gregoriano nació el Profeta ﷺ?",
+         "options": ["570 d.C.", "571 d.C.", "572 d.C.", "573 d.C."], "answer": 1,
+         "explanation": "El Profeta ﷺ nació en el Año del Elefante (571) como se menciona en 'The Sealed Nectar'."},
+        {"q": "¿Cuál es el nombre de la madre del Profeta ﷺ?",
+         "options": ["Halimah al-Sa'diyah", "Aminah bint Wahb", "Khadijah bint Khuwaylid", "Fatimah bint Asad"], "answer": 1,
+         "explanation": "La madre del Profeta ﷺ es Aminah bint Wahb ibn Abd Manaf."},
+        {"q": "¿En qué cueva descendió la primera revelación?",
+         "options": ["Cueva de Thawr", "Cueva de Hira", "Cueva de Kahf", "Cueva de Raqim"], "answer": 1,
+         "explanation": "La revelación descendió en la Cueva de Hira en el monte al-Nur cerca de La Meca."},
+        {"q": "¿Cuál es la primera sura revelada del Corán?",
+         "options": ["Al-Fatihah", "Al-Alaq", "Al-Muddathir", "Al-Baqarah"], "answer": 1,
+         "explanation": "Los primeros versículos revelados fueron «Lee en el nombre de tu Señor que creó» de la sura Al-Alaq."},
+        {"q": "¿Cuántos años tenía el Profeta ﷺ cuando llegó la primera revelación?",
+         "options": ["30 años", "35 años", "40 años", "45 años"], "answer": 2,
+         "explanation": "Tenía ﷺ cuarenta años al inicio de su profecía."},
+        {"q": "¿Quién fue la primera mujer en creer en el Profeta ﷺ?",
+         "options": ["Aisha", "Khadijah", "Fatimah", "Hafsah"], "answer": 1,
+         "explanation": "La primera en creer en él ﷺ fue su esposa Khadijah bint Khuwaylid (que Allah esté complacido con ella)."},
+        {"q": "¿Quién fue el primer hombre libre en abrazar el Islam?",
+         "options": ["Abu Bakr al-Siddiq", "Umar ibn al-Khattab", "Uthman ibn Affan", "Ali ibn Abi Talib"], "answer": 0,
+         "explanation": "Abu Bakr al-Siddiq (que Allah esté complacido con él) fue el primer hombre libre en abrazar el Islam."},
+        {"q": "¿Qué Compañero acompañó al Profeta ﷺ durante la Hégira?",
+         "options": ["Ali", "Abu Bakr", "Umar", "Uthman"], "answer": 1,
+         "explanation": "Abu Bakr al-Siddiq (que Allah esté complacido con él) lo acompañó."},
+        {"q": "¿Cuál fue la primera mezquita que estableció el Profeta ﷺ al llegar a Medina?",
+         "options": ["La Mezquita del Profeta", "La Mezquita de Quba", "La Mezquita al-Aqsa", "La Mezquita de las Dos Qiblas"], "answer": 1,
+         "explanation": "Estableció la Mezquita de Quba, la primera mezquita del Islam."},
+        {"q": "¿En qué año hégira tuvo lugar la batalla de Badr?",
+         "options": ["Primero", "Segundo", "Tercero", "Cuarto"], "answer": 1,
+         "explanation": "Tuvo lugar en el 2º año de la Hégira, conocido como el Día del Discernimiento."},
+        {"q": "¿Cuántos musulmanes había en la batalla de Badr?",
+         "options": ["300", "313", "350", "400"], "answer": 1,
+         "explanation": "Eran 313 hombres."},
+        {"q": "¿En qué año hégira tuvo lugar la batalla de Uhud?",
+         "options": ["Segundo", "Tercero", "Cuarto", "Quinto"], "answer": 1,
+         "explanation": "La batalla de Uhud tuvo lugar en el 3er año de la Hégira."},
+        {"q": "¿Quién es el Señor de los Mártires en la batalla de Uhud?",
+         "options": ["Hamza ibn Abd al-Muttalib", "Mus'ab ibn Umayr", "Anas ibn al-Nadr", "Sa'd ibn al-Rabi"], "answer": 0,
+         "explanation": "Hamza ibn Abd al-Muttalib, el tío del Profeta ﷺ, a quien el Profeta ﷺ llamó Señor de los Mártires."},
+        {"q": "¿En qué año hégira tuvo lugar la batalla de la Trinchera?",
+         "options": ["Tercero", "Cuarto", "Quinto", "Sexto"], "answer": 2,
+         "explanation": "Tuvo lugar en el 5º año de la Hégira."},
+        {"q": "¿Quién sugirió cavar la trinchera?",
+         "options": ["Abu Bakr", "Umar", "Salman al-Farisi", "Ali"], "answer": 2,
+         "explanation": "Salman al-Farisi (que Allah esté complacido con él) sugirió cavar la trinchera."},
+        {"q": "¿En qué año hégira se concluyó el tratado de Hudaybiyyah?",
+         "options": ["Cuarto", "Quinto", "Sexto", "Séptimo"], "answer": 2,
+         "explanation": "Se concluyó en el 6º año de la Hégira."},
+        {"q": "¿Cómo describió Allah el tratado de Hudaybiyyah en el Corán?",
+         "options": ["Una gran victoria", "Una victoria manifiesta", "Un triunfo poderoso", "Una vasta misericordia"], "answer": 1,
+         "explanation": "Allah dijo: «Ciertamente te hemos concedido una victoria manifiesta»."},
+        {"q": "¿A quién entregó el Profeta ﷺ el estandarte en Jaybar?",
+         "options": ["Abu Bakr", "Umar", "Ali ibn Abi Talib", "Uthman"], "answer": 2,
+         "explanation": "El Profeta ﷺ entregó el estandarte a Ali ibn Abi Talib."},
+        {"q": "¿Cuántos comandantes fueron martirizados en Mu'ta?",
+         "options": ["Dos", "Tres", "Cuatro", "Cinco"], "answer": 1,
+         "explanation": "Zayd ibn Hariza, Ya'far ibn Abi Talib y Abdullah ibn Rawaha."},
+        {"q": "¿En qué año hégira tuvo lugar la Peregrinación de Despedida?",
+         "options": ["Octavo", "Noveno", "Décimo", "Undécimo"], "answer": 2,
+         "explanation": "El Profeta ﷺ realizó la Peregrinación de Despedida en el 10º año de la Hégira."},
+        {"q": "¿En qué año hégira falleció el Profeta ﷺ?",
+         "options": ["Noveno", "Décimo", "Undécimo", "Duodécimo"], "answer": 2,
+         "explanation": "El Profeta ﷺ falleció en el 11º año de la Hégira."},
+        {"q": "¿Cuántos años tenía el Profeta ﷺ al fallecer?",
+         "options": ["60 años", "62 años", "63 años", "65 años"], "answer": 2,
+         "explanation": "Falleció ﷺ a la edad de sesenta y tres años."},
+        {"q": "¿Quién fue la hija más joven del Profeta ﷺ?",
+         "options": ["Zaynab", "Ruqayyah", "Umm Kulthum", "Fatimah"], "answer": 3,
+         "explanation": "Fatimah al-Zahra (que Allah esté complacido con ella) fue la hija más joven del Profeta ﷺ."},
+        {"q": "¿Cuál es el título de Abu Bakr al-Siddiq?",
+         "options": ["Al-Farooq", "Al-Siddiq", "Dhul-Nurayn", "La Espada de Allah"], "answer": 1,
+         "explanation": "El Profeta ﷺ le dio el título de Al-Siddiq por confirmar el Israa."},
+        {"q": "¿Cuál es el título de Umar ibn al-Khattab?",
+         "options": ["Al-Siddiq", "Al-Farooq", "Dhul-Nurayn", "El Confiable de la Umma"], "answer": 1,
+         "explanation": "El Profeta ﷺ le dio el título de Al-Farooq por distinguir la verdad de la falsedad."},
+    ],
+
+    # ================= Русский =================
+    "ru": [
+        {"q": "В каком году по григорианскому календарю родился Пророк ﷺ?",
+         "options": ["570 г.", "571 г.", "572 г.", "573 г."], "answer": 1,
+         "explanation": "Пророк ﷺ родился в Год Слона (571 г.), как указано в «The Sealed Nectar»."},
+        {"q": "Как зовут мать Пророка ﷺ?",
+         "options": ["Халима ас-Саадия", "Амина бинт Вахб", "Хадиджа бинт Хувайлид", "Фатима бинт Асад"], "answer": 1,
+         "explanation": "Мать Пророка ﷺ — Амина бинт Вахб ибн Абд Манаф."},
+        {"q": "В какой пещере снизошло первое откровение?",
+         "options": ["Пещера Саур", "Пещера Хира", "Пещера Кахф", "Пещера Раким"], "answer": 1,
+         "explanation": "Откровение снизошло в пещере Хира на горе ан-Нур близ Мекки."},
+        {"q": "Какая сура Корана была ниспослана первой?",
+         "options": ["Аль-Фатиха", "Аль-Алак", "Аль-Муддассир", "Аль-Бакара"], "answer": 1,
+         "explanation": "Первые ниспосланные аяты: «Читай во имя Господа твоего, Который сотворил» из суры Аль-Алак."},
+        {"q": "Сколько лет было Пророку ﷺ при первом откровении?",
+         "options": ["30 лет", "35 лет", "40 лет", "45 лет"], "answer": 2,
+         "explanation": "Ему ﷺ было сорок лет в начале его пророчества."},
+        {"q": "Кто была первой женщиной, уверовавшей в Пророка ﷺ?",
+         "options": ["Аиша", "Хадиджа", "Фатима", "Хафса"], "answer": 1,
+         "explanation": "Первой уверовавшей в него ﷺ была его жена Хадиджа бинт Хувайлид (да будет доволен ею Аллах)."},
+        {"q": "Кто был первым свободным мужчиной, принявшим ислам?",
+         "options": ["Абу Бакр ас-Сиддик", "Умар ибн аль-Хаттаб", "Усман ибн Аффан", "Али ибн Абу Талиб"], "answer": 0,
+         "explanation": "Абу Бакр ас-Сиддик (да будет доволен им Аллах) был первым свободным мужчиной, принявшим ислам."},
+        {"q": "Какой сподвижник сопровождал Пророка ﷺ во время хиджры?",
+         "options": ["Али", "Абу Бакр", "Умар", "Усман"], "answer": 1,
+         "explanation": "Абу Бакр ас-Сиддик (да будет доволен им Аллах) сопровождал его."},
+        {"q": "Какую первую мечеть основал Пророк ﷺ по прибытии в Медину?",
+         "options": ["Мечеть Пророка", "Мечеть Куба", "Мечеть аль-Акса", "Мечеть двух кибл"], "answer": 1,
+         "explanation": "Он основал мечеть Куба — первую мечеть в исламе."},
+        {"q": "В каком году хиджры произошла битва при Бадре?",
+         "options": ["Первом", "Втором", "Третьем", "Четвёртом"], "answer": 1,
+         "explanation": "Она произошла во 2-м году хиджры и известна как День Различения."},
+        {"q": "Сколько мусульман было в битве при Бадре?",
+         "options": ["300", "313", "350", "400"], "answer": 1,
+         "explanation": "Их было 313 человек."},
+        {"q": "В каком году хиджры произошла битва при Ухуде?",
+         "options": ["Втором", "Третьем", "Четвёртом", "Пятом"], "answer": 1,
+         "explanation": "Битва при Ухуде произошла в 3-м году хиджры."},
+        {"q": "Кто является Господином шахидов в битве при Ухуде?",
+         "options": ["Хамза ибн Абд аль-Мутталиб", "Мусъаб ибн Умайр", "Анас ибн ан-Надр", "Саад ибн ар-Раби"], "answer": 0,
+         "explanation": "Хамза ибн Абд аль-Мутталиб, дядя Пророка ﷺ, которого Пророк ﷺ назвал Господином шахидов."},
+        {"q": "В каком году хиджры произошла битва у Рва?",
+         "options": ["Третьем", "Четвёртом", "Пятом", "Шестом"], "answer": 2,
+         "explanation": "Она произошла в 5-м году хиджры."},
+        {"q": "Кто предложил вырыть ров?",
+         "options": ["Абу Бакр", "Умар", "Салман аль-Фариси", "Али"], "answer": 2,
+         "explanation": "Салман аль-Фариси (да будет доволен им Аллах) предложил вырыть ров."},
+        {"q": "В каком году хиджры был заключён Худайбийский договор?",
+         "options": ["Четвёртом", "Пятом", "Шестом", "Седьмом"], "answer": 2,
+         "explanation": "Он был заключён в 6-м году хиджры."},
+        {"q": "Как Аллах описал Худайбийский договор в Коране?",
+         "options": ["Великая победа", "Явная победа", "Мощный триумф", "Обширная милость"], "answer": 1,
+         "explanation": "Аллах сказал: «Мы даровали тебе явную победу»."},
+        {"q": "Кому Пророк ﷺ вручил знамя в Хайбаре?",
+         "options": ["Абу Бакру", "Умару", "Али ибн Абу Талибу", "Усману"], "answer": 2,
+         "explanation": "Пророк ﷺ вручил знамя Али ибн Абу Талибу."},
+        {"q": "Сколько полководцев пали шахидами при Муте?",
+         "options": ["Два", "Три", "Четыре", "Пять"], "answer": 1,
+         "explanation": "Зейд ибн Хариса, Джафар ибн Абу Талиб и Абдуллах ибн Раваха."},
+        {"q": "В каком году хиджры состоялось Прощальное паломничество?",
+         "options": ["Восьмом", "Девятом", "Десятом", "Одиннадцатом"], "answer": 2,
+         "explanation": "Пророк ﷺ совершил Прощальное паломничество в 10-м году хиджры."},
+        {"q": "В каком году хиджры Пророк ﷺ скончался?",
+         "options": ["Девятом", "Десятом", "Одиннадцатом", "Двенадцатом"], "answer": 2,
+         "explanation": "Пророк ﷺ скончался в 11-м году хиджры."},
+        {"q": "Сколько лет было Пророку ﷺ при кончине?",
+         "options": ["60 лет", "62 года", "63 года", "65 лет"], "answer": 2,
+         "explanation": "Он ﷺ скончался в возрасте шестидесяти трёх лет."},
+        {"q": "Кто была младшей дочерью Пророка ﷺ?",
+         "options": ["Зайнаб", "Рукайя", "Умм Кульсум", "Фатима"], "answer": 3,
+         "explanation": "Фатима аз-Захра (да будет доволен ею Аллах) была младшей дочерью Пророка ﷺ."},
+        {"q": "Каков титул Абу Бакра ас-Сиддика?",
+         "options": ["Аль-Фарук", "Ас-Сиддик", "Зун-Нурайн", "Меч Аллаха"], "answer": 1,
+         "explanation": "Пророк ﷺ дал ему титул ас-Сиддик за подтверждение Исры."},
+        {"q": "Каков титул Умара ибн аль-Хаттаба?",
+         "options": ["Ас-Сиддик", "Аль-Фарук", "Зун-Нурайн", "Доверенный уммы"], "answer": 1,
+         "explanation": "Пророк ﷺ дал ему титул аль-Фарук за различение истины от лжи."},
+    ],
+
+    # ================= 中文 =================
+    "zh": [
+        {"q": "先知 ﷺ 出生于公历哪一年？",
+         "options": ["公元570年", "公元571年", "公元572年", "公元573年"], "answer": 1,
+         "explanation": "先知 ﷺ 出生于象年（571年），如《The Sealed Nectar》所述。"},
+        {"q": "先知 ﷺ 的母亲叫什么名字？",
+         "options": ["哈莉玛·萨迪娅", "阿米娜·宾特·瓦赫卜", "赫蒂彻·宾特·胡韦利德", "法蒂玛·宾特·阿萨德"], "answer": 1,
+         "explanation": "先知 ﷺ 的母亲是阿米娜·宾特·瓦赫卜·本·阿卜杜·马纳夫。"},
+        {"q": "第一次启示降示在哪个山洞？",
+         "options": ["骚尔洞", "希拉洞", "凯赫夫洞", "拉基姆洞"], "answer": 1,
+         "explanation": "启示降示于麦加附近的努尔山希拉洞。"},
+        {"q": "《古兰经》中最早降示的章节是哪一章？",
+         "options": ["开端章", "血块章", "盖被的人章", "黄牛章"], "answer": 1,
+         "explanation": "最早降示的经文是血块章的「你应当奉你的创造主的名义而宣读」。"},
+        {"q": "第一次启示降临时，先知 ﷺ 多大年龄？",
+         "options": ["30岁", "35岁", "40岁", "45岁"], "answer": 2,
+         "explanation": "先知 ﷺ 开始使命时年四十岁。"},
+        {"q": "第一位信仰先知 ﷺ 的女性是谁？",
+         "options": ["阿伊莎", "赫蒂彻", "法蒂玛", "哈芙赛"], "answer": 1,
+         "explanation": "第一位信仰他 ﷺ 的是他的妻子赫蒂彻·宾特·胡韦利德（愿主喜悦她）。"},
+        {"q": "第一位接受伊斯兰的自由男性是谁？",
+         "options": ["艾布·伯克尔·松迪格", "欧麦尔·本·哈塔卜", "奥斯曼·本·阿凡", "阿里·本·阿比·塔利卜"], "answer": 0,
+         "explanation": "艾布·伯克尔·松迪格（愿主喜悦他）是第一位接受伊斯兰的自由男性。"},
+        {"q": "迁徙期间哪一位圣门弟子陪伴先知 ﷺ？",
+         "options": ["阿里", "艾布·伯克尔", "欧麦尔", "奥斯曼"], "answer": 1,
+         "explanation": "艾布·伯克尔·松迪格（愿主喜悦他）陪伴他。"},
+        {"q": "先知 ﷺ 抵达麦地那后建立的第一座清真寺是哪座？",
+         "options": ["先知清真寺", "库巴清真寺", "阿克萨清真寺", "双向清真寺"], "answer": 1,
+         "explanation": "他建立了库巴清真寺——伊斯兰历史上的第一座清真寺。"},
+        {"q": "白德尔战役发生在伊历哪一年？",
+         "options": ["第一年", "第二年", "第三年", "第四年"], "answer": 1,
+         "explanation": "发生在伊历第二年，被称为判别之日。"},
+        {"q": "白德尔战役中有多少穆斯林？",
+         "options": ["300人", "313人", "350人", "400人"], "answer": 1,
+         "explanation": "共有313人。"},
+        {"q": "伍侯德战役发生在伊历哪一年？",
+         "options": ["第二年", "第三年", "第四年", "第五年"], "answer": 1,
+         "explanation": "伍侯德战役发生在伊历第三年。"},
+        {"q": "伍侯德战役中谁是烈士之主？",
+         "options": ["哈姆扎·本·阿卜杜勒·穆塔里卜", "穆斯阿卜·本·乌麦尔", "阿纳斯·本·纳德尔", "萨阿德·本·拉比"], "answer": 0,
+         "explanation": "哈姆扎·本·阿卜杜勒·穆塔里卜，先知 ﷺ 的叔父，被先知 ﷺ 称为烈士之主。"},
+        {"q": "壕沟战役发生在伊历哪一年？",
+         "options": ["第三年", "第四年", "第五年", "第六年"], "answer": 2,
+         "explanation": "发生在伊历第五年。"},
+        {"q": "谁建议挖掘壕沟？",
+         "options": ["艾布·伯克尔", "欧麦尔", "萨勒曼·法里西", "阿里"], "answer": 2,
+         "explanation": "萨勒曼·法里西（愿主喜悦他）建议挖掘壕沟。"},
+        {"q": "侯代比亚和约缔结于伊历哪一年？",
+         "options": ["第四年", "第五年", "第六年", "第七年"], "answer": 2,
+         "explanation": "缔结于伊历第六年。"},
+        {"q": "真主在《古兰经》中如何描述侯代比亚和约？",
+         "options": ["伟大的胜利", "明显的胜利", "强大的凯旋", "广阔的慈悯"], "answer": 1,
+         "explanation": "真主说：「我确已赏赐你一种明显的胜利。」"},
+        {"q": "在海巴尔，先知 ﷺ 将旗帜交给了谁？",
+         "options": ["艾布·伯克尔", "欧麦尔", "阿里·本·阿比·塔利卜", "奥斯曼"], "answer": 2,
+         "explanation": "先知 ﷺ 将旗帜交给了阿里·本·阿比·塔利卜。"},
+        {"q": "在穆塔战役中有几位将领殉道？",
+         "options": ["两位", "三位", "四位", "五位"], "answer": 1,
+         "explanation": "宰德·本·哈里斯、贾法尔·本·阿比·塔利卜和阿卜杜拉·本·拉瓦哈。"},
+        {"q": "辞别朝觐发生在伊历哪一年？",
+         "options": ["第八年", "第九年", "第十年", "第十一年"], "answer": 2,
+         "explanation": "先知 ﷺ 在伊历第十年完成了辞别朝觐。"},
+        {"q": "先知 ﷺ 在伊历哪一年归真？",
+         "options": ["第九年", "第十年", "第十一年", "第十二年"], "answer": 2,
+         "explanation": "先知 ﷺ 在伊历第十一年归真。"},
+        {"q": "先知 ﷺ 归真时多大年龄？",
+         "options": ["60岁", "62岁", "63岁", "65岁"], "answer": 2,
+         "explanation": "他 ﷺ 归真时六十三岁。"},
+        {"q": "谁是先知 ﷺ 最小的女儿？",
+         "options": ["宰娜卜", "鲁卡娅", "乌姆·库勒苏姆", "法蒂玛"], "answer": 3,
+         "explanation": "法蒂玛·扎赫拉（愿主喜悦她）是先知 ﷺ 最小的女儿。"},
+        {"q": "艾布·伯克尔·松迪格的称号是什么？",
+         "options": ["法鲁克", "松迪格", "双光者", "真主之剑"], "answer": 1,
+         "explanation": "先知 ﷺ 因他确认夜行登霄而赐予他松迪格称号。"},
+        {"q": "欧麦尔·本·哈塔卜的称号是什么？",
+         "options": ["松迪格", "法鲁克", "双光者", "乌玛的忠信者"], "answer": 1,
+         "explanation": "先知 ﷺ 因他分辨真伪而赐予他法鲁克称号。"},
+    ],
+
+    # ================= हिन्दी =================
+    "hi": [
+        {"q": "पैग़ंबर ﷺ का जन्म ग्रेगोरियन वर्ष में कब हुआ?",
+         "options": ["570 ई.", "571 ई.", "572 ई.", "573 ई."], "answer": 1,
+         "explanation": "पैग़ंबर ﷺ का जन्म हाथी के वर्ष (571 ई.) में हुआ, जैसा 'The Sealed Nectar' में वर्णित है।"},
+        {"q": "पैग़ंबर ﷺ की माता का नाम क्या है?",
+         "options": ["हलीमा सादिया", "आमिना बिन्त वहब", "ख़दीजा बिन्त ख़ुवैलिद", "फ़ातिमा बिन्त असद"], "answer": 1,
+         "explanation": "पैग़ंबर ﷺ की माता आमिना बिन्त वहब बिन्त अब्द मनाफ़ हैं।"},
+        {"q": "पहली वह्य किस गुफा में नाज़िल हुई?",
+         "options": ["ग़ार-ए-सौर", "ग़ार-ए-हिरा", "ग़ार-ए-कहफ़", "ग़ार-ए-रक़ीम"], "answer": 1,
+         "explanation": "वह्य मक्का के पास जबल-उन-नूर की ग़ार-ए-हिरा में नाज़िल हुई।"},
+        {"q": "क़ुरआन की पहली नाज़िल होने वाली सूरह कौन है?",
+         "options": ["अल-फ़ातिहा", "अल-अलक़", "अल-मुद्दस्सिर", "अल-बक़रा"], "answer": 1,
+         "explanation": "पहली आयतें सूरह अल-अलक़ से थीं: ﴿اِقْرَاْ بِاسْمِ رَبِّكَ الَّذِيْ خَلَقَ﴾।"},
+        {"q": "पहली वह्य के समय पैग़ंबर ﷺ की उम्र कितनी थी?",
+         "options": ["30 साल", "35 साल", "40 साल", "45 साल"], "answer": 2,
+         "explanation": "नुबुव्वत के आरंभ में आप ﷺ चालीस वर्ष के थे।"},
+        {"q": "पैग़ंबर ﷺ पर सबसे पहले किस औरत ने ईमान लाया?",
+         "options": ["आइशा", "ख़दीजा", "फ़ातिमा", "हफ़्सा"], "answer": 1,
+         "explanation": "आप ﷺ की ज़ौजा ख़दीजा बिन्त ख़ुवैलिद (रज़ियल्लाहु अन्हा) ने सबसे पहले ईमान लाया।"},
+        {"q": "आज़ाद मर्दों में सबसे पहले किसने इस्लाम क़बूल किया?",
+         "options": ["अबू बक्र सिद्दीक़", "उमर बिन ख़त्ताब", "उस्मान बिन अफ़्फ़ान", "अली बिन अबी तालिब"], "answer": 0,
+         "explanation": "अबू बक्र सिद्दीक़ (रज़ियल्लाहु अन्हु) आज़ाद मर्दों में सबसे पहले मुसलमान हुए।"},
+        {"q": "हिजरत में पैग़ंबर ﷺ के साथ कौन थे?",
+         "options": ["अली", "अबू बक्र", "उमर", "उस्मान"], "answer": 1,
+         "explanation": "अबू बक्र सिद्दीक़ (रज़ियल्लाहु अन्हु) आप ﷺ के साथ थे।"},
+        {"q": "मदीना पहुँचने पर पैग़ंबर ﷺ ने पहली कौन-सी मस्जिद बनाई?",
+         "options": ["मस्जिद-ए-नबवी", "मस्जिद-ए-क़ुबा", "मस्जिद-ए-अक़्सा", "मस्जिद-ए-क़िब्लतैन"], "answer": 1,
+         "explanation": "आप ﷺ ने मस्जिद-ए-क़ुबा बनाई, जो इस्लाम की पहली मस्जिद है।"},
+        {"q": "ग़ज़्वा-ए-बद्र किस हिजरी साल में हुआ?",
+         "options": ["पहला", "दूसरा", "तीसरा", "चौथा"], "answer": 1,
+         "explanation": "यह दूसरे हिजरी में हुआ, जिसे यौमुल फ़ुरक़ान कहा जाता है।"},
+        {"q": "ग़ज़्वा-ए-बद्र में मुसलमानों की तादाद कितनी थी?",
+         "options": ["300", "313", "350", "400"], "answer": 1,
+         "explanation": "उनकी तादाद 313 थी।"},
+        {"q": "ग़ज़्वा-ए-उहुद किस हिजरी साल में हुआ?",
+         "options": ["दूसरा", "तीसरा", "चौथा", "पाँचवाँ"], "answer": 1,
+         "explanation": "ग़ज़्वा-ए-उहुद तीसरे हिजरी में हुआ।"},
+        {"q": "ग़ज़्वा-ए-उहुद में सैयदुश-शुहदा कौन हैं?",
+         "options": ["हमज़ा बिन अब्दुल मुत्तलिब", "मुसअब बिन उमैर", "अनस बिन नदर", "सअद बिन रबी"], "answer": 0,
+         "explanation": "हमज़ा बिन अब्दुल मुत्तलिब, पैग़ंबर ﷺ के चचा, जिन्हें आप ﷺ ने सैयदुश-शुहदा का लक़ब दिया।"},
+        {"q": "ग़ज़्वा-ए-ख़ंदक़ किस हिजरी साल में हुआ?",
+         "options": ["तीसरा", "चौथा", "पाँचवाँ", "छठा"], "answer": 2,
+         "explanation": "यह पाँचवें हिजरी में हुआ।"},
+        {"q": "ख़ंदक़ खोदने की तजवीज़ किसने दी?",
+         "options": ["अबू बक्र", "उमर", "सलमान फ़ारसी", "अली"], "answer": 2,
+         "explanation": "सलमान फ़ारसी (रज़ियल्लाहु अन्हु) ने ख़ंदक़ खोदने की तजवीज़ दी।"},
+        {"q": "सुलह-ए-हुदैबिय्या किस हिजरी साल में हुई?",
+         "options": ["चौथा", "पाँचवाँ", "छठा", "सातवाँ"], "answer": 2,
+         "explanation": "यह छठे हिजरी में हुई।"},
+        {"q": "अल्लाह ने क़ुरआन में सुलह-ए-हुदैबिय्या को क्या कहा?",
+         "options": ["अज़ीम फ़तह", "फ़तह-ए-मुबीन", "बड़ी नुसरत", "वसी रहमत"], "answer": 1,
+         "explanation": "अल्लाह ने फ़रमाया: ﴿اِنَّا فَتَحْنَا لَكَ فَتْحًا مُّبِيْنًا﴾।"},
+        {"q": "ख़ैबर में पैग़ंबर ﷺ ने झंडा किसको दिया?",
+         "options": ["अबू बक्र", "उमर", "अली बिन अबी तालिब", "उस्मान"], "answer": 2,
+         "explanation": "पैग़ंबर ﷺ ने झंडा अली बिन अबी तालिब को दिया।"},
+        {"q": "ग़ज़्वा-ए-मूता में कितने सरदार शहीद हुए?",
+         "options": ["दो", "तीन", "चार", "पाँच"], "answer": 1,
+         "explanation": "ज़ैद बिन हारिसा, जाफ़र बिन अबी तालिब, और अब्दुल्लाह बिन रवाहा।"},
+        {"q": "हज्जतुल विदा किस हिजरी साल में अदा किया गया?",
+         "options": ["आठवाँ", "नौवाँ", "दसवाँ", "ग्यारहवाँ"], "answer": 2,
+         "explanation": "पैग़ंबर ﷺ ने हज्जतुल विदा दसवें हिजरी में अदा किया।"},
+        {"q": "पैग़ंबर ﷺ की वफ़ात किस हिजरी साल में हुई?",
+         "options": ["नौवाँ", "दसवाँ", "ग्यारहवाँ", "बारहवाँ"], "answer": 2,
+         "explanation": "पैग़ंबर ﷺ की वफ़ात ग्यारहवें हिजरी में हुई।"},
+        {"q": "वफ़ात के वक़्त पैग़ंबर ﷺ की उम्र कितनी थी?",
+         "options": ["60 साल", "62 साल", "63 साल", "65 साल"], "answer": 2,
+         "explanation": "आप ﷺ की वफ़ात तिरसठ साल की उम्र में हुई।"},
+        {"q": "पैग़ंबर ﷺ की सबसे छोटी बेटी कौन हैं?",
+         "options": ["ज़ैनब", "रुक़य्या", "उम्मे कुलसूम", "फ़ातिमा"], "answer": 3,
+         "explanation": "फ़ातिमा ज़हरा (रज़ियल्लाहु अन्हा) पैग़ंबर ﷺ की सबसे छोटी बेटी हैं।"},
+        {"q": "अबू बक्र सिद्दीक़ का लक़ब क्या है?",
+         "options": ["फ़ारूक़", "सिद्दीक़", "ज़ुन-नूरैन", "सैफ़ुल्लाह"], "answer": 1,
+         "explanation": "पैग़ंबर ﷺ ने उन्हें सिद्दीक़ का लक़ब दिया।"},
+        {"q": "उमर बिन ख़त्ताब का लक़ब क्या है?",
+         "options": ["सिद्दीक़", "फ़ारूक़", "ज़ुन-नूरैन", "अमीनुल उम्मत"], "answer": 1,
+         "explanation": "पैग़ंबर ﷺ ने उन्हें फ़ारूक़ का लक़ब दिया।"},
+    ],
+}
+
+# ---------------------------------------------------------------------------
+# 5. LOCATIONS DATABASE
 # ---------------------------------------------------------------------------
 LOCATIONS = [
     {"key": "makkah", "name": {"ar": "مكة المكرمة", "en": "Makkah", "ur": "مکہ مکرمہ",
@@ -312,158 +1107,98 @@ LOCATIONS = [
 ]
 
 # ---------------------------------------------------------------------------
-# 4. TRANSLATIONS (UI)
+# 6. UI TRANSLATIONS
 # ---------------------------------------------------------------------------
 UI_TEXT = {
-    "ar": {"app_name": "مُبين AI",
-           "tagline": "منصة ذكية تخدم السيرة النبوية بلغات العالم",
-           "select_lang": "اختر اللغة",
-           "events_title": "أحداث السيرة والغزوات والمعارك",
-           "select_event": "اختر الحدث",
-           "chat_title": "اسأل مُبين AI",
-           "chat_placeholder": "اكتب سؤالك حول السيرة النبوية...",
-           "chat_button": "إرسال",
-           "spinner": "جارٍ البحث في كتاب «الرحيق المختوم»...",
-           "about_title": "عن الموقع",
-           "about_text": "موقع يعتمد على كتاب «الرحيق المختوم» للشيخ صفي الرحمن المباركفوري، ويقدم تجربة تفاعلية لاستكشاف أحداث السيرة النبوية بلغات متعددة.",
-           "events_hint": "اختر حدثاً من القائمة لقراءة نبذة عنه، أو اسأل مُبين AI مباشرة.",
-           "suggestions": "💡 اقتراحات سريعة",
-           "menu": "☰ القائمة",
+    "ar": {"app_name": "مُبين AI", "tagline": "منصة ذكية تخدم السيرة النبوية بلغات العالم",
+           "select_lang": "اختر اللغة", "events_title": "أحداث السيرة والغزوات والمعارك",
+           "select_event": "اختر الحدث", "chat_title": "اسأل مُبين AI",
+           "chat_placeholder": "اكتب سؤالك حول السيرة النبوية...", "chat_button": "إرسال",
+           "spinner": "جارٍ البحث في كتاب «الرحيق المختوم»...", "about_title": "عن الموقع",
+           "about_text": "موقع يعتمد على كتاب «الرحيق المختوم» للشيخ صفي الرحمن المباركفوري.",
+           "events_hint": "اختر حدثاً لقراءة نبذة عنه، أو اسأل مُبين AI مباشرة.",
+           "suggestions": "💡 اقتراحات سريعة", "menu": "☰ القائمة",
            "rtl": True, "dir": "rtl"},
-    "en": {"app_name": "Mubeen AI",
-           "tagline": "A smart platform serving the Prophetic Seerah in world languages",
-           "select_lang": "Select Language",
-           "events_title": "Seerah Events, Battles & Expeditions",
-           "select_event": "Select an event",
-           "chat_title": "Ask Mubeen AI",
-           "chat_placeholder": "Type your question about the Seerah...",
-           "chat_button": "Send",
-           "spinner": "Searching 'The Sealed Nectar'...",
-           "about_title": "About the Site",
-           "about_text": "A site grounded in 'The Sealed Nectar' by Safiur Rahman Mubarakpuri, offering an interactive experience to explore the events of the Prophetic Seerah in multiple languages.",
+    "en": {"app_name": "Mubeen AI", "tagline": "A smart platform serving the Prophetic Seerah in world languages",
+           "select_lang": "Select Language", "events_title": "Seerah Events, Battles & Expeditions",
+           "select_event": "Select an event", "chat_title": "Ask Mubeen AI",
+           "chat_placeholder": "Type your question about the Seerah...", "chat_button": "Send",
+           "spinner": "Searching 'The Sealed Nectar'...", "about_title": "About",
+           "about_text": "A site grounded in 'The Sealed Nectar' by Safiur Rahman Mubarakpuri.",
            "events_hint": "Select an event to read an excerpt, or ask Mubeen AI directly.",
-           "suggestions": "💡 Quick prompts",
-           "menu": "☰ Menu",
+           "suggestions": "💡 Quick prompts", "menu": "☰ Menu",
            "rtl": False, "dir": "ltr"},
-    "ur": {"app_name": "مبین AI",
-           "tagline": "عالمی زبانوں میں سیرت نبوی کی خدمت کرنے والا ذہین پلیٹ فارم",
-           "select_lang": "زبان منتخب کریں",
-           "events_title": "سیرت کے واقعات، غزوات اور معرکے",
-           "select_event": "واقعہ منتخب کریں",
-           "chat_title": "مبین AI سے پوچھیں",
-           "chat_placeholder": "سیرت نبوی کے بارے میں اپنا سوال لکھیں...",
-           "chat_button": "بھیجیں",
-           "spinner": "«الرحيق المختوم» میں تلاش ہو رہی ہے...",
-           "about_title": "سائٹ کے بارے میں",
+    "ur": {"app_name": "مبین AI", "tagline": "عالمی زبانوں میں سیرت نبوی کی خدمت کرنے والا ذہین پلیٹ فارم",
+           "select_lang": "زبان منتخب کریں", "events_title": "سیرت کے واقعات، غزوات اور معرکے",
+           "select_event": "واقعہ منتخب کریں", "chat_title": "مبین AI سے پوچھیں",
+           "chat_placeholder": "سیرت نبوی کے بارے میں اپنا سوال لکھیں...", "chat_button": "بھیجیں",
+           "spinner": "«الرحيق المختوم» میں تلاش ہو رہی ہے...", "about_title": "سائٹ کے بارے میں",
            "about_text": "یہ سائٹ شیخ صفی الرحمن مبارکپوری کی کتاب «الرحيق المختوم» پر مبنی ہے۔",
-           "events_hint": "کوئی واقعہ منتخب کریں یا مبین AI سے براہِ راست پوچھیں۔",
-           "suggestions": "💡 فوری تجاویز",
-           "menu": "☰ مینو",
+           "events_hint": "کوئی واقعہ منتخب کریں یا مبین AI سے پوچھیں۔",
+           "suggestions": "💡 فوری تجاویز", "menu": "☰ مینو",
            "rtl": True, "dir": "rtl"},
-    "id": {"app_name": "Mubeen AI",
-           "tagline": "Platform cerdas yang melayani Sirah Nabawiyah dalam bahasa dunia",
-           "select_lang": "Pilih Bahasa",
-           "events_title": "Peristiwa, Perang & Ekspedisi Sirah",
-           "select_event": "Pilih peristiwa",
-           "chat_title": "Tanya Mubeen AI",
-           "chat_placeholder": "Tulis pertanyaan Anda tentang Sirah...",
-           "chat_button": "Kirim",
-           "spinner": "Menelusuri 'The Sealed Nectar'...",
-           "about_title": "Tentang Situs",
+    "id": {"app_name": "Mubeen AI", "tagline": "Platform cerdas yang melayani Sirah Nabawiyah dalam bahasa dunia",
+           "select_lang": "Pilih Bahasa", "events_title": "Peristiwa, Perang & Ekspedisi Sirah",
+           "select_event": "Pilih peristiwa", "chat_title": "Tanya Mubeen AI",
+           "chat_placeholder": "Tulis pertanyaan Anda tentang Sirah...", "chat_button": "Kirim",
+           "spinner": "Menelusuri 'The Sealed Nectar'...", "about_title": "Tentang",
            "about_text": "Situs yang bersumber dari 'The Sealed Nectar'.",
            "events_hint": "Pilih peristiwa atau tanya Mubeen AI langsung.",
-           "suggestions": "💡 Saran cepat",
-           "menu": "☰ Menu",
+           "suggestions": "💡 Saran cepat", "menu": "☰ Menu",
            "rtl": False, "dir": "ltr"},
-    "tr": {"app_name": "Mubeen AI",
-           "tagline": "Siyer-i Nebi'ye dünya dillerinde hizmet eden akıllı platform",
-           "select_lang": "Dil Seçin",
-           "events_title": "Siyer Olayları, Savaşlar ve Seferler",
-           "select_event": "Bir olay seçin",
-           "chat_title": "Mubeen AI'ya Sor",
-           "chat_placeholder": "Siyer hakkında sorunuzu yazın...",
-           "chat_button": "Gönder",
-           "spinner": "'The Sealed Nectar' taranıyor...",
-           "about_title": "Site Hakkında",
+    "tr": {"app_name": "Mubeen AI", "tagline": "Siyer-i Nebi'ye dünya dillerinde hizmet eden akıllı platform",
+           "select_lang": "Dil Seçin", "events_title": "Siyer Olayları, Savaşlar ve Seferler",
+           "select_event": "Bir olay seçin", "chat_title": "Mubeen AI'ya Sor",
+           "chat_placeholder": "Siyer hakkında sorunuzu yazın...", "chat_button": "Gönder",
+           "spinner": "'The Sealed Nectar' taranıyor...", "about_title": "Hakkında",
            "about_text": "Safiur Rahman Mubarakpuri'nin 'The Sealed Nectar' eserine dayanır.",
            "events_hint": "Bir olay seçin veya Mubeen AI'ya sorun.",
-           "suggestions": "💡 Hızlı öneriler",
-           "menu": "☰ Menü",
+           "suggestions": "💡 Hızlı öneriler", "menu": "☰ Menü",
            "rtl": False, "dir": "ltr"},
-    "fr": {"app_name": "Mubeen AI",
-           "tagline": "Plateforme intelligente au service de la Sîra dans les langues du monde",
-           "select_lang": "Choisir la langue",
-           "events_title": "Événements, Batailles & Expéditions",
-           "select_event": "Sélectionner un événement",
-           "chat_title": "Demander à Mubeen AI",
-           "chat_placeholder": "Écrivez votre question sur la Sîra...",
-           "chat_button": "Envoyer",
-           "spinner": "Recherche dans 'The Sealed Nectar'...",
-           "about_title": "À propos du site",
+    "fr": {"app_name": "Mubeen AI", "tagline": "Plateforme intelligente au service de la Sîra",
+           "select_lang": "Choisir la langue", "events_title": "Événements, Batailles & Expéditions",
+           "select_event": "Sélectionner un événement", "chat_title": "Demander à Mubeen AI",
+           "chat_placeholder": "Écrivez votre question...", "chat_button": "Envoyer",
+           "spinner": "Recherche dans 'The Sealed Nectar'...", "about_title": "À propos",
            "about_text": "Un site basé sur 'The Sealed Nectar'.",
            "events_hint": "Sélectionnez un événement ou demandez à Mubeen AI.",
-           "suggestions": "💡 Suggestions rapides",
-           "menu": "☰ Menu",
+           "suggestions": "💡 Suggestions rapides", "menu": "☰ Menu",
            "rtl": False, "dir": "ltr"},
-    "es": {"app_name": "Mubeen AI",
-           "tagline": "Plataforma inteligente al servicio de la Sira en los idiomas del mundo",
-           "select_lang": "Seleccionar idioma",
-           "events_title": "Eventos, Batallas y Expediciones",
-           "select_event": "Selecciona un evento",
-           "chat_title": "Pregunta a Mubeen AI",
-           "chat_placeholder": "Escribe tu pregunta sobre la Sira...",
-           "chat_button": "Enviar",
-           "spinner": "Buscando en 'The Sealed Nectar'...",
-           "about_title": "Acerca del sitio",
+    "es": {"app_name": "Mubeen AI", "tagline": "Plataforma inteligente al servicio de la Sira",
+           "select_lang": "Seleccionar idioma", "events_title": "Eventos, Batallas y Expediciones",
+           "select_event": "Selecciona un evento", "chat_title": "Pregunta a Mubeen AI",
+           "chat_placeholder": "Escribe tu pregunta...", "chat_button": "Enviar",
+           "spinner": "Buscando en 'The Sealed Nectar'...", "about_title": "Acerca de",
            "about_text": "Un sitio basado en 'The Sealed Nectar'.",
            "events_hint": "Selecciona un evento o pregunta a Mubeen AI.",
-           "suggestions": "💡 Sugerencias rápidas",
-           "menu": "☰ Menú",
+           "suggestions": "💡 Sugerencias rápidas", "menu": "☰ Menú",
            "rtl": False, "dir": "ltr"},
-    "ru": {"app_name": "Mubeen AI",
-           "tagline": "Умная платформа, служащая Сире на языках мира",
-           "select_lang": "Выберите язык",
-           "events_title": "События, битвы и походы Сиры",
-           "select_event": "Выберите событие",
-           "chat_title": "Спросить Mubeen AI",
-           "chat_placeholder": "Напишите вопрос о Сире...",
-           "chat_button": "Отправить",
-           "spinner": "Поиск в 'The Sealed Nectar'...",
-           "about_title": "О сайте",
+    "ru": {"app_name": "Mubeen AI", "tagline": "Умная платформа, служащая Сире",
+           "select_lang": "Выберите язык", "events_title": "События, битвы и походы Сиры",
+           "select_event": "Выберите событие", "chat_title": "Спросить Mubeen AI",
+           "chat_placeholder": "Напишите вопрос...", "chat_button": "Отправить",
+           "spinner": "Поиск в 'The Sealed Nectar'...", "about_title": "О сайте",
            "about_text": "Сайт основан на книге 'The Sealed Nectar'.",
            "events_hint": "Выберите событие или спросите Mubeen AI.",
-           "suggestions": "💡 Быстрые подсказки",
-           "menu": "☰ Меню",
+           "suggestions": "💡 Быстрые подсказки", "menu": "☰ Меню",
            "rtl": False, "dir": "ltr"},
-    "zh": {"app_name": "Mubeen AI",
-           "tagline": "以世界多种语言服务先知传记的智能平台",
-           "select_lang": "选择语言",
-           "events_title": "先知传记事件、战役与远征",
-           "select_event": "选择事件",
-           "chat_title": "询问 Mubeen AI",
-           "chat_placeholder": "请输入您关于先知传记的问题...",
-           "chat_button": "发送",
-           "spinner": "正在检索《The Sealed Nectar》...",
-           "about_title": "关于本站",
+    "zh": {"app_name": "Mubeen AI", "tagline": "以世界多种语言服务先知传记的智能平台",
+           "select_lang": "选择语言", "events_title": "先知传记事件、战役与远征",
+           "select_event": "选择事件", "chat_title": "询问 Mubeen AI",
+           "chat_placeholder": "请输入您的问题...", "chat_button": "发送",
+           "spinner": "正在检索《The Sealed Nectar》...", "about_title": "关于",
            "about_text": "本站基于《The Sealed Nectar》。",
            "events_hint": "选择事件或直接询问 Mubeen AI。",
-           "suggestions": "💡 快速提示",
-           "menu": "☰ 菜单",
+           "suggestions": "💡 快速提示", "menu": "☰ 菜单",
            "rtl": False, "dir": "ltr"},
-    "hi": {"app_name": "Mubeen AI",
-           "tagline": "विश्व की भाषाओं में सीरत की सेवा करने वाला स्मार्ट प्लेटफ़ॉर्म",
-           "select_lang": "भाषा चुनें",
-           "events_title": "सीरत की घटनाएँ, लड़ाइयाँ और अभियान",
-           "select_event": "घटना चुनें",
-           "chat_title": "Mubeen AI से पूछें",
-           "chat_placeholder": "सीरत के बारे में अपना प्रश्न लिखें...",
-           "chat_button": "भेजें",
-           "spinner": "'The Sealed Nectar' में खोज रहे हैं...",
-           "about_title": "साइट के बारे में",
+    "hi": {"app_name": "Mubeen AI", "tagline": "विश्व की भाषाओं में सीरत की सेवा करने वाला स्मार्ट प्लेटफ़ॉर्म",
+           "select_lang": "भाषा चुनें", "events_title": "सीरत की घटनाएँ, लड़ाइयाँ और अभियान",
+           "select_event": "घटना चुनें", "chat_title": "Mubeen AI से पूछें",
+           "chat_placeholder": "सीरत के बारे में अपना प्रश्न लिखें...", "chat_button": "भेजें",
+           "spinner": "'The Sealed Nectar' में खोज रहे हैं...", "about_title": "परिचय",
            "about_text": "यह साइट 'The Sealed Nectar' पर आधारित है।",
            "events_hint": "कोई घटना चुनें या Mubeen AI से पूछें।",
-           "suggestions": "💡 त्वरित सुझाव",
-           "menu": "☰ मेनू",
+           "suggestions": "💡 त्वरित सुझाव", "menu": "☰ मेनू",
            "rtl": False, "dir": "ltr"},
 }
 
@@ -514,361 +1249,147 @@ SUGGESTIONS = {
 }
 
 # ---------------------------------------------------------------------------
-# 5. QUIZ: 100 QUESTIONS BANK (Arabic)
-# ---------------------------------------------------------------------------
-QUIZ_BANK = [
-    # ============ مرحلة مكة (1-25) ============
-    {"q": "في أي عام ميلادي وُلد النبي ﷺ؟",
-     "options": ["570م", "571م", "572م", "573م"], "answer": 1,
-     "explanation": "وُلد النبي ﷺ عام الفيل (571م) كما ورد في «الرحيق المختوم»."},
-    {"q": "ما اسم والدة النبي ﷺ؟",
-     "options": ["حليمة السعدية", "آمنة بنت وهب", "خديجة بنت خويلد", "فاطمة بنت أسد"], "answer": 1,
-     "explanation": "والدة النبي ﷺ هي آمنة بنت وهب بن عبد مناف."},
-    {"q": "من الذي كفل النبي ﷺ بعد وفاة جده عبد المطلب؟",
-     "options": ["أبو طالب", "العباس", "حمزة", "أبو لهب"], "answer": 0,
-     "explanation": "كفله عمه أبو طالب بعد وفاة جده عبد المطلب."},
-    {"q": "في أي غار نزل الوحي على النبي ﷺ أول مرة؟",
-     "options": ["غار ثور", "غار حراء", "غار الكهف", "غار الرقيم"], "answer": 1,
-     "explanation": "نزل الوحي في غار حراء بجبل النور قرب مكة."},
-    {"q": "ما أول سورة نزلت من القرآن الكريم؟",
-     "options": ["الفاتحة", "العلق", "المدثر", "البقرة"], "answer": 1,
-     "explanation": "أول ما نزل قوله تعالى: ﴿اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ﴾ من سورة العلق."},
-    {"q": "كم كان عمر النبي ﷺ عند نزول الوحي؟",
-     "options": ["30 سنة", "35 سنة", "40 سنة", "45 سنة"], "answer": 2,
-     "explanation": "كان عمره ﷺ أربعين سنة عند بعثته."},
-    {"q": "من هي أول من آمن بالنبي ﷺ من النساء؟",
-     "options": ["عائشة", "خديجة", "فاطمة", "حفصة"], "answer": 1,
-     "explanation": "أول من آمن به ﷺ زوجته خديجة بنت خويلد رضي الله عنها."},
-    {"q": "من أول من أسلم من الرجال الأحرار؟",
-     "options": ["أبو بكر الصديق", "عمر بن الخطاب", "عثمان بن عفان", "علي بن أبي طالب"], "answer": 0,
-     "explanation": "أبو بكر الصديق رضي الله عنه أول من أسلم من الرجال الأحرار."},
-    {"q": "من أول من أسلم من الصبيان؟",
-     "options": ["أسامة بن زيد", "علي بن أبي طالب", "عبد الله بن عباس", "الحسن بن علي"], "answer": 1,
-     "explanation": "علي بن أبي طالب رضي الله عنه أول من أسلم من الصبيان."},
-    {"q": "كم سنة دامت الدعوة السرية؟",
-     "options": ["سنة", "سنتان", "ثلاث سنوات", "خمس سنوات"], "answer": 2,
-     "explanation": "دامت الدعوة السرية ثلاث سنوات."},
-    {"q": "أين كان المسلمون يجتمعون سراً في بداية الدعوة؟",
-     "options": ["دار الأرقم", "دار الندوة", "المسجد الحرام", "دار أبي سفيان"], "answer": 0,
-     "explanation": "كانوا يجتمعون في دار الأرقم بن أبي الأرقم."},
-    {"q": "من هو الصحابي الذي رافق النبي ﷺ في هجرته إلى المدينة؟",
-     "options": ["علي", "أبو بكر", "عمر", "عثمان"], "answer": 1,
-     "explanation": "رافقه أبو بكر الصديق رضي الله عنه في الهجرة."},
-    {"q": "في أي غار مكث النبي ﷺ وأبو بكر ثلاث ليال قبل الهجرة؟",
-     "options": ["غار حراء", "غار ثور", "غار الكهف", "غار عرفة"], "answer": 1,
-     "explanation": "مكثا في غار ثور ثلاث ليال."},
-    {"q": "ما أول مسجد أسسه النبي ﷺ عند وصوله إلى المدينة؟",
-     "options": ["المسجد النبوي", "مسجد قباء", "المسجد الأقصى", "مسجد القبلتين"], "answer": 1,
-     "explanation": "أسس مسجد قباء أول مسجد في الإسلام."},
-    {"q": "في أي سنة هجرية كانت الهجرة إلى المدينة؟",
-     "options": ["السنة الأولى للهجرة", "السنة الثانية", "السنة الثالثة", "قبل الهجرة بشهر"], "answer": 0,
-     "explanation": "كانت الهجرة في السنة الأولى للهجرة، وهي بداية التاريخ الهجري."},
-    {"q": "ما اسم المدينة قبل أن تصبح المدينة المنورة؟",
-     "options": ["يثرب", "طيبة", "مكة", "بطحاء"], "answer": 0,
-     "explanation": "كان اسمها يثرب، ثم سمّاها النبي ﷺ المدينة (طيبة)."},
-    {"q": "كم كان عدد المسلمين في غزوة بدر؟",
-     "options": ["300", "313", "350", "400"], "answer": 1,
-     "explanation": "كان عددهم 313 رجلاً في غزوة بدر."},
-    {"q": "كم كان عدد المشركين في غزوة بدر؟",
-     "options": ["500", "700", "1000", "1500"], "answer": 2,
-     "explanation": "كان عدد المشركين حوالي 1000 مقاتل."},
-    {"q": "في أي سنة هجرية وقعت غزوة بدر الكبرى؟",
-     "options": ["السنة الأولى", "السنة الثانية", "السنة الثالثة", "السنة الرابعة"], "answer": 1,
-     "explanation": "وقعت في السنة الثانية للهجرة، وتسمى يوم الفرقان."},
-    {"q": "في أي سنة هجرية وقعت غزوة أحد؟",
-     "options": ["السنة الثانية", "السنة الثالثة", "السنة الرابعة", "السنة الخامسة"], "answer": 1,
-     "explanation": "وقعت غزوة أحد في السنة الثالثة للهجرة."},
-    {"q": "كم عدد الشهداء في غزوة أحد؟",
-     "options": ["50", "60", "70", "80"], "answer": 2,
-     "explanation": "استُشهد في غزوة أحد سبعون من الصحابة رضي الله عنهم."},
-    {"q": "من هو سيد الشهداء في غزوة أحد؟",
-     "options": ["حمزة بن عبد المطلب", "مصعب بن عمير", "أنس بن النضر", "سعد بن الربيع"], "answer": 0,
-     "explanation": "حمزة بن عبد المطلب عم النبي ﷺ، لقّبه النبي ﷺ بسيد الشهداء."},
-    {"q": "في أي سنة هجرية وقعت غزوة الخندق (الأحزاب)؟",
-     "options": ["السنة الثالثة", "السنة الرابعة", "السنة الخامسة", "السنة السادسة"], "answer": 2,
-     "explanation": "وقعت في السنة الخامسة للهجرة."},
-    {"q": "لماذا سُمّيت غزوة الخندق بهذا الاسم؟",
-     "options": ["لأن المسلمين حفروا خندقاً", "لأن المسلمين كانوا في خندق", "لأن العدو حفر خندقاً", "لأن الأرض كانت خندقاً"], "answer": 0,
-     "explanation": "حفر المسلمون خندقاً حول المدينة بأمر النبي ﷺ (فكرة سلمان الفارسي)."},
-    {"q": "من الذي اقترح حفر الخندق في غزوة الخندق؟",
-     "options": ["أبو بكر", "عمر", "سلمان الفارسي", "علي"], "answer": 2,
-     "explanation": "سلمان الفارسي رضي الله عنه اقترح حفر الخندق."},
-
-    # ============ ما بعد الخندق والمعاهدات (26-50) ============
-    {"q": "في أي سنة هجرية وقع صلح الحديبية؟",
-     "options": ["السنة الرابعة", "السنة الخامسة", "السنة السادسة", "السنة السابعة"], "answer": 2,
-     "explanation": "وقع في السنة السادسة للهجرة."},
-    {"q": "بماذا وصف الله صلح الحديبية في القرآن؟",
-     "options": ["فتحاً عظيماً", "فتحاً مبيناً", "نصراً مؤزراً", "رحمة واسعة"], "answer": 1,
-     "explanation": "قال تعالى: ﴿إِنَّا فَتَحْنَا لَكَ فَتْحًا مُبِينًا﴾."},
-    {"q": "في أي سنة هجرية فُتحت خيبر؟",
-     "options": ["السنة الخامسة", "السنة السادسة", "السنة السابعة", "السنة الثامنة"], "answer": 2,
-     "explanation": "فُتحت خيبر في السنة السابعة للهجرة."},
-    {"q": "من الذي أعطاه النبي ﷺ الراية في خيبر؟",
-     "options": ["أبو بكر", "عمر", "علي بن أبي طالب", "عثمان"], "answer": 2,
-     "explanation": "أعطى النبي ﷺ الراية لعلي بن أبي طالب رضي الله عنه."},
-    {"q": "في أي سنة هجرية وقعت غزوة مؤتة؟",
-     "options": ["السنة السادسة", "السنة السابعة", "السنة الثامنة", "السنة التاسعة"], "answer": 2,
-     "explanation": "وقعت في السنة الثامنة للهجرة."},
-    {"q": "كم عدد القادة الثلاثة الذين استُشهدوا في مؤتة؟",
-     "options": ["قائدان", "ثلاثة قادة", "أربعة قادة", "خمسة قادة"], "answer": 1,
-     "explanation": "زيد بن حارثة، جعفر بن أبي طالب، وعبد الله بن رواحة رضي الله عنهم."},
-    {"q": "من تولّى قيادة الجيش في مؤتة بعد استشهاد القادة الثلاثة؟",
-     "options": ["خالد بن الوليد", "أبو عبيدة", "المثنى", "عمرو بن العاص"], "answer": 0,
-     "explanation": "خالد بن الوليد رضي الله عنه تولّى القيادة وانسحب بالجيش."},
-    {"q": "في أي سنة هجرية كانت غزوة تبوك؟",
-     "options": ["السنة السابعة", "الثامنة", "التاسعة", "العاشرة"], "answer": 2,
-     "explanation": "كانت في السنة التاسعة للهجرة، وتسمى غزوة العسرة."},
-    {"q": "لماذا سُمّيت غزوة تبوك بغزوة العسرة؟",
-     "options": ["لشدة الحرارة وقلة الزاد", "لأنها كانت في الشتاء", "لقلّة الجيش", "لكثرة العدو"], "answer": 0,
-     "explanation": "سُمّيت بذلك لشدة الحرارة وقلّة الزاد وقلة الماء."},
-    {"q": "في أي سنة هجرية كانت حجة الوداع؟",
-     "options": ["السنة الثامنة", "التاسعة", "العاشرة", "الحادية عشرة"], "answer": 2,
-     "explanation": "حجّ النبي ﷺ حجة الوداع في السنة العاشرة للهجرة."},
-    {"q": "أين خطب النبي ﷺ خطبته الجامعة في حجة الوداع؟",
-     "options": ["في منى", "في عرفة", "في مزدلفة", "في المسجد الحرام"], "answer": 1,
-     "explanation": "خطب خطبته الجامعة في عرفة."},
-    {"q": "ما الآية التي نزلت في حجة الوداع؟",
-     "options": ["﴿الْيَوْمَ أَكْمَلْتُ لَكُمْ دِينَكُمْ﴾", "﴿إِنَّا فَتَحْنَا لَكَ﴾", "﴿وَمَا أَرْسَلْنَاكَ﴾", "﴿يَا أَيُّهَا النَّبِيُّ﴾"], "answer": 0,
-     "explanation": "نزلت آية: ﴿الْيَوْمَ أَكْمَلْتُ لَكُمْ دِينَكُمْ وَأَتْمَمْتُ عَلَيْكُمْ نِعْمَتِي﴾."},
-    {"q": "في أي سنة هجرية توفي النبي ﷺ؟",
-     "options": ["السنة التاسعة", "العاشرة", "الحادية عشرة", "الثانية عشرة"], "answer": 2,
-     "explanation": "توفي النبي ﷺ في السنة الحادية عشرة للهجرة."},
-    {"q": "في أي يوم توفي النبي ﷺ؟",
-     "options": ["الاثنين", "الثلاثاء", "الأربعاء", "الخميس"], "answer": 0,
-     "explanation": "توفي ﷺ يوم الاثنين في شهر ربيع الأول."},
-    {"q": "كم كان عمر النبي ﷺ عند وفاته؟",
-     "options": ["60 سنة", "62 سنة", "63 سنة", "65 سنة"], "answer": 2,
-     "explanation": "توفي ﷺ وعمره ثلاث وستون سنة."},
-    {"q": "أين دُفن النبي ﷺ؟",
-     "options": ["في البقيع", "في حجرة عائشة", "في المسجد الحرام", "في مكة"], "answer": 1,
-     "explanation": "دُفن ﷺ في حجرة عائشة رضي الله عنها."},
-    {"q": "كم عدد زوجات النبي ﷺ اللاتي توفي عنهن؟",
-     "options": ["8", "9", "10", "11"], "answer": 1,
-     "explanation": "توفي ﷺ عن تسع من أزواجه رضي الله عنهن."},
-    {"q": "من هي أم المؤمنين التي روت أكثر الأحاديث؟",
-     "options": ["عائشة", "حفصة", "أم سلمة", "زينب"], "answer": 0,
-     "explanation": "عائشة رضي الله عنها أكثر أمهات المؤمنين رواية للحديث."},
-    {"q": "ما اسم خاتم النبيين الذي ورد في القرآن؟",
-     "options": ["أحمد", "محمد", "مصطفى", "محمود"], "answer": 1,
-     "explanation": "اسمه ﷺ محمد وأحمد، لكن الأشهر محمد."},
-    {"q": "في أي قبيلة وُلد النبي ﷺ؟",
-     "options": ["بني أمية", "قريش (بني هاشم)", "الأنصار", "بني تميم"], "answer": 1,
-     "explanation": "وُلد في قريش من بني هاشم."},
-    {"q": "ما اسم عم النبي ﷺ الذي آذاه كثيراً؟",
-     "options": ["أبو لهب", "أبو طالب", "العباس", "حمزة"], "answer": 0,
-     "explanation": "أبو لهب (عبد العزى) عم النبي ﷺ كان من أشد أعدائه."},
-    {"q": "ما اسم زوجة أبي لهب التي كانت تؤذي النبي ﷺ؟",
-     "options": ["أم جميل", "أم سلمة", "أم أيمن", "أم حبيبة"], "answer": 0,
-     "explanation": "أم جميل حمالة الحطب، ورد ذكرها في سورة المسد."},
-    {"q": "من هو شاعر الرسول ﷺ؟",
-     "options": ["حسان بن ثابت", "لبيد بن ربيعة", "امرؤ القيس", "زهير بن أبي سلمى"], "answer": 0,
-     "explanation": "حسان بن ثابت رضي الله عنه شاعر الرسول ﷺ."},
-    {"q": "من هو مؤذن الرسول ﷺ الأول؟",
-     "options": ["بلال بن رباح", "عبد الله بن زيد", "أبو محذورة", "سعد القرظ"], "answer": 0,
-     "explanation": "بلال بن رباح رضي الله عنه أول مؤذن في الإسلام."},
-
-    # ============ أخلاق النبي ﷺ (51-65) ============
-    {"q": "بماذا لُقّب النبي ﷺ قبل البعثة؟",
-     "options": ["الصادق الأمين", "الكريم", "الشجاع", "الحكيم"], "answer": 0,
-     "explanation": "لقّبه قومه بـ«الصادق الأمين» قبل النبوة."},
-    {"q": "كم كان عمر النبي ﷺ عندما تزوج خديجة؟",
-     "options": ["20", "25", "30", "35"], "answer": 1,
-     "explanation": "تزوج خديجة رضي الله عنها وعمره خمس وعشرون سنة."},
-    {"q": "كم كان عمر خديجة عند زواجها بالنبي ﷺ؟",
-     "options": ["30", "35", "40", "45"], "answer": 2,
-     "explanation": "كان عمرها أربعين سنة."},
-    {"q": "كم عدد أولاد النبي ﷺ من البنين والبنات؟",
-     "options": ["5", "6", "7", "8"], "answer": 2,
-     "explanation": "ثلاثة بنين وأربع بنات."},
-    {"q": "من هي أصغر بنات النبي ﷺ؟",
-     "options": ["زينب", "رقية", "أم كلثوم", "فاطمة"], "answer": 3,
-     "explanation": "فاطمة الزهراء رضي الله عنها أصغر بنات النبي ﷺ."},
-    {"q": "من زوج فاطمة بنت النبي ﷺ؟",
-     "options": ["عثمان", "علي", "الزبير", "طلحة"], "answer": 1,
-     "explanation": "تزوجها علي بن أبي طالب رضي الله عنه."},
-    {"q": "ما لقب أبي بكر الصديق؟",
-     "options": ["الفاروق", "الصديق", "ذو النورين", "سيف الله"], "answer": 1,
-     "explanation": "لقّبه النبي ﷺ بالصديق لتصديقه بالإسراء."},
-    {"q": "ما لقب عمر بن الخطاب؟",
-     "options": ["الصديق", "الفاروق", "ذو النورين", "أمين الأمة"], "answer": 1,
-     "explanation": "لقّبه النبي ﷺ بالفاروق لأنه فرّق بين الحق والباطل."},
-    {"q": "ما لقب عثمان بن عفان؟",
-     "options": ["الصديق", "الفاروق", "ذو النورين", "الأمين"], "answer": 2,
-     "explanation": "لُقّب بذي النورين لأنه تزوج ابنتي النبي ﷺ."},
-    {"q": "ما لقب خالد بن الوليد؟",
-     "options": ["سيف الله المسلول", "الفاروق", "الصديق", "ذو النورين"], "answer": 0,
-     "explanation": "لقّبه النبي ﷺ بـ«سيف الله المسلول»."},
-    {"q": "ما لقب حمزة بن عبد المطلب؟",
-     "options": ["أسد الله", "سيد الشهداء", "الحمزة", "جميع ما سبق"], "answer": 3,
-     "explanation": "حمزة رضي الله عنه أسد الله وسيد الشهداء وعمه ﷺ."},
-    {"q": "من هو حبر الأمة؟",
-     "options": ["عبد الله بن عباس", "عبد الله بن عمر", "أبو هريرة", "أنس بن مالك"], "answer": 0,
-     "explanation": "عبد الله بن عباس رضي الله عنه لُقّب بحبر الأمة."},
-    {"q": "من أكثر الصحابة رواية للحديث؟",
-     "options": ["أبو هريرة", "أنس", "جابر", "ابن عمر"], "answer": 0,
-     "explanation": "أبو هريرة رضي الله عنه أكثر الصحابة رواية للحديث."},
-    {"q": "ما اسم الجبل الذي نزل فيه الوحي؟",
-     "options": ["جبل ثور", "جبل النور", "جبل أحد", "جبل عرفات"], "answer": 1,
-     "explanation": "جبل النور، وفيه غار حراء الذي نزل فيه الوحي."},
-    {"q": "ما اسم ناقة النبي ﷺ في الهجرة؟",
-     "options": ["القصواء", "العضباء", "الجدعاء", "جميعها"], "answer": 3,
-     "explanation": "ناقة النبي ﷺ الشهيرة لها أسماء عدة منها القصواء والعضباء."},
-
-    # ============ الغزوات التفصيلية (66-80) ============
-    {"q": "من هو الصحابي الذي أشار بحفر الخندق؟",
-     "options": ["سلمان الفارسي", "أبو ذر", "بلال", "عمار"], "answer": 0,
-     "explanation": "سلمان الفارسي رضي الله عنه اقترح حفر الخندق."},
-    {"q": "كم يوماً دامت غزوة الخندق؟",
-     "options": ["10 أيام", "15 يوماً", "حوالي شهر", "3 أيام"], "answer": 2,
-     "explanation": "دام حصار الأحزاب حوالي شهر."},
-    {"q": "كم عدد الشهداء في غزوة بدر من المسلمين؟",
-     "options": ["6", "14", "20", "70"], "answer": 1,
-     "explanation": "استُشهد 14 مسلماً في غزوة بدر."},
-    {"q": "كم عدد القتلى من المشركين في بدر؟",
-     "options": ["50", "70", "100", "200"], "answer": 1,
-     "explanation": "قُتل من المشركين 70 وأُسر 70."},
-    {"q": "من هو الصحابي الذي فدى نفسه بأبيه وأمه يوم بدر؟",
-     "options": ["أبو بكر", "عمر", "الزبير", "مصعب"], "answer": 0,
-     "explanation": "أبو بكر الصديق رضي الله عنه."},
-    {"q": "من هو أول شهيد في الإسلام؟",
-     "options": ["سُمية بنت خياط", "بلال", "عمار", "ياسر"], "answer": 0,
-     "explanation": "سُمية بنت خياط رضي الله عنها أول شهيدة في الإسلام."},
-    {"q": "من الصحابي الذي كان يُعذَّب فيقول: أحدٌ أحد؟",
-     "options": ["بلال", "عمار", "أبو ذر", "سلمان"], "answer": 0,
-     "explanation": "بلال بن رباح رضي الله عنه كان يُعذَّب فيقول: أحدٌ أحد."},
-    {"q": "من هو الصحابي الذي شهد له النبي ﷺ بالجنة وقال: «عمر بن الخطاب»؟",
-     "options": ["عمر", "أبو بكر", "عثمان", "علي"], "answer": 0,
-     "explanation": "عمر بن الخطاب رضي الله عنه."},
-    {"q": "من الذي فدى النبي ﷺ بنفسه في غزوة أحد؟",
-     "options": ["طلحة بن عبيد الله", "أبو بكر", "علي", "الزبير"], "answer": 0,
-     "explanation": "طلحة بن عبيد الله رضي الله عنه وقى النبي ﷺ بجسده."},
-    {"q": "من هي الصحابية التي دافعت عن النبي ﷺ يوم أحد؟",
-     "options": ["نسيبة (أم عمارة)", "خديجة", "عائشة", "أم سلمة"], "answer": 0,
-     "explanation": "نسيبة بنت كعب (أم عمارة) رضي الله عنها دافعت عنه ﷺ."},
-    {"q": "ما اسم الخندق الذي حُفر في غزوة الخندق؟",
-     "options": ["الخندق", "الأحزاب", "الفتح", "النصر"], "answer": 0,
-     "explanation": "سُمي الخندق نسبة للحفرة التي حُفرت حول المدينة."},
-    {"q": "من الذي قتل كعب بن الأشرف (زعيم اليهود)؟",
-     "options": ["محمد بن مسلمة", "علي", "الزبير", "أبو بكر"], "answer": 0,
-     "explanation": "محمد بن مسلمة رضي الله عنه قتل كعب بن الأشرف."},
-    {"q": "ما اسم اليهودية التي دسّت السم للنبي ﷺ في خيبر؟",
-     "options": ["زينب بنت الحارث", "صفية", "ريحانة", "أميمة"], "answer": 0,
-     "explanation": "زينب بنت الحارث دسّت السم في شاة مشوية."},
-    {"q": "من هي الصحابية التي كانت أول من استشهد في غزوة أحد؟",
-     "options": ["أم عمارة", "سُمية", "أم أيمن", "أم سليم"], "answer": 0,
-     "explanation": "أم عمارة نسيبة بنت كعب رضي الله عنها."},
-    {"q": "من الذي تولى قيادة المشركين في غزوة أحد؟",
-     "options": ["أبو سفيان", "أبو جهل", "خالد بن الوليد", "عكرمة"], "answer": 0,
-     "explanation": "أبو سفيان بن حرب قاد المشركين في أحد."},
-
-    # ============ الرحلة والهجرة (81-90) ============
-    {"q": "كم سنة قضاها النبي ﷺ في الدعوة في مكة؟",
-     "options": ["10 سنوات", "13 سنة", "15 سنة", "20 سنة"], "answer": 1,
-     "explanation": "قضى ﷺ ثلاثة عشرة سنة يدعو في مكة."},
-    {"q": "من هو الصحابي الذي نام في فراش النبي ﷺ ليلة الهجرة؟",
-     "options": ["علي بن أبي طالب", "أبو بكر", "عمر", "عثمان"], "answer": 0,
-     "explanation": "علي بن أبي طالب رضي الله عنه نام في فراشه ﷺ فداءً له."},
-    {"q": "من هي المرأة التي ضيّفت النبي ﷺ وأبا بكر أثناء الهجرة؟",
-     "options": ["أم معبد", "أم أيمن", "أم سليم", "أم عمارة"], "answer": 0,
-     "explanation": "أم معبد الخزاعية استضافتهما وبارك النبي ﷺ في شاتها."},
-    {"q": "من هو الدليل الذي رافق النبي ﷺ وأبا بكر في الهجرة؟",
-     "options": ["عبد الله بن أريقط", "عبد الله بن أبي بكر", "عامر بن فهيرة", "أبو أيوب"], "answer": 0,
-     "explanation": "عبد الله بن أريقط الدليل المشرك الذي استأجراه."},
-    {"q": "من كان يأتي بالطعام للنبي ﷺ وأبي بكر في الغار؟",
-     "options": ["أسماء بنت أبي بكر", "عائشة", "أم سلمة", "أم أيمن"], "answer": 0,
-     "explanation": "أسماء بنت أبي بكر رضي الله عنها كانت تأتي بالطعام."},
-    {"q": "من أول من استقبل النبي ﷺ في المدينة؟",
-     "options": ["الأنصار", "أبو أيوب الأنصاري", "سعد بن معاذ", "أُسيد بن حضير"], "answer": 1,
-     "explanation": "أبو أيوب الأنصاري رضي الله عنه نزل النبي ﷺ في بيته."},
-    {"q": "ما الحيوان الذي ركب النبي ﷺ في هجرته؟",
-     "options": ["القصواء", "الفرس", "البغل", "الحمار"], "answer": 0,
-     "explanation": "القصواء ناقته ﷺ في الهجرة."},
-    {"q": "من هم الذين آخى النبي ﷺ بينهم في المدينة؟",
-     "options": ["المهاجرين والأنصار", "قريش وثقيف", "الأوس والخزرج فقط", "بني إسرائيل"], "answer": 0,
-     "explanation": "آخى بين المهاجرين والأنصار."},
-    {"q": "ما اسم الوثيقة التي كتبها النبي ﷺ في المدينة؟",
-     "options": ["الصحيفة", "الدستور", "الميثاق", "العهد"], "answer": 0,
-     "explanation": "الصحيفة، أول دستور في الإسلام."},
-    {"q": "كم سنة قضاها النبي ﷺ في المدينة؟",
-     "options": ["8 سنوات", "9 سنوات", "10 سنوات", "13 سنة"], "answer": 2,
-     "explanation": "قضى ﷺ عشر سنوات في المدينة."},
-
-    # ============ عامة وأخلاق (91-100) ============
-    {"q": "من خاتم الأنبياء والمرسلين؟",
-     "options": ["محمد ﷺ", "عيسى عليه السلام", "موسى عليه السلام", "إبراهيم عليه السلام"], "answer": 0,
-     "explanation": "محمد ﷺ خاتم الأنبياء والمرسلين."},
-    {"q": "ما اسم كتاب النبي ﷺ؟",
-     "options": ["القرآن الكريم", "الإنجيل", "التوراة", "الزبور"], "answer": 0,
-     "explanation": "القرآن الكريم هو الكتاب المنزل على محمد ﷺ."},
-    {"q": "كم سنة نزل القرآن الكريم؟",
-     "options": ["13 سنة", "20 سنة", "23 سنة", "30 سنة"], "answer": 2,
-     "explanation": "نزل القرآن في 23 سنة (13 في مكة، 10 في المدينة)."},
-    {"q": "ما اسم أول سورة نزلت كاملة؟",
-     "options": ["الفاتحة", "العلق", "المدثر", "الناس"], "answer": 0,
-     "explanation": "الفاتحة أول سورة نزلت كاملة."},
-    {"q": "ما اسم آخر سورة نزلت؟",
-     "options": ["النصر", "الفاتحة", "الناس", "الإخلاص"], "answer": 0,
-     "explanation": "سورة النصر آخر سورة نزلت."},
-    {"q": "من هو النبي الذي بشر بمحمد ﷺ؟",
-     "options": ["عيسى عليه السلام", "موسى عليه السلام", "إبراهيم عليه السلام", "نوح عليه السلام"], "answer": 0,
-     "explanation": "عيسى عليه السلام بشر بالنبي محمد ﷺ (باسم أحمد)."},
-    {"q": "ما اسم أول بيت وُضع للناس؟",
-     "options": ["المسجد الحرام", "المسجد النبوي", "المسجد الأقصى", "مسجد قباء"], "answer": 0,
-     "explanation": "المسجد الحرام بمكة أول بيت وُضع للناس."},
-    {"q": "كم عدد أسماء النبي ﷺ الواردة في الأحاديث؟",
-     "options": ["5", "10", "أكثر من 20", "3"], "answer": 2,
-     "explanation": "للنبي ﷺ أسماء كثيرة، وذكر العلماء أكثر من عشرين اسماً."},
-    {"q": "من هي آخر زوجات النبي ﷺ؟",
-     "options": ["عائشة", "ميمونة", "أم سلمة", "صفية"], "answer": 1,
-     "explanation": "ميمونة بنت الحارث رضي الله عنها آخر من تزوجها النبي ﷺ."},
-    {"q": "ما الدعاء الذي كان يقوله النبي ﷺ عند الاستيقاظ؟",
-     "options": ["الحمد لله الذي أحيانا", "الحمد لله رب العالمين", "بسم الله", "لا حول ولا قوة إلا بالله"], "answer": 0,
-     "explanation": "كان ﷺ يقول: «الحمد لله الذي أحيانا بعدما أماتنا وإليه النشور»."},
-]
-
-# ---------------------------------------------------------------------------
-# 6. QUIZ UI TRANSLATIONS
+# 7. QUIZ UI LABELS
 # ---------------------------------------------------------------------------
 QUIZ_LABELS = {
     "ar": {"quiz_title": "📝 اختبار السيرة النبوية",
-           "quiz_intro": "اختبر معرفتك بالسيرة النبوية عبر 10 أسئلة عشوائية من بنك يحتوي على 100 سؤال.",
+           "quiz_intro": "اختبر معرفتك بالسيرة النبوية عبر 10 أسئلة عشوائية من بنك يحتوي على 25 سؤالاً.",
            "question_of": "السؤال {current} من {total}",
            "next_button": "السؤال التالي →", "finish_button": "إظهار النتيجة",
            "check_button": "تحقق من الإجابة", "start_button": "▶️ ابدأ الاختبار",
            "exit_button": "🚪 الخروج من الاختبار",
-           "correct": "✅ إجابة صحيحة!", "wrong": "❌ إجابة خاطئة!",
            "explanation_label": "📖 التوضيح:", "your_score": "نتيجتك النهائية",
            "excellent": "🏆 ممتاز! أنت خبير في السيرة النبوية",
            "very_good": "🌟 جيد جدًا! معرفتك بالسيرة قوية",
            "good": "👍 جيد! تحتاج إلى مراجعة بعض الأحداث",
-           "try_again": "📚 حاول مرة أخرى! اقرأ المزيد من «الرحيق المختوم»",
+           "try_again": "📚 حاول مرة أخرى!",
            "restart_button": "🔄 إعادة الاختبار", "correct_answer": "الإجابة الصحيحة",
-           "select_answer": "اختر الإجابة الصحيحة", "please_select": "⚠️ اختر إجابة أولاً",
+           "please_select": "⚠️ اختر إجابة أولاً",
            "page_home": "🏠 الرئيسية", "page_quiz": "📝 اختبار السيرة",
-           "questions": "أسئلة", "translating": "جارٍ الترجمة...",
-           "confirm_exit": "هل تريد الخروج؟ سيتم فقدان تقدمك."},
+           "questions": "أسئلة"},
     "en": {"quiz_title": "📝 Seerah Quiz",
-           "quiz_intro": "Test your knowledge with 10 random questions from a bank of 100.",
+           "quiz_intro": "Test your knowledge of the Seerah with 10 random questions from a bank of 25.",
            "question_of": "Question {current} of {total}",
            "next_button": "Next Question →", "finish_button": "Show Result",
            "check_button": "Check Answer", "start_button": "▶️ Start Quiz",
            "exit_button": "🚪 Exit Quiz",
-           "correct": "✅ Correct!", "wrong": "❌ Wrong!",
            "explanation_label": "📖 Explanation:", "your_score": "Your Final Score",
            "excellent": "🏆 Excellent! You are a Seerah expert",
            "very_good": "🌟 Very good! Your knowledge is strong",
            "good": "👍 Good! You need to review some events",
-           "try_again": "📚 Try again! Read more from 'The Sealed Nectar'",
+           "try_again": "📚 Try again!",
            "restart_button": "🔄 Restart Quiz", "correct_answer": "Correct Answer",
-           "select_answer": "Select the correct answer", "please_select": "⚠️ Please select an answer",
+           "please_select": "⚠️ Please select an answer",
            "page_home": "🏠 Home", "page_quiz": "📝 Seerah Quiz",
-           "questions": "Questions", "translating": "Translating...",
-           "confirm_exit": "Exit? Your progress will be lost."},
+           "questions": "Questions"},
+    "ur": {"quiz_title": "📝 سیرت نبوی کا امتحان",
+           "quiz_intro": "25 سوالوں کے ذخیرے سے 10 بے ترتیب سوالات کے ذریعے اپنی معلومات آزمائیں۔",
+           "question_of": "سوال {current} از {total}",
+           "next_button": "اگلا سوال →", "finish_button": "نتیجہ دکھائیں",
+           "check_button": "جواب چیک کریں", "start_button": "▶️ امتحان شروع کریں",
+           "exit_button": "🚪 امتحان سے باہر نکلیں",
+           "explanation_label": "📖 وضاحت:", "your_score": "آپ کا حتمی نتیجہ",
+           "excellent": "🏆 بہترین!", "very_good": "🌟 بہت اچھا!",
+           "good": "👍 اچھا!", "try_again": "📚 دوبارہ کوشش کریں!",
+           "restart_button": "🔄 دوبارہ امتحان", "correct_answer": "صحیح جواب",
+           "please_select": "⚠️ پہلے جواب منتخب کریں",
+           "page_home": "🏠 مرکزی صفحہ", "page_quiz": "📝 سیرت کا امتحان",
+           "questions": "سوالات"},
+    "id": {"quiz_title": "📝 Kuis Sirah",
+           "quiz_intro": "Uji pengetahuan Anda dengan 10 pertanyaan acak dari bank 25 pertanyaan.",
+           "question_of": "Pertanyaan {current} dari {total}",
+           "next_button": "Pertanyaan Berikutnya →", "finish_button": "Tampilkan Hasil",
+           "check_button": "Periksa Jawaban", "start_button": "▶️ Mulai Kuis",
+           "exit_button": "🚪 Keluar dari Kuis",
+           "explanation_label": "📖 Penjelasan:", "your_score": "Skor Akhir Anda",
+           "excellent": "🏆 Luar biasa!", "very_good": "🌟 Sangat baik!",
+           "good": "👍 Bagus!", "try_again": "📚 Coba lagi!",
+           "restart_button": "🔄 Mulai Ulang", "correct_answer": "Jawaban Benar",
+           "please_select": "⚠️ Pilih jawaban dulu",
+           "page_home": "🏠 Beranda", "page_quiz": "📝 Kuis Sirah",
+           "questions": "Pertanyaan"},
+    "tr": {"quiz_title": "📝 Siyer Sınavı",
+           "quiz_intro": "25 soruluk bankadan rastgele seçilen 10 soruyla bilginizi test edin.",
+           "question_of": "Soru {current} / {total}",
+           "next_button": "Sonraki Soru →", "finish_button": "Sonucu Göster",
+           "check_button": "Cevabı Kontrol Et", "start_button": "▶️ Sınava Başla",
+           "exit_button": "🚪 Sınavdan Çık",
+           "explanation_label": "📖 Açıklama:", "your_score": "Final Puanınız",
+           "excellent": "🏆 Mükemmel!", "very_good": "🌟 Çok iyi!",
+           "good": "👍 İyi!", "try_again": "📚 Tekrar deneyin!",
+           "restart_button": "🔄 Yeniden Başlat", "correct_answer": "Doğru Cevap",
+           "please_select": "⚠️ Önce bir cevap seçin",
+           "page_home": "🏠 Ana Sayfa", "page_quiz": "📝 Siyer Sınavı",
+           "questions": "Soru"},
+    "fr": {"quiz_title": "📝 Quiz Sîra",
+           "quiz_intro": "Testez vos connaissances avec 10 questions aléatoires sur 25.",
+           "question_of": "Question {current} sur {total}",
+           "next_button": "Question Suivante →", "finish_button": "Afficher le Résultat",
+           "check_button": "Vérifier", "start_button": "▶️ Commencer",
+           "exit_button": "🚪 Quitter le Quiz",
+           "explanation_label": "📖 Explication :", "your_score": "Votre Score Final",
+           "excellent": "🏆 Excellent !", "very_good": "🌟 Très bien !",
+           "good": "👍 Bien !", "try_again": "📚 Réessayez !",
+           "restart_button": "🔄 Recommencer", "correct_answer": "Bonne Réponse",
+           "please_select": "⚠️ Sélectionnez une réponse",
+           "page_home": "🏠 Accueil", "page_quiz": "📝 Quiz Sîra",
+           "questions": "Questions"},
+    "es": {"quiz_title": "📝 Cuestionario de Sira",
+           "quiz_intro": "Pon a prueba tu conocimiento con 10 preguntas aleatorias de 25.",
+           "question_of": "Pregunta {current} de {total}",
+           "next_button": "Siguiente →", "finish_button": "Mostrar Resultado",
+           "check_button": "Verificar", "start_button": "▶️ Iniciar",
+           "exit_button": "🚪 Salir del Cuestionario",
+           "explanation_label": "📖 Explicación:", "your_score": "Tu Puntuación Final",
+           "excellent": "🏆 ¡Excelente!", "very_good": "🌟 ¡Muy bien!",
+           "good": "👍 ¡Bien!", "try_again": "📚 ¡Inténtalo de nuevo!",
+           "restart_button": "🔄 Reiniciar", "correct_answer": "Respuesta Correcta",
+           "please_select": "⚠️ Selecciona una respuesta",
+           "page_home": "🏠 Inicio", "page_quiz": "📝 Cuestionario",
+           "questions": "Preguntas"},
+    "ru": {"quiz_title": "📝 Викторина по Сире",
+           "quiz_intro": "Проверьте свои знания через 10 случайных вопросов из 25.",
+           "question_of": "Вопрос {current} из {total}",
+           "next_button": "Следующий →", "finish_button": "Показать Результат",
+           "check_button": "Проверить", "start_button": "▶️ Начать",
+           "exit_button": "🚪 Выйти из Викторины",
+           "explanation_label": "📖 Объяснение:", "your_score": "Ваш Финальный Счёт",
+           "excellent": "🏆 Отлично!", "very_good": "🌟 Очень хорошо!",
+           "good": "👍 Хорошо!", "try_again": "📚 Попробуйте снова!",
+           "restart_button": "🔄 Начать Заново", "correct_answer": "Правильный Ответ",
+           "please_select": "⚠️ Выберите ответ",
+           "page_home": "🏠 Главная", "page_quiz": "📝 Викторина",
+           "questions": "Вопросов"},
+    "zh": {"quiz_title": "📝 先知传记测验",
+           "quiz_intro": "通过25题题库中随机抽取的10道题测试您的知识。",
+           "question_of": "第 {current} 题，共 {total} 题",
+           "next_button": "下一题 →", "finish_button": "显示结果",
+           "check_button": "检查答案", "start_button": "▶️ 开始测验",
+           "exit_button": "🚪 退出测验",
+           "explanation_label": "📖 解释：", "your_score": "您的最终得分",
+           "excellent": "🏆 优秀！", "very_good": "🌟 很好！",
+           "good": "👍 不错！", "try_again": "📚 再试一次！",
+           "restart_button": "🔄 重新开始", "correct_answer": "正确答案",
+           "please_select": "⚠️ 请先选择答案",
+           "page_home": "🏠 首页", "page_quiz": "📝 测验",
+           "questions": "题"},
+    "hi": {"quiz_title": "📝 सीरत प्रश्नोत्तरी",
+           "quiz_intro": "25 प्रश्नों के बैंक से 10 यादृच्छिक प्रश्नों के साथ अपना ज्ञान परखें।",
+           "question_of": "प्रश्न {current} / {total}",
+           "next_button": "अगला प्रश्न →", "finish_button": "परिणाम दिखाएँ",
+           "check_button": "उत्तर जाँचें", "start_button": "▶️ प्रश्नोत्तरी शुरू करें",
+           "exit_button": "🚪 प्रश्नोत्तरी से बाहर",
+           "explanation_label": "📖 व्याख्या:", "your_score": "आपका अंतिम स्कोर",
+           "excellent": "🏆 उत्कृष्ट!", "very_good": "🌟 बहुत अच्छा!",
+           "good": "👍 अच्छा!", "try_again": "📚 फिर कोशिश करें!",
+           "restart_button": "🔄 पुनः आरंभ करें", "correct_answer": "सही उत्तर",
+           "please_select": "⚠️ पहले उत्तर चुनें",
+           "page_home": "🏠 होम", "page_quiz": "📝 प्रश्नोत्तरी",
+           "questions": "प्रश्न"},
 }
 
 # ---------------------------------------------------------------------------
-# 7. SESSION STATE
+# 8. SESSION STATE
 # ---------------------------------------------------------------------------
 if "lang" not in st.session_state:
     st.session_state.lang = "ar"
@@ -894,13 +1415,11 @@ if "quiz_selected" not in st.session_state:
     st.session_state.quiz_selected = None
 if "quiz_questions" not in st.session_state:
     st.session_state.quiz_questions = []
-if "quiz_translation_cache" not in st.session_state:
-    st.session_state.quiz_translation_cache = {}
 if "close_menu" not in st.session_state:
     st.session_state.close_menu = False
 
 # ---------------------------------------------------------------------------
-# 8. HELPERS
+# 9. HELPERS
 # ---------------------------------------------------------------------------
 def location_name(loc: dict, lang: str) -> str:
     return loc["name"].get(lang, loc["name"]["en"])
@@ -928,7 +1447,7 @@ def _get_secret(name: str) -> Optional[str]:
 
 
 # ---------------------------------------------------------------------------
-# 9. AI
+# 10. AI
 # ---------------------------------------------------------------------------
 @st.cache_resource(show_spinner=False)
 def get_gemini_client():
@@ -942,7 +1461,7 @@ def get_gemini_client():
         return None
 
 
-def call_gemini(prompt: str, system_instruction: str = "", temperature: float = 0.3) -> str:
+def call_gemini(prompt: str, system_instruction: str) -> str:
     client = get_gemini_client()
     if client is None:
         return ""
@@ -953,16 +1472,13 @@ def call_gemini(prompt: str, system_instruction: str = "", temperature: float = 
 
     for model_name in ["gemini-2.5-flash", "gemini-2.0-flash"]:
         try:
-            config = types.GenerateContentConfig(temperature=temperature)
-            if system_instruction:
-                config = types.GenerateContentConfig(
-                    system_instruction=system_instruction,
-                    temperature=temperature,
-                )
             response = client.models.generate_content(
                 model=model_name,
                 contents=prompt,
-                config=config,
+                config=types.GenerateContentConfig(
+                    system_instruction=system_instruction,
+                    temperature=0.3,
+                ),
             )
             text = getattr(response, "text", None)
             if text and text.strip():
@@ -1013,61 +1529,7 @@ def call_ai(prompt: str, system_instruction: str) -> str:
     answer = call_groq(prompt, system_instruction)
     if answer and len(answer) > 20:
         return answer
-    return "⚠️ تعذّر الحصول على إجابة حالياً. يرجى المحاولة مرة أخرى بعد لحظات."
-
-
-# ---------------------------------------------------------------------------
-# 10. TRANSLATE QUIZ QUESTION via Gemini
-# ---------------------------------------------------------------------------
-def translate_quiz_question(q_ar: dict, target_lang: str) -> dict:
-    """يترجم سؤال الاختبار إلى اللغة الهدف باستخدام Gemini."""
-    if target_lang == "ar":
-        return q_ar
-
-    cache_key = f"{q_ar['q'][:40]}_{target_lang}"
-    if cache_key in st.session_state.quiz_translation_cache:
-        return st.session_state.quiz_translation_cache[cache_key]
-
-    lang_name = LANG_NAMES_FOR_PROMPT.get(target_lang, "English")
-    prompt = f"""Translate the following Islamic Seerah quiz question into {lang_name}.
-Keep the same structure. Respond ONLY with valid JSON (no markdown code blocks).
-
-Input JSON:
-{{
-  "q": "{q_ar['q']}",
-  "options": {json.dumps(q_ar['options'], ensure_ascii=False)},
-  "explanation": "{q_ar['explanation']}"
-}}
-
-Respond with the translated JSON only:
-{{
-  "q": "translated question",
-  "options": ["translated option 1", "translated option 2", "translated option 3", "translated option 4"],
-  "explanation": "translated explanation"
-}}"""
-
-    response = call_gemini(prompt, temperature=0.2)
-    if not response:
-        return q_ar
-
-    # تنظيف
-    response = response.strip()
-    if response.startswith("```"):
-        lines = response.split("\n")
-        response = "\n".join([l for l in lines if not l.strip().startswith("```")])
-
-    try:
-        data = json.loads(response)
-        translated = {
-            "q": data.get("q", q_ar["q"]),
-            "options": data.get("options", q_ar["options"]),
-            "answer": q_ar["answer"],
-            "explanation": data.get("explanation", q_ar["explanation"]),
-        }
-        st.session_state.quiz_translation_cache[cache_key] = translated
-        return translated
-    except Exception:
-        return q_ar
+    return "⚠️ تعذّر الحصول على إجابة حالياً. يرجى المحاولة بعد لحظات."
 
 
 # ---------------------------------------------------------------------------
@@ -1088,11 +1550,8 @@ def build_system_instruction(lang_code: str) -> str:
 - اترك سطراً فارغاً بين كل فقرة.
 - اختم بخلاصة تحت `**الخلاصة:**`.
 
-🌍 اللغة:
-- أجب بالكامل بلغة **{target_lang}**.
-
-🚫 ممنوعات:
-- لا تخترع أحاديث أو أسانيد."""
+🌍 اللغة: أجب بالكامل بلغة **{target_lang}**.
+🚫 ممنوعات: لا تخترع أحاديث أو أسانيد."""
 
 
 def build_user_prompt(lang_code: str, question: str) -> str:
@@ -1121,18 +1580,15 @@ def inject_css(lang_dir: str, rtl: bool):
             background-color: #FDFBF7 !important;
             font-family: 'Cairo', 'Amiri', sans-serif !important;
         }}
-
         .block-container {{
             padding-top: 1rem !important;
             padding-bottom: 2rem !important;
             max-width: 1400px !important;
         }}
-
         h1, h2, h3, h4, h5, h6 {{
             font-family: 'Amiri', 'Cairo', serif !important;
             color: #1B4D3E !important;
         }}
-
         p, span, div, label, li, a, button, input, textarea, select {{
             font-family: 'Cairo', 'Amiri', sans-serif !important;
         }}
@@ -1238,7 +1694,6 @@ def inject_css(lang_dir: str, rtl: bool):
             font-weight: 600;
             font-size: 1rem;
         }}
-
         .mubeen-ai-answer {{
             background: linear-gradient(135deg, #FFFFFF 0%, #FBF7EC 100%);
             border: 2px solid #C5A059;
@@ -1267,14 +1722,6 @@ def inject_css(lang_dir: str, rtl: bool):
             color: #1B4D3E;
             font-weight: 700;
             font-size: 1.05rem;
-        }}
-        .mubeen-ai-answer .ai-body h3 {{
-            color: #1B4D3E !important;
-            font-family: 'Amiri', serif !important;
-            font-size: 1.15rem !important;
-            margin: 14px 0 6px 0 !important;
-            border-bottom: 1px solid #E8D9B8;
-            padding-bottom: 4px;
         }}
 
         /* ===== البانر الرئيسي — اللوقو مكبّر ===== */
@@ -1336,14 +1783,10 @@ def inject_css(lang_dir: str, rtl: bool):
             font-size: 1rem !important;
             text-align: {('right' if rtl else 'left')} !important;
             margin-bottom: 8px !important;
-            transition: all 0.2s ease !important;
-            width: 100% !important;
         }}
         div[data-testid="stButton"] button[kind="secondary"]:hover {{
             background-color: #F5F2EB !important;
             border-color: #C5A059 !important;
-            transform: translateX({'-3px' if not rtl else '3px'}) !important;
-            box-shadow: 0 4px 12px rgba(197, 160, 89, 0.2) !important;
         }}
 
         .stTextInput input, .stTextArea textarea,
@@ -1370,7 +1813,7 @@ def inject_css(lang_dir: str, rtl: bool):
 
 
 # ---------------------------------------------------------------------------
-# 13. HELPER: Markdown formatter
+# 13. HELPER: Markdown
 # ---------------------------------------------------------------------------
 def format_answer_markdown(text: str) -> str:
     import html as html_lib
@@ -1404,7 +1847,7 @@ def render_quiz(t: dict, rtl: bool, lang_dir: str, lang: str):
     ql = QUIZ_LABELS.get(lang, QUIZ_LABELS.get("en", QUIZ_LABELS["ar"]))
     total = 10
 
-    # ---- زر الخروج في الأعلى ----
+    # زر الخروج في الأعلى
     col_exit, col_spacer, col_info = st.columns([1, 2, 1])
     with col_exit:
         if st.button(ql["exit_button"], key="exit_quiz_btn", use_container_width=True):
@@ -1418,7 +1861,7 @@ def render_quiz(t: dict, rtl: bool, lang_dir: str, lang: str):
             st.session_state.close_menu = True
             st.rerun()
 
-    # ---- شاشة البداية ----
+    # شاشة البداية
     if not st.session_state.quiz_started and not st.session_state.quiz_finished:
         st.markdown(
             f"""
@@ -1433,8 +1876,11 @@ def render_quiz(t: dict, rtl: bool, lang_dir: str, lang: str):
         col_a, col_b, col_c = st.columns([1, 1, 1])
         with col_b:
             if st.button(ql["start_button"], key="start_quiz_btn", use_container_width=True):
-                # اختيار 10 أسئلة عشوائية من البنك
-                st.session_state.quiz_questions = random.sample(QUIZ_BANK, 10)
+                bank = QUIZ_BANK.get(lang, QUIZ_BANK.get("ar", []))
+                if len(bank) >= 10:
+                    st.session_state.quiz_questions = random.sample(bank, 10)
+                else:
+                    st.session_state.quiz_questions = bank
                 st.session_state.quiz_started = True
                 st.session_state.quiz_current = 0
                 st.session_state.quiz_score = 0
@@ -1444,27 +1890,20 @@ def render_quiz(t: dict, rtl: bool, lang_dir: str, lang: str):
                 st.rerun()
         return
 
-    # ---- شاشة النتيجة ----
+    # شاشة النتيجة
     if st.session_state.quiz_finished:
         score = st.session_state.quiz_score
-        percentage = int((score / total) * 100)
+        total_q = len(st.session_state.quiz_questions)
+        percentage = int((score / total_q) * 100) if total_q > 0 else 0
 
         if percentage >= 90:
-            feedback = ql["excellent"]
-            color = "#1B4D3E"
-            emoji = "🏆"
+            feedback = ql["excellent"]; color = "#1B4D3E"; emoji = "🏆"
         elif percentage >= 70:
-            feedback = ql["very_good"]
-            color = "#2c6a58"
-            emoji = "🌟"
+            feedback = ql["very_good"]; color = "#2c6a58"; emoji = "🌟"
         elif percentage >= 50:
-            feedback = ql["good"]
-            color = "#C5A059"
-            emoji = "👍"
+            feedback = ql["good"]; color = "#C5A059"; emoji = "👍"
         else:
-            feedback = ql["try_again"]
-            color = "#8B4513"
-            emoji = "📚"
+            feedback = ql["try_again"]; color = "#8B4513"; emoji = "📚"
 
         st.markdown(
             f"""
@@ -1475,11 +1914,9 @@ def render_quiz(t: dict, rtl: bool, lang_dir: str, lang: str):
                            margin:8px 0; font-size:1.8rem;">{ql['your_score']}</h2>
                 <div style="font-size:3rem; font-weight:700; color:{color};
                             font-family:'Amiri', serif; margin:14px 0;">
-                    {score} / {total}
+                    {score} / {total_q}
                 </div>
-                <div style="font-size:1.3rem; color:#666; margin:8px 0;">
-                    ({percentage}%)
-                </div>
+                <div style="font-size:1.3rem; color:#666; margin:8px 0;">({percentage}%)</div>
                 <p style="color:#555; font-size:1rem; line-height:1.8;
                           margin-top:20px; font-weight:600;">{feedback}</p>
             </div>
@@ -1490,7 +1927,11 @@ def render_quiz(t: dict, rtl: bool, lang_dir: str, lang: str):
         col_x, col_y, col_z = st.columns([1, 1, 1])
         with col_y:
             if st.button(ql["restart_button"], key="restart_quiz_btn", use_container_width=True):
-                st.session_state.quiz_questions = random.sample(QUIZ_BANK, 10)
+                bank = QUIZ_BANK.get(lang, QUIZ_BANK.get("ar", []))
+                if len(bank) >= 10:
+                    st.session_state.quiz_questions = random.sample(bank, 10)
+                else:
+                    st.session_state.quiz_questions = bank
                 st.session_state.quiz_started = True
                 st.session_state.quiz_finished = False
                 st.session_state.quiz_current = 0
@@ -1500,42 +1941,32 @@ def render_quiz(t: dict, rtl: bool, lang_dir: str, lang: str):
                 st.rerun()
         return
 
-    # ---- شاشة السؤال ----
+    # شاشة السؤال
     idx = st.session_state.quiz_current
-    if idx >= total:
+    total_q = len(st.session_state.quiz_questions)
+    if idx >= total_q:
         st.session_state.quiz_finished = True
         st.rerun()
 
-    q_ar = st.session_state.quiz_questions[idx]
+    q = st.session_state.quiz_questions[idx]
+    progress_pct = int(((idx) / total_q) * 100)
 
-    # ترجمة السؤال للغة الحالية
-    if lang != "ar":
-        with st.spinner(ql["translating"]):
-            q = translate_quiz_question(q_ar, lang)
-    else:
-        q = q_ar
-
-    progress_pct = int(((idx) / total) * 100)
-
-    # شريط التقدم
     st.markdown(
         f"""
         <div dir="{lang_dir}" style="margin-bottom:14px;">
             <div style="color:#1B4D3E; font-weight:700; font-size:1rem; margin-bottom:8px;">
-                {ql['question_of'].format(current=idx + 1, total=total)}
+                {ql['question_of'].format(current=idx + 1, total=total_q)}
             </div>
             <div style="background:#F5F2EB; border-radius:10px; height:14px;
                         overflow:hidden; border:1px solid #C5A059;">
                 <div style="background:linear-gradient(90deg, #1B4D3E 0%, #C5A059 100%);
-                            height:100%; width:{progress_pct}%;
-                            transition: width 0.4s ease;"></div>
+                            height:100%; width:{progress_pct}%;"></div>
             </div>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    # بطاقة السؤال
     st.markdown(
         f"""
         <div class="mubeen-card" dir="{lang_dir}" style="border-color:#1B4D3E;
@@ -1549,41 +1980,21 @@ def render_quiz(t: dict, rtl: bool, lang_dir: str, lang: str):
         unsafe_allow_html=True,
     )
 
-    # ===== الخيارات كأزرار واضحة =====
     letters = ["A", "B", "C", "D"]
 
     for i, opt in enumerate(q["options"]):
         if st.session_state.quiz_answered:
-            if i == q["answer"]:
-                badge = "✅"
-            elif i == st.session_state.quiz_selected:
-                badge = "❌"
-            else:
-                badge = "⚪"
+            badge = "✅" if i == q["answer"] else ("❌" if i == st.session_state.quiz_selected else "⚪")
         else:
-            if i == st.session_state.quiz_selected:
-                badge = "🟡"
-            else:
-                badge = "⚪"
+            badge = "🟡" if i == st.session_state.quiz_selected else "⚪"
 
         if not st.session_state.quiz_answered:
-            if st.button(
-                f"{badge}  {letters[i]}. {opt}",
-                key=f"opt_{idx}_{i}",
-                use_container_width=True,
-            ):
+            if st.button(f"{badge}  {letters[i]}. {opt}", key=f"opt_{idx}_{i}", use_container_width=True):
                 st.session_state.quiz_selected = i
                 st.rerun()
         else:
-            if i == q["answer"]:
-                bg_color = "#E8F5E9"
-                border_color = "#1B4D3E"
-            elif i == st.session_state.quiz_selected:
-                bg_color = "#FFEBEE"
-                border_color = "#C62828"
-            else:
-                bg_color = "#FDFBF7"
-                border_color = "#E8D9B8"
+            bg_color = "#E8F5E9" if i == q["answer"] else ("#FFEBEE" if i == st.session_state.quiz_selected else "#FDFBF7")
+            border_color = "#1B4D3E" if i == q["answer"] else ("#C62828" if i == st.session_state.quiz_selected else "#E8D9B8")
 
             st.markdown(
                 f"""
@@ -1603,7 +2014,6 @@ def render_quiz(t: dict, rtl: bool, lang_dir: str, lang: str):
                 unsafe_allow_html=True,
             )
 
-    # التحقق من الإجابة
     if not st.session_state.quiz_answered:
         col_a, col_b, col_c = st.columns([1, 1, 1])
         with col_b:
@@ -1616,16 +2026,6 @@ def render_quiz(t: dict, rtl: bool, lang_dir: str, lang: str):
                 else:
                     st.warning(ql["please_select"])
     else:
-        correct = st.session_state.quiz_selected == q["answer"]
-        if correct:
-            st.success(ql["correct"])
-        else:
-            st.error(ql["wrong"])
-            st.info(
-                f"**{ql['correct_answer']}**: "
-                f"{letters[q['answer']]}. {q['options'][q['answer']]}"
-            )
-
         st.markdown(
             f"""
             <div class="mubeen-card" dir="{lang_dir}"
@@ -1642,21 +2042,20 @@ def render_quiz(t: dict, rtl: bool, lang_dir: str, lang: str):
 
         col_a, col_b, col_c = st.columns([1, 1, 1])
         with col_b:
-            button_label = ql["finish_button"] if (idx + 1) >= total else ql["next_button"]
+            button_label = ql["finish_button"] if (idx + 1) >= total_q else ql["next_button"]
             if st.button(button_label, key=f"next_{idx}", use_container_width=True):
                 st.session_state.quiz_current += 1
                 st.session_state.quiz_answered = False
                 st.session_state.quiz_selected = None
-                if st.session_state.quiz_current >= total:
+                if st.session_state.quiz_current >= total_q:
                     st.session_state.quiz_finished = True
                 st.rerun()
 
 
 # ---------------------------------------------------------------------------
-# 15. MENU EXPANDER — CLOSE ON NAVIGATE
+# 15. MENU
 # ---------------------------------------------------------------------------
 def close_menu_js():
-    """يغلق القائمة المنسدلة بعد التنقل."""
     st.markdown(
         """
         <script>
@@ -1676,7 +2075,7 @@ def close_menu_js():
 
 
 # ---------------------------------------------------------------------------
-# 16. MAIN APP
+# 16. MAIN
 # ---------------------------------------------------------------------------
 def main():
     t = UI_TEXT[st.session_state.lang]
@@ -1685,12 +2084,11 @@ def main():
 
     inject_css(lang_dir, rtl)
 
-    # إذا كان المستخدم قد طلب إغلاق القائمة
     if st.session_state.close_menu:
         close_menu_js()
         st.session_state.close_menu = False
 
-    # ===== القائمة المنسدلة =====
+    # القائمة
     with st.expander(t["menu"], expanded=False):
         st.markdown(
             f"""
@@ -1705,7 +2103,6 @@ def main():
             unsafe_allow_html=True,
         )
 
-        # أزرار التنقل
         ql = QUIZ_LABELS.get(st.session_state.lang, QUIZ_LABELS["ar"])
         nav_col1, nav_col2 = st.columns(2)
         with nav_col1:
@@ -1719,12 +2116,9 @@ def main():
                 st.session_state.close_menu = True
                 st.rerun()
 
-        st.markdown(
-            "<hr style='border: 1px solid #C5A059; opacity:0.4; margin: 14px 0;'>",
-            unsafe_allow_html=True,
-        )
+        st.markdown("<hr style='border: 1px solid #C5A059; opacity:0.4; margin: 14px 0;'>",
+                    unsafe_allow_html=True)
 
-        # اختيار اللغة
         st.markdown(
             f"<label style='color:#1B4D3E; font-weight:700; font-size:1rem;'>{t['select_lang']}</label>",
             unsafe_allow_html=True,
@@ -1743,10 +2137,8 @@ def main():
             st.session_state.chat_history = []
             st.rerun()
 
-        st.markdown(
-            "<hr style='border: 1px solid #C5A059; opacity:0.4; margin: 14px 0;'>",
-            unsafe_allow_html=True,
-        )
+        st.markdown("<hr style='border: 1px solid #C5A059; opacity:0.4; margin: 14px 0;'>",
+                    unsafe_allow_html=True)
 
         st.markdown(
             f"<h4 style='color:#1B4D3E; font-family:Amiri, serif; font-size:1.05rem; margin-bottom:6px;'>{t['about_title']}</h4>",
@@ -1757,7 +2149,7 @@ def main():
             unsafe_allow_html=True,
         )
 
-    # ===== البانر الرئيسي =====
+    # البانر
     _logo_b64 = get_logo_base64("assets/logo.png")
     _logo_banner_html = (
         f'<img class="mubeen-logo-banner" src="data:image/png;base64,{_logo_b64}" alt="Mubeen AI" />'
@@ -1773,7 +2165,7 @@ def main():
         unsafe_allow_html=True,
     )
 
-    # ===== عرض الصفحة =====
+    # عرض الصفحة
     if st.session_state.current_page == "quiz":
         render_quiz(t, rtl, lang_dir, st.session_state.lang)
         return
@@ -1823,10 +2215,8 @@ def main():
             unsafe_allow_html=True,
         )
 
-    st.markdown(
-        "<hr style='border:1px solid #C5A059; opacity:0.4; margin-top:20px;'>",
-        unsafe_allow_html=True,
-    )
+    st.markdown("<hr style='border:1px solid #C5A059; opacity:0.4; margin-top:20px;'>",
+                unsafe_allow_html=True)
 
     st.markdown(
         f"<h2 style='font-family:Amiri, serif; color:#1B4D3E; text-align:{'right' if rtl else 'left'};'>{t['chat_title']}</h2>",
@@ -1836,16 +2226,12 @@ def main():
     if st.session_state.pending_prompt:
         prompt_text = st.session_state.pending_prompt
         st.session_state.pending_prompt = None
-        st.session_state.chat_history.append(
-            {"role": "user", "content": prompt_text}
-        )
+        st.session_state.chat_history.append({"role": "user", "content": prompt_text})
         with st.spinner(t["spinner"]):
             system_instruction = build_system_instruction(st.session_state.lang)
             prompt = build_user_prompt(st.session_state.lang, prompt_text)
             answer = call_ai(prompt, system_instruction)
-        st.session_state.chat_history.append(
-            {"role": "assistant", "content": answer}
-        )
+        st.session_state.chat_history.append({"role": "assistant", "content": answer})
         st.rerun()
 
     if st.session_state.chat_history:
@@ -1873,23 +2259,18 @@ def main():
 
     with st.form(key="chat_form", clear_on_submit=True):
         user_input = st.text_input(
-            t["chat_title"],
-            placeholder=t["chat_placeholder"],
+            t["chat_title"], placeholder=t["chat_placeholder"],
             label_visibility="collapsed",
         )
         submitted = st.form_submit_button(t["chat_button"])
 
     if submitted and user_input.strip():
-        st.session_state.chat_history.append(
-            {"role": "user", "content": user_input.strip()}
-        )
+        st.session_state.chat_history.append({"role": "user", "content": user_input.strip()})
         with st.spinner(t["spinner"]):
             system_instruction = build_system_instruction(st.session_state.lang)
             prompt = build_user_prompt(st.session_state.lang, user_input.strip())
             answer = call_ai(prompt, system_instruction)
-        st.session_state.chat_history.append(
-            {"role": "assistant", "content": answer}
-        )
+        st.session_state.chat_history.append({"role": "assistant", "content": answer})
         st.rerun()
 
     st.markdown(
