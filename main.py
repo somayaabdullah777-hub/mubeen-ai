@@ -1,10 +1,12 @@
 """
 Mubeen AI (مُبين AI) — Smart platform for the Prophetic Seerah in world languages.
-AI Chat + Timeline + Interactive Quiz — all in one page with top expander menu.
+AI Chat + Timeline + Interactive Quiz (100 questions, random selection, AI translation).
 """
 
 import base64
+import json
 import os
+import random
 from typing import Optional
 
 import requests
@@ -310,7 +312,7 @@ LOCATIONS = [
 ]
 
 # ---------------------------------------------------------------------------
-# 4. TRANSLATIONS
+# 4. TRANSLATIONS (UI)
 # ---------------------------------------------------------------------------
 UI_TEXT = {
     "ar": {"app_name": "مُبين AI",
@@ -353,7 +355,7 @@ UI_TEXT = {
            "chat_button": "بھیجیں",
            "spinner": "«الرحيق المختوم» میں تلاش ہو رہی ہے...",
            "about_title": "سائٹ کے بارے میں",
-           "about_text": "یہ سائٹ شیخ صفی الرحمن مبارکپوری کی کتاب «الرحيق المختوم» پر مبنی ہے، اور کثیر زبانوں میں سیرت نبوی کے واقعات کو دریافت کرنے کا ایک تفاعلی تجربہ پیش کرتی ہے۔",
+           "about_text": "یہ سائٹ شیخ صفی الرحمن مبارکپوری کی کتاب «الرحيق المختوم» پر مبنی ہے۔",
            "events_hint": "کوئی واقعہ منتخب کریں یا مبین AI سے براہِ راست پوچھیں۔",
            "suggestions": "💡 فوری تجاویز",
            "menu": "☰ مینو",
@@ -368,7 +370,7 @@ UI_TEXT = {
            "chat_button": "Kirim",
            "spinner": "Menelusuri 'The Sealed Nectar'...",
            "about_title": "Tentang Situs",
-           "about_text": "Situs yang bersumber dari 'The Sealed Nectar' karya Safiur Rahman Mubarakpuri, menawarkan pengalaman interaktif untuk menjelajahi peristiwa Sirah Nabawiyah dalam berbagai bahasa.",
+           "about_text": "Situs yang bersumber dari 'The Sealed Nectar'.",
            "events_hint": "Pilih peristiwa atau tanya Mubeen AI langsung.",
            "suggestions": "💡 Saran cepat",
            "menu": "☰ Menu",
@@ -383,7 +385,7 @@ UI_TEXT = {
            "chat_button": "Gönder",
            "spinner": "'The Sealed Nectar' taranıyor...",
            "about_title": "Site Hakkında",
-           "about_text": "Safiur Rahman Mubarakpuri'nin 'The Sealed Nectar' eserine dayanan, Siyer-i Nebi olaylarını birden çok dilde keşfetmek için etkileşimli deneyim sunan bir site.",
+           "about_text": "Safiur Rahman Mubarakpuri'nin 'The Sealed Nectar' eserine dayanır.",
            "events_hint": "Bir olay seçin veya Mubeen AI'ya sorun.",
            "suggestions": "💡 Hızlı öneriler",
            "menu": "☰ Menü",
@@ -391,14 +393,14 @@ UI_TEXT = {
     "fr": {"app_name": "Mubeen AI",
            "tagline": "Plateforme intelligente au service de la Sîra dans les langues du monde",
            "select_lang": "Choisir la langue",
-           "events_title": "Événements, Batailles & Expéditions de la Sîra",
+           "events_title": "Événements, Batailles & Expéditions",
            "select_event": "Sélectionner un événement",
            "chat_title": "Demander à Mubeen AI",
            "chat_placeholder": "Écrivez votre question sur la Sîra...",
            "chat_button": "Envoyer",
            "spinner": "Recherche dans 'The Sealed Nectar'...",
            "about_title": "À propos du site",
-           "about_text": "Un site basé sur 'The Sealed Nectar' de Safiur Rahman Mubarakpuri, offrant une expérience interactive pour explorer les événements de la Sîra en plusieurs langues.",
+           "about_text": "Un site basé sur 'The Sealed Nectar'.",
            "events_hint": "Sélectionnez un événement ou demandez à Mubeen AI.",
            "suggestions": "💡 Suggestions rapides",
            "menu": "☰ Menu",
@@ -406,14 +408,14 @@ UI_TEXT = {
     "es": {"app_name": "Mubeen AI",
            "tagline": "Plataforma inteligente al servicio de la Sira en los idiomas del mundo",
            "select_lang": "Seleccionar idioma",
-           "events_title": "Eventos, Batallas y Expediciones de la Sira",
+           "events_title": "Eventos, Batallas y Expediciones",
            "select_event": "Selecciona un evento",
            "chat_title": "Pregunta a Mubeen AI",
            "chat_placeholder": "Escribe tu pregunta sobre la Sira...",
            "chat_button": "Enviar",
            "spinner": "Buscando en 'The Sealed Nectar'...",
            "about_title": "Acerca del sitio",
-           "about_text": "Un sitio basado en 'The Sealed Nectar' de Safiur Rahman Mubarakpuri, que ofrece una experiencia interactiva para explorar los eventos de la Sira en varios idiomas.",
+           "about_text": "Un sitio basado en 'The Sealed Nectar'.",
            "events_hint": "Selecciona un evento o pregunta a Mubeen AI.",
            "suggestions": "💡 Sugerencias rápidas",
            "menu": "☰ Menú",
@@ -428,7 +430,7 @@ UI_TEXT = {
            "chat_button": "Отправить",
            "spinner": "Поиск в 'The Sealed Nectar'...",
            "about_title": "О сайте",
-           "about_text": "Сайт основан на книге 'The Sealed Nectar' Сафиура Рахмана Мубаракпури и предлагает интерактивный опыт изучения событий Сиры на разных языках.",
+           "about_text": "Сайт основан на книге 'The Sealed Nectar'.",
            "events_hint": "Выберите событие или спросите Mubeen AI.",
            "suggestions": "💡 Быстрые подсказки",
            "menu": "☰ Меню",
@@ -443,7 +445,7 @@ UI_TEXT = {
            "chat_button": "发送",
            "spinner": "正在检索《The Sealed Nectar》...",
            "about_title": "关于本站",
-           "about_text": "本站基于 Safiur Rahman Mubarakpuri 的《The Sealed Nectar》，提供多语言互动体验，探索先知传记的事件。",
+           "about_text": "本站基于《The Sealed Nectar》。",
            "events_hint": "选择事件或直接询问 Mubeen AI。",
            "suggestions": "💡 快速提示",
            "menu": "☰ 菜单",
@@ -458,7 +460,7 @@ UI_TEXT = {
            "chat_button": "भेजें",
            "spinner": "'The Sealed Nectar' में खोज रहे हैं...",
            "about_title": "साइट के बारे में",
-           "about_text": "यह साइट सफ़ीउर रहमान मुबारकपुरी की 'The Sealed Nectar' पर आधारित है, और कई भाषाओं में सीरत की घटनाओं को जानने का इंटरैक्टिव अनुभव प्रदान करती है।",
+           "about_text": "यह साइट 'The Sealed Nectar' पर आधारित है।",
            "events_hint": "कोई घटना चुनें या Mubeen AI से पूछें।",
            "suggestions": "💡 त्वरित सुझाव",
            "menu": "☰ मेनू",
@@ -512,124 +514,361 @@ SUGGESTIONS = {
 }
 
 # ---------------------------------------------------------------------------
-# 5. QUIZ DATA
+# 5. QUIZ: 100 QUESTIONS BANK (Arabic)
 # ---------------------------------------------------------------------------
-QUIZ_QUESTIONS = [
-    {
-        "q": "في أي سنة هجرية وقعت غزوة بدر الكبرى؟",
-        "options": ["السنة الأولى", "السنة الثانية", "السنة الثالثة", "السنة الرابعة"],
-        "answer": 1,
-        "explanation": "وقعت غزوة بدر في السنة الثانية للهجرة، وكانت أول معركة فاصلة في الإسلام وأُطلق عليها «يوم الفرقان».",
-    },
-    {
-        "q": "كم عدد القادة الثلاثة الذين استُشهدوا في غزوة مؤتة؟",
-        "options": ["قائدان", "ثلاثة قادة", "أربعة قادة", "خمسة قادة"],
-        "answer": 1,
-        "explanation": "استُشهد في غزوة مؤتة ثلاثة قادة: زيد بن حارثة، وجعفر بن أبي طالب، وعبد الله بن رواحة رضي الله عنهم.",
-    },
-    {
-        "q": "ما هو أول مسجد أُسِّس في الإسلام؟",
-        "options": ["المسجد النبوي", "المسجد الحرام", "مسجد قباء", "المسجد الأقصى"],
-        "answer": 2,
-        "explanation": "مسجد قباء هو أول مسجد أُسِّس في الإسلام، وقد أسّسه النبي ﷺ عند قدومه مهاجرًا.",
-    },
-    {
-        "q": "في أي غزوة حفر المسلمون الخندق حول المدينة؟",
-        "options": ["غزوة بدر", "غزوة أحد", "غزوة الخندق", "غزوة خيبر"],
-        "answer": 2,
-        "explanation": "في غزوة الخندق (الأحزاب) في السنة الخامسة للهجرة، حفر المسلمون خندقًا حول المدينة بأمر النبي ﷺ.",
-    },
-    {
-        "q": "ما اسم الصلح الذي سمّاه الله «فتحًا مبينًا»؟",
-        "options": ["صلح الحديبية", "صلح خيبر", "صلح تبوك", "صلح الطائف"],
-        "answer": 0,
-        "explanation": "صلح الحديبية في السنة السادسة للهجرة، وقد سمّاه الله في القرآن «فتحًا مبينًا».",
-    },
-    {
-        "q": "في أي سنة هجرية كانت حجة الوداع؟",
-        "options": ["السنة الثامنة", "السنة التاسعة", "السنة العاشرة", "السنة الحادية عشرة"],
-        "answer": 2,
-        "explanation": "حجّ النبي ﷺ حجة الوداع في السنة العاشرة للهجرة، وخطب في عرفة خطبةً جامعة، ونزلت آية إكمال الدين.",
-    },
-    {
-        "q": "ما اسم الغزوة التي استُشهد فيها سبعون من الصحابة؟",
-        "options": ["غزوة بدر", "غزوة أحد", "غزوة الخندق", "غزوة تبوك"],
-        "answer": 1,
-        "explanation": "غزوة أحد في السنة الثالثة للهجرة، وقد كانت درسًا عظيمًا في طاعة أوامر النبي ﷺ.",
-    },
-    {
-        "q": "في أي غزوة أعطى النبي ﷺ الراية لعلي بن أبي طالب رضي الله عنه؟",
-        "options": ["غزوة بدر", "غزوة أحد", "غزوة خيبر", "غزوة مؤتة"],
-        "answer": 2,
-        "explanation": "في غزوة خيبر (السنة السابعة للهجرة)، أعطى النبي ﷺ الراية لعلي بن أبي طالب رضي الله عنه.",
-    },
-    {
-        "q": "ما اسم الكهف الذي نزل فيه الوحي على النبي ﷺ أول مرة؟",
-        "options": ["غار ثور", "غار حراء", "كهف الرقيم", "غار الكهف"],
-        "answer": 1,
-        "explanation": "غار حراء هو المكان الذي نزل فيه جبريل عليه السلام على النبي ﷺ بأول آيات سورة العلق.",
-    },
-    {
-        "q": "كم كان عمر النبي ﷺ عندما نزل عليه الوحي أول مرة؟",
-        "options": ["ثلاثون سنة", "خمسة وثلاثون سنة", "أربعون سنة", "خمسة وأربعون سنة"],
-        "answer": 2,
-        "explanation": "كان عمر النبي ﷺ أربعين سنة عندما نزل عليه الوحي أول مرة في غار حراء.",
-    },
+QUIZ_BANK = [
+    # ============ مرحلة مكة (1-25) ============
+    {"q": "في أي عام ميلادي وُلد النبي ﷺ؟",
+     "options": ["570م", "571م", "572م", "573م"], "answer": 1,
+     "explanation": "وُلد النبي ﷺ عام الفيل (571م) كما ورد في «الرحيق المختوم»."},
+    {"q": "ما اسم والدة النبي ﷺ؟",
+     "options": ["حليمة السعدية", "آمنة بنت وهب", "خديجة بنت خويلد", "فاطمة بنت أسد"], "answer": 1,
+     "explanation": "والدة النبي ﷺ هي آمنة بنت وهب بن عبد مناف."},
+    {"q": "من الذي كفل النبي ﷺ بعد وفاة جده عبد المطلب؟",
+     "options": ["أبو طالب", "العباس", "حمزة", "أبو لهب"], "answer": 0,
+     "explanation": "كفله عمه أبو طالب بعد وفاة جده عبد المطلب."},
+    {"q": "في أي غار نزل الوحي على النبي ﷺ أول مرة؟",
+     "options": ["غار ثور", "غار حراء", "غار الكهف", "غار الرقيم"], "answer": 1,
+     "explanation": "نزل الوحي في غار حراء بجبل النور قرب مكة."},
+    {"q": "ما أول سورة نزلت من القرآن الكريم؟",
+     "options": ["الفاتحة", "العلق", "المدثر", "البقرة"], "answer": 1,
+     "explanation": "أول ما نزل قوله تعالى: ﴿اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ﴾ من سورة العلق."},
+    {"q": "كم كان عمر النبي ﷺ عند نزول الوحي؟",
+     "options": ["30 سنة", "35 سنة", "40 سنة", "45 سنة"], "answer": 2,
+     "explanation": "كان عمره ﷺ أربعين سنة عند بعثته."},
+    {"q": "من هي أول من آمن بالنبي ﷺ من النساء؟",
+     "options": ["عائشة", "خديجة", "فاطمة", "حفصة"], "answer": 1,
+     "explanation": "أول من آمن به ﷺ زوجته خديجة بنت خويلد رضي الله عنها."},
+    {"q": "من أول من أسلم من الرجال الأحرار؟",
+     "options": ["أبو بكر الصديق", "عمر بن الخطاب", "عثمان بن عفان", "علي بن أبي طالب"], "answer": 0,
+     "explanation": "أبو بكر الصديق رضي الله عنه أول من أسلم من الرجال الأحرار."},
+    {"q": "من أول من أسلم من الصبيان؟",
+     "options": ["أسامة بن زيد", "علي بن أبي طالب", "عبد الله بن عباس", "الحسن بن علي"], "answer": 1,
+     "explanation": "علي بن أبي طالب رضي الله عنه أول من أسلم من الصبيان."},
+    {"q": "كم سنة دامت الدعوة السرية؟",
+     "options": ["سنة", "سنتان", "ثلاث سنوات", "خمس سنوات"], "answer": 2,
+     "explanation": "دامت الدعوة السرية ثلاث سنوات."},
+    {"q": "أين كان المسلمون يجتمعون سراً في بداية الدعوة؟",
+     "options": ["دار الأرقم", "دار الندوة", "المسجد الحرام", "دار أبي سفيان"], "answer": 0,
+     "explanation": "كانوا يجتمعون في دار الأرقم بن أبي الأرقم."},
+    {"q": "من هو الصحابي الذي رافق النبي ﷺ في هجرته إلى المدينة؟",
+     "options": ["علي", "أبو بكر", "عمر", "عثمان"], "answer": 1,
+     "explanation": "رافقه أبو بكر الصديق رضي الله عنه في الهجرة."},
+    {"q": "في أي غار مكث النبي ﷺ وأبو بكر ثلاث ليال قبل الهجرة؟",
+     "options": ["غار حراء", "غار ثور", "غار الكهف", "غار عرفة"], "answer": 1,
+     "explanation": "مكثا في غار ثور ثلاث ليال."},
+    {"q": "ما أول مسجد أسسه النبي ﷺ عند وصوله إلى المدينة؟",
+     "options": ["المسجد النبوي", "مسجد قباء", "المسجد الأقصى", "مسجد القبلتين"], "answer": 1,
+     "explanation": "أسس مسجد قباء أول مسجد في الإسلام."},
+    {"q": "في أي سنة هجرية كانت الهجرة إلى المدينة؟",
+     "options": ["السنة الأولى للهجرة", "السنة الثانية", "السنة الثالثة", "قبل الهجرة بشهر"], "answer": 0,
+     "explanation": "كانت الهجرة في السنة الأولى للهجرة، وهي بداية التاريخ الهجري."},
+    {"q": "ما اسم المدينة قبل أن تصبح المدينة المنورة؟",
+     "options": ["يثرب", "طيبة", "مكة", "بطحاء"], "answer": 0,
+     "explanation": "كان اسمها يثرب، ثم سمّاها النبي ﷺ المدينة (طيبة)."},
+    {"q": "كم كان عدد المسلمين في غزوة بدر؟",
+     "options": ["300", "313", "350", "400"], "answer": 1,
+     "explanation": "كان عددهم 313 رجلاً في غزوة بدر."},
+    {"q": "كم كان عدد المشركين في غزوة بدر؟",
+     "options": ["500", "700", "1000", "1500"], "answer": 2,
+     "explanation": "كان عدد المشركين حوالي 1000 مقاتل."},
+    {"q": "في أي سنة هجرية وقعت غزوة بدر الكبرى؟",
+     "options": ["السنة الأولى", "السنة الثانية", "السنة الثالثة", "السنة الرابعة"], "answer": 1,
+     "explanation": "وقعت في السنة الثانية للهجرة، وتسمى يوم الفرقان."},
+    {"q": "في أي سنة هجرية وقعت غزوة أحد؟",
+     "options": ["السنة الثانية", "السنة الثالثة", "السنة الرابعة", "السنة الخامسة"], "answer": 1,
+     "explanation": "وقعت غزوة أحد في السنة الثالثة للهجرة."},
+    {"q": "كم عدد الشهداء في غزوة أحد؟",
+     "options": ["50", "60", "70", "80"], "answer": 2,
+     "explanation": "استُشهد في غزوة أحد سبعون من الصحابة رضي الله عنهم."},
+    {"q": "من هو سيد الشهداء في غزوة أحد؟",
+     "options": ["حمزة بن عبد المطلب", "مصعب بن عمير", "أنس بن النضر", "سعد بن الربيع"], "answer": 0,
+     "explanation": "حمزة بن عبد المطلب عم النبي ﷺ، لقّبه النبي ﷺ بسيد الشهداء."},
+    {"q": "في أي سنة هجرية وقعت غزوة الخندق (الأحزاب)؟",
+     "options": ["السنة الثالثة", "السنة الرابعة", "السنة الخامسة", "السنة السادسة"], "answer": 2,
+     "explanation": "وقعت في السنة الخامسة للهجرة."},
+    {"q": "لماذا سُمّيت غزوة الخندق بهذا الاسم؟",
+     "options": ["لأن المسلمين حفروا خندقاً", "لأن المسلمين كانوا في خندق", "لأن العدو حفر خندقاً", "لأن الأرض كانت خندقاً"], "answer": 0,
+     "explanation": "حفر المسلمون خندقاً حول المدينة بأمر النبي ﷺ (فكرة سلمان الفارسي)."},
+    {"q": "من الذي اقترح حفر الخندق في غزوة الخندق؟",
+     "options": ["أبو بكر", "عمر", "سلمان الفارسي", "علي"], "answer": 2,
+     "explanation": "سلمان الفارسي رضي الله عنه اقترح حفر الخندق."},
+
+    # ============ ما بعد الخندق والمعاهدات (26-50) ============
+    {"q": "في أي سنة هجرية وقع صلح الحديبية؟",
+     "options": ["السنة الرابعة", "السنة الخامسة", "السنة السادسة", "السنة السابعة"], "answer": 2,
+     "explanation": "وقع في السنة السادسة للهجرة."},
+    {"q": "بماذا وصف الله صلح الحديبية في القرآن؟",
+     "options": ["فتحاً عظيماً", "فتحاً مبيناً", "نصراً مؤزراً", "رحمة واسعة"], "answer": 1,
+     "explanation": "قال تعالى: ﴿إِنَّا فَتَحْنَا لَكَ فَتْحًا مُبِينًا﴾."},
+    {"q": "في أي سنة هجرية فُتحت خيبر؟",
+     "options": ["السنة الخامسة", "السنة السادسة", "السنة السابعة", "السنة الثامنة"], "answer": 2,
+     "explanation": "فُتحت خيبر في السنة السابعة للهجرة."},
+    {"q": "من الذي أعطاه النبي ﷺ الراية في خيبر؟",
+     "options": ["أبو بكر", "عمر", "علي بن أبي طالب", "عثمان"], "answer": 2,
+     "explanation": "أعطى النبي ﷺ الراية لعلي بن أبي طالب رضي الله عنه."},
+    {"q": "في أي سنة هجرية وقعت غزوة مؤتة؟",
+     "options": ["السنة السادسة", "السنة السابعة", "السنة الثامنة", "السنة التاسعة"], "answer": 2,
+     "explanation": "وقعت في السنة الثامنة للهجرة."},
+    {"q": "كم عدد القادة الثلاثة الذين استُشهدوا في مؤتة؟",
+     "options": ["قائدان", "ثلاثة قادة", "أربعة قادة", "خمسة قادة"], "answer": 1,
+     "explanation": "زيد بن حارثة، جعفر بن أبي طالب، وعبد الله بن رواحة رضي الله عنهم."},
+    {"q": "من تولّى قيادة الجيش في مؤتة بعد استشهاد القادة الثلاثة؟",
+     "options": ["خالد بن الوليد", "أبو عبيدة", "المثنى", "عمرو بن العاص"], "answer": 0,
+     "explanation": "خالد بن الوليد رضي الله عنه تولّى القيادة وانسحب بالجيش."},
+    {"q": "في أي سنة هجرية كانت غزوة تبوك؟",
+     "options": ["السنة السابعة", "الثامنة", "التاسعة", "العاشرة"], "answer": 2,
+     "explanation": "كانت في السنة التاسعة للهجرة، وتسمى غزوة العسرة."},
+    {"q": "لماذا سُمّيت غزوة تبوك بغزوة العسرة؟",
+     "options": ["لشدة الحرارة وقلة الزاد", "لأنها كانت في الشتاء", "لقلّة الجيش", "لكثرة العدو"], "answer": 0,
+     "explanation": "سُمّيت بذلك لشدة الحرارة وقلّة الزاد وقلة الماء."},
+    {"q": "في أي سنة هجرية كانت حجة الوداع؟",
+     "options": ["السنة الثامنة", "التاسعة", "العاشرة", "الحادية عشرة"], "answer": 2,
+     "explanation": "حجّ النبي ﷺ حجة الوداع في السنة العاشرة للهجرة."},
+    {"q": "أين خطب النبي ﷺ خطبته الجامعة في حجة الوداع؟",
+     "options": ["في منى", "في عرفة", "في مزدلفة", "في المسجد الحرام"], "answer": 1,
+     "explanation": "خطب خطبته الجامعة في عرفة."},
+    {"q": "ما الآية التي نزلت في حجة الوداع؟",
+     "options": ["﴿الْيَوْمَ أَكْمَلْتُ لَكُمْ دِينَكُمْ﴾", "﴿إِنَّا فَتَحْنَا لَكَ﴾", "﴿وَمَا أَرْسَلْنَاكَ﴾", "﴿يَا أَيُّهَا النَّبِيُّ﴾"], "answer": 0,
+     "explanation": "نزلت آية: ﴿الْيَوْمَ أَكْمَلْتُ لَكُمْ دِينَكُمْ وَأَتْمَمْتُ عَلَيْكُمْ نِعْمَتِي﴾."},
+    {"q": "في أي سنة هجرية توفي النبي ﷺ؟",
+     "options": ["السنة التاسعة", "العاشرة", "الحادية عشرة", "الثانية عشرة"], "answer": 2,
+     "explanation": "توفي النبي ﷺ في السنة الحادية عشرة للهجرة."},
+    {"q": "في أي يوم توفي النبي ﷺ؟",
+     "options": ["الاثنين", "الثلاثاء", "الأربعاء", "الخميس"], "answer": 0,
+     "explanation": "توفي ﷺ يوم الاثنين في شهر ربيع الأول."},
+    {"q": "كم كان عمر النبي ﷺ عند وفاته؟",
+     "options": ["60 سنة", "62 سنة", "63 سنة", "65 سنة"], "answer": 2,
+     "explanation": "توفي ﷺ وعمره ثلاث وستون سنة."},
+    {"q": "أين دُفن النبي ﷺ؟",
+     "options": ["في البقيع", "في حجرة عائشة", "في المسجد الحرام", "في مكة"], "answer": 1,
+     "explanation": "دُفن ﷺ في حجرة عائشة رضي الله عنها."},
+    {"q": "كم عدد زوجات النبي ﷺ اللاتي توفي عنهن؟",
+     "options": ["8", "9", "10", "11"], "answer": 1,
+     "explanation": "توفي ﷺ عن تسع من أزواجه رضي الله عنهن."},
+    {"q": "من هي أم المؤمنين التي روت أكثر الأحاديث؟",
+     "options": ["عائشة", "حفصة", "أم سلمة", "زينب"], "answer": 0,
+     "explanation": "عائشة رضي الله عنها أكثر أمهات المؤمنين رواية للحديث."},
+    {"q": "ما اسم خاتم النبيين الذي ورد في القرآن؟",
+     "options": ["أحمد", "محمد", "مصطفى", "محمود"], "answer": 1,
+     "explanation": "اسمه ﷺ محمد وأحمد، لكن الأشهر محمد."},
+    {"q": "في أي قبيلة وُلد النبي ﷺ؟",
+     "options": ["بني أمية", "قريش (بني هاشم)", "الأنصار", "بني تميم"], "answer": 1,
+     "explanation": "وُلد في قريش من بني هاشم."},
+    {"q": "ما اسم عم النبي ﷺ الذي آذاه كثيراً؟",
+     "options": ["أبو لهب", "أبو طالب", "العباس", "حمزة"], "answer": 0,
+     "explanation": "أبو لهب (عبد العزى) عم النبي ﷺ كان من أشد أعدائه."},
+    {"q": "ما اسم زوجة أبي لهب التي كانت تؤذي النبي ﷺ؟",
+     "options": ["أم جميل", "أم سلمة", "أم أيمن", "أم حبيبة"], "answer": 0,
+     "explanation": "أم جميل حمالة الحطب، ورد ذكرها في سورة المسد."},
+    {"q": "من هو شاعر الرسول ﷺ؟",
+     "options": ["حسان بن ثابت", "لبيد بن ربيعة", "امرؤ القيس", "زهير بن أبي سلمى"], "answer": 0,
+     "explanation": "حسان بن ثابت رضي الله عنه شاعر الرسول ﷺ."},
+    {"q": "من هو مؤذن الرسول ﷺ الأول؟",
+     "options": ["بلال بن رباح", "عبد الله بن زيد", "أبو محذورة", "سعد القرظ"], "answer": 0,
+     "explanation": "بلال بن رباح رضي الله عنه أول مؤذن في الإسلام."},
+
+    # ============ أخلاق النبي ﷺ (51-65) ============
+    {"q": "بماذا لُقّب النبي ﷺ قبل البعثة؟",
+     "options": ["الصادق الأمين", "الكريم", "الشجاع", "الحكيم"], "answer": 0,
+     "explanation": "لقّبه قومه بـ«الصادق الأمين» قبل النبوة."},
+    {"q": "كم كان عمر النبي ﷺ عندما تزوج خديجة؟",
+     "options": ["20", "25", "30", "35"], "answer": 1,
+     "explanation": "تزوج خديجة رضي الله عنها وعمره خمس وعشرون سنة."},
+    {"q": "كم كان عمر خديجة عند زواجها بالنبي ﷺ؟",
+     "options": ["30", "35", "40", "45"], "answer": 2,
+     "explanation": "كان عمرها أربعين سنة."},
+    {"q": "كم عدد أولاد النبي ﷺ من البنين والبنات؟",
+     "options": ["5", "6", "7", "8"], "answer": 2,
+     "explanation": "ثلاثة بنين وأربع بنات."},
+    {"q": "من هي أصغر بنات النبي ﷺ؟",
+     "options": ["زينب", "رقية", "أم كلثوم", "فاطمة"], "answer": 3,
+     "explanation": "فاطمة الزهراء رضي الله عنها أصغر بنات النبي ﷺ."},
+    {"q": "من زوج فاطمة بنت النبي ﷺ؟",
+     "options": ["عثمان", "علي", "الزبير", "طلحة"], "answer": 1,
+     "explanation": "تزوجها علي بن أبي طالب رضي الله عنه."},
+    {"q": "ما لقب أبي بكر الصديق؟",
+     "options": ["الفاروق", "الصديق", "ذو النورين", "سيف الله"], "answer": 1,
+     "explanation": "لقّبه النبي ﷺ بالصديق لتصديقه بالإسراء."},
+    {"q": "ما لقب عمر بن الخطاب؟",
+     "options": ["الصديق", "الفاروق", "ذو النورين", "أمين الأمة"], "answer": 1,
+     "explanation": "لقّبه النبي ﷺ بالفاروق لأنه فرّق بين الحق والباطل."},
+    {"q": "ما لقب عثمان بن عفان؟",
+     "options": ["الصديق", "الفاروق", "ذو النورين", "الأمين"], "answer": 2,
+     "explanation": "لُقّب بذي النورين لأنه تزوج ابنتي النبي ﷺ."},
+    {"q": "ما لقب خالد بن الوليد؟",
+     "options": ["سيف الله المسلول", "الفاروق", "الصديق", "ذو النورين"], "answer": 0,
+     "explanation": "لقّبه النبي ﷺ بـ«سيف الله المسلول»."},
+    {"q": "ما لقب حمزة بن عبد المطلب؟",
+     "options": ["أسد الله", "سيد الشهداء", "الحمزة", "جميع ما سبق"], "answer": 3,
+     "explanation": "حمزة رضي الله عنه أسد الله وسيد الشهداء وعمه ﷺ."},
+    {"q": "من هو حبر الأمة؟",
+     "options": ["عبد الله بن عباس", "عبد الله بن عمر", "أبو هريرة", "أنس بن مالك"], "answer": 0,
+     "explanation": "عبد الله بن عباس رضي الله عنه لُقّب بحبر الأمة."},
+    {"q": "من أكثر الصحابة رواية للحديث؟",
+     "options": ["أبو هريرة", "أنس", "جابر", "ابن عمر"], "answer": 0,
+     "explanation": "أبو هريرة رضي الله عنه أكثر الصحابة رواية للحديث."},
+    {"q": "ما اسم الجبل الذي نزل فيه الوحي؟",
+     "options": ["جبل ثور", "جبل النور", "جبل أحد", "جبل عرفات"], "answer": 1,
+     "explanation": "جبل النور، وفيه غار حراء الذي نزل فيه الوحي."},
+    {"q": "ما اسم ناقة النبي ﷺ في الهجرة؟",
+     "options": ["القصواء", "العضباء", "الجدعاء", "جميعها"], "answer": 3,
+     "explanation": "ناقة النبي ﷺ الشهيرة لها أسماء عدة منها القصواء والعضباء."},
+
+    # ============ الغزوات التفصيلية (66-80) ============
+    {"q": "من هو الصحابي الذي أشار بحفر الخندق؟",
+     "options": ["سلمان الفارسي", "أبو ذر", "بلال", "عمار"], "answer": 0,
+     "explanation": "سلمان الفارسي رضي الله عنه اقترح حفر الخندق."},
+    {"q": "كم يوماً دامت غزوة الخندق؟",
+     "options": ["10 أيام", "15 يوماً", "حوالي شهر", "3 أيام"], "answer": 2,
+     "explanation": "دام حصار الأحزاب حوالي شهر."},
+    {"q": "كم عدد الشهداء في غزوة بدر من المسلمين؟",
+     "options": ["6", "14", "20", "70"], "answer": 1,
+     "explanation": "استُشهد 14 مسلماً في غزوة بدر."},
+    {"q": "كم عدد القتلى من المشركين في بدر؟",
+     "options": ["50", "70", "100", "200"], "answer": 1,
+     "explanation": "قُتل من المشركين 70 وأُسر 70."},
+    {"q": "من هو الصحابي الذي فدى نفسه بأبيه وأمه يوم بدر؟",
+     "options": ["أبو بكر", "عمر", "الزبير", "مصعب"], "answer": 0,
+     "explanation": "أبو بكر الصديق رضي الله عنه."},
+    {"q": "من هو أول شهيد في الإسلام؟",
+     "options": ["سُمية بنت خياط", "بلال", "عمار", "ياسر"], "answer": 0,
+     "explanation": "سُمية بنت خياط رضي الله عنها أول شهيدة في الإسلام."},
+    {"q": "من الصحابي الذي كان يُعذَّب فيقول: أحدٌ أحد؟",
+     "options": ["بلال", "عمار", "أبو ذر", "سلمان"], "answer": 0,
+     "explanation": "بلال بن رباح رضي الله عنه كان يُعذَّب فيقول: أحدٌ أحد."},
+    {"q": "من هو الصحابي الذي شهد له النبي ﷺ بالجنة وقال: «عمر بن الخطاب»؟",
+     "options": ["عمر", "أبو بكر", "عثمان", "علي"], "answer": 0,
+     "explanation": "عمر بن الخطاب رضي الله عنه."},
+    {"q": "من الذي فدى النبي ﷺ بنفسه في غزوة أحد؟",
+     "options": ["طلحة بن عبيد الله", "أبو بكر", "علي", "الزبير"], "answer": 0,
+     "explanation": "طلحة بن عبيد الله رضي الله عنه وقى النبي ﷺ بجسده."},
+    {"q": "من هي الصحابية التي دافعت عن النبي ﷺ يوم أحد؟",
+     "options": ["نسيبة (أم عمارة)", "خديجة", "عائشة", "أم سلمة"], "answer": 0,
+     "explanation": "نسيبة بنت كعب (أم عمارة) رضي الله عنها دافعت عنه ﷺ."},
+    {"q": "ما اسم الخندق الذي حُفر في غزوة الخندق؟",
+     "options": ["الخندق", "الأحزاب", "الفتح", "النصر"], "answer": 0,
+     "explanation": "سُمي الخندق نسبة للحفرة التي حُفرت حول المدينة."},
+    {"q": "من الذي قتل كعب بن الأشرف (زعيم اليهود)؟",
+     "options": ["محمد بن مسلمة", "علي", "الزبير", "أبو بكر"], "answer": 0,
+     "explanation": "محمد بن مسلمة رضي الله عنه قتل كعب بن الأشرف."},
+    {"q": "ما اسم اليهودية التي دسّت السم للنبي ﷺ في خيبر؟",
+     "options": ["زينب بنت الحارث", "صفية", "ريحانة", "أميمة"], "answer": 0,
+     "explanation": "زينب بنت الحارث دسّت السم في شاة مشوية."},
+    {"q": "من هي الصحابية التي كانت أول من استشهد في غزوة أحد؟",
+     "options": ["أم عمارة", "سُمية", "أم أيمن", "أم سليم"], "answer": 0,
+     "explanation": "أم عمارة نسيبة بنت كعب رضي الله عنها."},
+    {"q": "من الذي تولى قيادة المشركين في غزوة أحد؟",
+     "options": ["أبو سفيان", "أبو جهل", "خالد بن الوليد", "عكرمة"], "answer": 0,
+     "explanation": "أبو سفيان بن حرب قاد المشركين في أحد."},
+
+    # ============ الرحلة والهجرة (81-90) ============
+    {"q": "كم سنة قضاها النبي ﷺ في الدعوة في مكة؟",
+     "options": ["10 سنوات", "13 سنة", "15 سنة", "20 سنة"], "answer": 1,
+     "explanation": "قضى ﷺ ثلاثة عشرة سنة يدعو في مكة."},
+    {"q": "من هو الصحابي الذي نام في فراش النبي ﷺ ليلة الهجرة؟",
+     "options": ["علي بن أبي طالب", "أبو بكر", "عمر", "عثمان"], "answer": 0,
+     "explanation": "علي بن أبي طالب رضي الله عنه نام في فراشه ﷺ فداءً له."},
+    {"q": "من هي المرأة التي ضيّفت النبي ﷺ وأبا بكر أثناء الهجرة؟",
+     "options": ["أم معبد", "أم أيمن", "أم سليم", "أم عمارة"], "answer": 0,
+     "explanation": "أم معبد الخزاعية استضافتهما وبارك النبي ﷺ في شاتها."},
+    {"q": "من هو الدليل الذي رافق النبي ﷺ وأبا بكر في الهجرة؟",
+     "options": ["عبد الله بن أريقط", "عبد الله بن أبي بكر", "عامر بن فهيرة", "أبو أيوب"], "answer": 0,
+     "explanation": "عبد الله بن أريقط الدليل المشرك الذي استأجراه."},
+    {"q": "من كان يأتي بالطعام للنبي ﷺ وأبي بكر في الغار؟",
+     "options": ["أسماء بنت أبي بكر", "عائشة", "أم سلمة", "أم أيمن"], "answer": 0,
+     "explanation": "أسماء بنت أبي بكر رضي الله عنها كانت تأتي بالطعام."},
+    {"q": "من أول من استقبل النبي ﷺ في المدينة؟",
+     "options": ["الأنصار", "أبو أيوب الأنصاري", "سعد بن معاذ", "أُسيد بن حضير"], "answer": 1,
+     "explanation": "أبو أيوب الأنصاري رضي الله عنه نزل النبي ﷺ في بيته."},
+    {"q": "ما الحيوان الذي ركب النبي ﷺ في هجرته؟",
+     "options": ["القصواء", "الفرس", "البغل", "الحمار"], "answer": 0,
+     "explanation": "القصواء ناقته ﷺ في الهجرة."},
+    {"q": "من هم الذين آخى النبي ﷺ بينهم في المدينة؟",
+     "options": ["المهاجرين والأنصار", "قريش وثقيف", "الأوس والخزرج فقط", "بني إسرائيل"], "answer": 0,
+     "explanation": "آخى بين المهاجرين والأنصار."},
+    {"q": "ما اسم الوثيقة التي كتبها النبي ﷺ في المدينة؟",
+     "options": ["الصحيفة", "الدستور", "الميثاق", "العهد"], "answer": 0,
+     "explanation": "الصحيفة، أول دستور في الإسلام."},
+    {"q": "كم سنة قضاها النبي ﷺ في المدينة؟",
+     "options": ["8 سنوات", "9 سنوات", "10 سنوات", "13 سنة"], "answer": 2,
+     "explanation": "قضى ﷺ عشر سنوات في المدينة."},
+
+    # ============ عامة وأخلاق (91-100) ============
+    {"q": "من خاتم الأنبياء والمرسلين؟",
+     "options": ["محمد ﷺ", "عيسى عليه السلام", "موسى عليه السلام", "إبراهيم عليه السلام"], "answer": 0,
+     "explanation": "محمد ﷺ خاتم الأنبياء والمرسلين."},
+    {"q": "ما اسم كتاب النبي ﷺ؟",
+     "options": ["القرآن الكريم", "الإنجيل", "التوراة", "الزبور"], "answer": 0,
+     "explanation": "القرآن الكريم هو الكتاب المنزل على محمد ﷺ."},
+    {"q": "كم سنة نزل القرآن الكريم؟",
+     "options": ["13 سنة", "20 سنة", "23 سنة", "30 سنة"], "answer": 2,
+     "explanation": "نزل القرآن في 23 سنة (13 في مكة، 10 في المدينة)."},
+    {"q": "ما اسم أول سورة نزلت كاملة؟",
+     "options": ["الفاتحة", "العلق", "المدثر", "الناس"], "answer": 0,
+     "explanation": "الفاتحة أول سورة نزلت كاملة."},
+    {"q": "ما اسم آخر سورة نزلت؟",
+     "options": ["النصر", "الفاتحة", "الناس", "الإخلاص"], "answer": 0,
+     "explanation": "سورة النصر آخر سورة نزلت."},
+    {"q": "من هو النبي الذي بشر بمحمد ﷺ؟",
+     "options": ["عيسى عليه السلام", "موسى عليه السلام", "إبراهيم عليه السلام", "نوح عليه السلام"], "answer": 0,
+     "explanation": "عيسى عليه السلام بشر بالنبي محمد ﷺ (باسم أحمد)."},
+    {"q": "ما اسم أول بيت وُضع للناس؟",
+     "options": ["المسجد الحرام", "المسجد النبوي", "المسجد الأقصى", "مسجد قباء"], "answer": 0,
+     "explanation": "المسجد الحرام بمكة أول بيت وُضع للناس."},
+    {"q": "كم عدد أسماء النبي ﷺ الواردة في الأحاديث؟",
+     "options": ["5", "10", "أكثر من 20", "3"], "answer": 2,
+     "explanation": "للنبي ﷺ أسماء كثيرة، وذكر العلماء أكثر من عشرين اسماً."},
+    {"q": "من هي آخر زوجات النبي ﷺ؟",
+     "options": ["عائشة", "ميمونة", "أم سلمة", "صفية"], "answer": 1,
+     "explanation": "ميمونة بنت الحارث رضي الله عنها آخر من تزوجها النبي ﷺ."},
+    {"q": "ما الدعاء الذي كان يقوله النبي ﷺ عند الاستيقاظ؟",
+     "options": ["الحمد لله الذي أحيانا", "الحمد لله رب العالمين", "بسم الله", "لا حول ولا قوة إلا بالله"], "answer": 0,
+     "explanation": "كان ﷺ يقول: «الحمد لله الذي أحيانا بعدما أماتنا وإليه النشور»."},
 ]
 
+# ---------------------------------------------------------------------------
+# 6. QUIZ UI TRANSLATIONS
+# ---------------------------------------------------------------------------
 QUIZ_LABELS = {
-    "ar": {
-        "quiz_title": "🎴 اختبار السيرة النبوية",
-        "quiz_intro": "اختبر معرفتك بالسيرة النبوية عبر 10 أسئلة مختارة من «الرحيق المختوم».",
-        "question_of": "السؤال {current} من {total}",
-        "next_button": "السؤال التالي →",
-        "finish_button": "إظهار النتيجة",
-        "check_button": "تحقق من الإجابة",
-        "start_button": "▶️ ابدأ الاختبار",
-        "correct": "✅ إجابة صحيحة!",
-        "wrong": "❌ إجابة خاطئة!",
-        "explanation_label": "📖 التوضيح:",
-        "your_score": "نتيجتك النهائية",
-        "excellent": "🏆 ممتاز! أنت خبير في السيرة النبوية",
-        "very_good": "🌟 جيد جدًا! معرفتك بالسيرة قوية",
-        "good": "👍 جيد! تحتاج إلى مراجعة بعض الأحداث",
-        "try_again": "📚 حاول مرة أخرى! اقرأ المزيد من «الرحيق المختوم»",
-        "restart_button": "🔄 إعادة الاختبار",
-        "correct_answer": "الإجابة الصحيحة",
-        "select_answer": "اختر الإجابة الصحيحة",
-        "please_select": "⚠️ اختر إجابة أولاً",
-        "page_home": "🏠 الرئيسية",
-        "page_quiz": "🎴 اختبار السيرة",
-        "questions": "أسئلة",
-    },
-    "en": {
-        "quiz_title": "🎴 Seerah Quiz",
-        "quiz_intro": "Test your knowledge of the Seerah through 10 selected questions from 'The Sealed Nectar'.",
-        "question_of": "Question {current} of {total}",
-        "next_button": "Next Question →",
-        "finish_button": "Show Result",
-        "check_button": "Check Answer",
-        "start_button": "▶️ Start Quiz",
-        "correct": "✅ Correct!",
-        "wrong": "❌ Wrong!",
-        "explanation_label": "📖 Explanation:",
-        "your_score": "Your Final Score",
-        "excellent": "🏆 Excellent! You are a Seerah expert",
-        "very_good": "🌟 Very good! Your knowledge is strong",
-        "good": "👍 Good! You need to review some events",
-        "try_again": "📚 Try again! Read more from 'The Sealed Nectar'",
-        "restart_button": "🔄 Restart Quiz",
-        "correct_answer": "Correct Answer",
-        "select_answer": "Select the correct answer",
-        "please_select": "⚠️ Please select an answer",
-        "page_home": "🏠 Home",
-        "page_quiz": "🎴 Seerah Quiz",
-        "questions": "Questions",
-    },
+    "ar": {"quiz_title": "📝 اختبار السيرة النبوية",
+           "quiz_intro": "اختبر معرفتك بالسيرة النبوية عبر 10 أسئلة عشوائية من بنك يحتوي على 100 سؤال.",
+           "question_of": "السؤال {current} من {total}",
+           "next_button": "السؤال التالي →", "finish_button": "إظهار النتيجة",
+           "check_button": "تحقق من الإجابة", "start_button": "▶️ ابدأ الاختبار",
+           "exit_button": "🚪 الخروج من الاختبار",
+           "correct": "✅ إجابة صحيحة!", "wrong": "❌ إجابة خاطئة!",
+           "explanation_label": "📖 التوضيح:", "your_score": "نتيجتك النهائية",
+           "excellent": "🏆 ممتاز! أنت خبير في السيرة النبوية",
+           "very_good": "🌟 جيد جدًا! معرفتك بالسيرة قوية",
+           "good": "👍 جيد! تحتاج إلى مراجعة بعض الأحداث",
+           "try_again": "📚 حاول مرة أخرى! اقرأ المزيد من «الرحيق المختوم»",
+           "restart_button": "🔄 إعادة الاختبار", "correct_answer": "الإجابة الصحيحة",
+           "select_answer": "اختر الإجابة الصحيحة", "please_select": "⚠️ اختر إجابة أولاً",
+           "page_home": "🏠 الرئيسية", "page_quiz": "📝 اختبار السيرة",
+           "questions": "أسئلة", "translating": "جارٍ الترجمة...",
+           "confirm_exit": "هل تريد الخروج؟ سيتم فقدان تقدمك."},
+    "en": {"quiz_title": "📝 Seerah Quiz",
+           "quiz_intro": "Test your knowledge with 10 random questions from a bank of 100.",
+           "question_of": "Question {current} of {total}",
+           "next_button": "Next Question →", "finish_button": "Show Result",
+           "check_button": "Check Answer", "start_button": "▶️ Start Quiz",
+           "exit_button": "🚪 Exit Quiz",
+           "correct": "✅ Correct!", "wrong": "❌ Wrong!",
+           "explanation_label": "📖 Explanation:", "your_score": "Your Final Score",
+           "excellent": "🏆 Excellent! You are a Seerah expert",
+           "very_good": "🌟 Very good! Your knowledge is strong",
+           "good": "👍 Good! You need to review some events",
+           "try_again": "📚 Try again! Read more from 'The Sealed Nectar'",
+           "restart_button": "🔄 Restart Quiz", "correct_answer": "Correct Answer",
+           "select_answer": "Select the correct answer", "please_select": "⚠️ Please select an answer",
+           "page_home": "🏠 Home", "page_quiz": "📝 Seerah Quiz",
+           "questions": "Questions", "translating": "Translating...",
+           "confirm_exit": "Exit? Your progress will be lost."},
 }
 
 # ---------------------------------------------------------------------------
-# 6. SESSION STATE
+# 7. SESSION STATE
 # ---------------------------------------------------------------------------
 if "lang" not in st.session_state:
     st.session_state.lang = "ar"
@@ -653,9 +892,15 @@ if "quiz_finished" not in st.session_state:
     st.session_state.quiz_finished = False
 if "quiz_selected" not in st.session_state:
     st.session_state.quiz_selected = None
+if "quiz_questions" not in st.session_state:
+    st.session_state.quiz_questions = []
+if "quiz_translation_cache" not in st.session_state:
+    st.session_state.quiz_translation_cache = {}
+if "close_menu" not in st.session_state:
+    st.session_state.close_menu = False
 
 # ---------------------------------------------------------------------------
-# 7. HELPERS
+# 8. HELPERS
 # ---------------------------------------------------------------------------
 def location_name(loc: dict, lang: str) -> str:
     return loc["name"].get(lang, loc["name"]["en"])
@@ -683,7 +928,7 @@ def _get_secret(name: str) -> Optional[str]:
 
 
 # ---------------------------------------------------------------------------
-# 8. AI
+# 9. AI
 # ---------------------------------------------------------------------------
 @st.cache_resource(show_spinner=False)
 def get_gemini_client():
@@ -697,7 +942,7 @@ def get_gemini_client():
         return None
 
 
-def call_gemini(prompt: str, system_instruction: str) -> str:
+def call_gemini(prompt: str, system_instruction: str = "", temperature: float = 0.3) -> str:
     client = get_gemini_client()
     if client is None:
         return ""
@@ -708,33 +953,22 @@ def call_gemini(prompt: str, system_instruction: str) -> str:
 
     for model_name in ["gemini-2.5-flash", "gemini-2.0-flash"]:
         try:
+            config = types.GenerateContentConfig(temperature=temperature)
+            if system_instruction:
+                config = types.GenerateContentConfig(
+                    system_instruction=system_instruction,
+                    temperature=temperature,
+                )
             response = client.models.generate_content(
                 model=model_name,
                 contents=prompt,
-                config=types.GenerateContentConfig(
-                    system_instruction=system_instruction,
-                    tools=[types.Tool(google_search=types.GoogleSearch())],
-                    temperature=0.3,
-                ),
+                config=config,
             )
             text = getattr(response, "text", None)
             if text and text.strip():
                 return text.strip()
         except Exception:
-            try:
-                response = client.models.generate_content(
-                    model=model_name,
-                    contents=prompt,
-                    config=types.GenerateContentConfig(
-                        system_instruction=system_instruction,
-                        temperature=0.3,
-                    ),
-                )
-                text = getattr(response, "text", None)
-                if text and text.strip():
-                    return text.strip()
-            except Exception:
-                continue
+            continue
     return ""
 
 
@@ -779,14 +1013,65 @@ def call_ai(prompt: str, system_instruction: str) -> str:
     answer = call_groq(prompt, system_instruction)
     if answer and len(answer) > 20:
         return answer
-    return (
-        "⚠️ تعذّر الحصول على إجابة حالياً. "
-        "يرجى المحاولة مرة أخرى بعد لحظات."
-    )
+    return "⚠️ تعذّر الحصول على إجابة حالياً. يرجى المحاولة مرة أخرى بعد لحظات."
 
 
 # ---------------------------------------------------------------------------
-# 9. SYSTEM INSTRUCTION
+# 10. TRANSLATE QUIZ QUESTION via Gemini
+# ---------------------------------------------------------------------------
+def translate_quiz_question(q_ar: dict, target_lang: str) -> dict:
+    """يترجم سؤال الاختبار إلى اللغة الهدف باستخدام Gemini."""
+    if target_lang == "ar":
+        return q_ar
+
+    cache_key = f"{q_ar['q'][:40]}_{target_lang}"
+    if cache_key in st.session_state.quiz_translation_cache:
+        return st.session_state.quiz_translation_cache[cache_key]
+
+    lang_name = LANG_NAMES_FOR_PROMPT.get(target_lang, "English")
+    prompt = f"""Translate the following Islamic Seerah quiz question into {lang_name}.
+Keep the same structure. Respond ONLY with valid JSON (no markdown code blocks).
+
+Input JSON:
+{{
+  "q": "{q_ar['q']}",
+  "options": {json.dumps(q_ar['options'], ensure_ascii=False)},
+  "explanation": "{q_ar['explanation']}"
+}}
+
+Respond with the translated JSON only:
+{{
+  "q": "translated question",
+  "options": ["translated option 1", "translated option 2", "translated option 3", "translated option 4"],
+  "explanation": "translated explanation"
+}}"""
+
+    response = call_gemini(prompt, temperature=0.2)
+    if not response:
+        return q_ar
+
+    # تنظيف
+    response = response.strip()
+    if response.startswith("```"):
+        lines = response.split("\n")
+        response = "\n".join([l for l in lines if not l.strip().startswith("```")])
+
+    try:
+        data = json.loads(response)
+        translated = {
+            "q": data.get("q", q_ar["q"]),
+            "options": data.get("options", q_ar["options"]),
+            "answer": q_ar["answer"],
+            "explanation": data.get("explanation", q_ar["explanation"]),
+        }
+        st.session_state.quiz_translation_cache[cache_key] = translated
+        return translated
+    except Exception:
+        return q_ar
+
+
+# ---------------------------------------------------------------------------
+# 11. SYSTEM INSTRUCTION
 # ---------------------------------------------------------------------------
 def build_system_instruction(lang_code: str) -> str:
     target_lang = LANG_NAMES_FOR_PROMPT.get(lang_code, "Arabic (العربية)")
@@ -797,20 +1082,14 @@ def build_system_instruction(lang_code: str) -> str:
 2. إذا لم تكن المعلومة موجودة، قل بوضوح: "هذه المعلومة ليست في المصدر الذي أعتمد عليه".
 3. لا تخترع أحداثاً أو تواريخ أو أسماء.
 
-💡 قاعدة الفوائد:
-- عندما يُسأل عن "فائدة" أو "درس" أو "حكمة" — أجب بوضوح.
-- ميّز بين: (أ) المنصوص عليه في الكتاب، (ب) الدروس المستنبطة.
-
 📝 قواعد التنسيق:
 - ابدأ بجواب مباشر في سطر واحد.
 - استخدم عناوين فرعية بصيغة `**العنوان**`.
-- عند استخدام قائمة، استخدم نوعاً واحداً فقط.
 - اترك سطراً فارغاً بين كل فقرة.
 - اختم بخلاصة تحت `**الخلاصة:**`.
 
 🌍 اللغة:
 - أجب بالكامل بلغة **{target_lang}**.
-- لا تخلط بين اللغات.
 
 🚫 ممنوعات:
 - لا تخترع أحاديث أو أسانيد."""
@@ -825,12 +1104,11 @@ def build_user_prompt(lang_code: str, question: str) -> str:
 تذكير:
 - ابدأ بجواب مباشر.
 - استخدم عناوين ونقاط منظمة.
-- إذا لم تجد المعلومة، اعترف بذلك بوضوح.
-- اختم بخلاصة قصيرة."""
+- إذا لم تجد المعلومة، اعترف بذلك بوضوح."""
 
 
 # ---------------------------------------------------------------------------
-# 10. CSS
+# 12. CSS
 # ---------------------------------------------------------------------------
 def inject_css(lang_dir: str, rtl: bool):
     align = "right" if rtl else "left"
@@ -905,7 +1183,7 @@ def inject_css(lang_dir: str, rtl: bool):
         }}
         div[data-testid="stExpander"] > div {{ padding: 20px !important; }}
 
-        /* إخفاء نص arrow في القوائم */
+        /* إخفاء نص arrow */
         div[data-testid="stExpander"] summary span[data-testid*="stIcon"] {{
             font-size: 0 !important;
             color: transparent !important;
@@ -999,23 +1277,24 @@ def inject_css(lang_dir: str, rtl: bool):
             padding-bottom: 4px;
         }}
 
+        /* ===== البانر الرئيسي — اللوقو مكبّر ===== */
         .mubeen-header {{
             background: linear-gradient(90deg, #1B4D3E 0%, #2c6a58 100%);
             border: 2px solid #C5A059;
             border-radius: 14px;
-            padding: 24px 22px;
-            margin-bottom: 18px;
-            box-shadow: 0 10px 26px rgba(27, 77, 62, 0.25);
+            padding: 32px 28px;
+            margin-bottom: 20px;
+            box-shadow: 0 12px 30px rgba(27, 77, 62, 0.28);
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 180px;
+            min-height: 240px;
         }}
         .mubeen-header .mubeen-logo-banner {{
-            height: 140px;
+            height: 186px;
             width: auto;
             max-width: 100%;
-            filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.35));
+            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.4));
         }}
 
         .mubeen-hint {{
@@ -1029,6 +1308,7 @@ def inject_css(lang_dir: str, rtl: bool):
             text-align: {align};
         }}
 
+        /* ===== الأزرار ===== */
         .stFormSubmitButton > button,
         div[data-testid="stButton"] button {{
             background-color: #1B4D3E !important;
@@ -1044,6 +1324,28 @@ def inject_css(lang_dir: str, rtl: bool):
             background-color: #143a2e !important;
         }}
 
+        /* أزرار خيارات الاختبار (secondary) */
+        div[data-testid="stButton"] button[kind="secondary"] {{
+            background-color: #FDFBF7 !important;
+            color: #1B4D3E !important;
+            border: 2px solid #E8D9B8 !important;
+            border-{('right' if rtl else 'left')}: 5px solid #C5A059 !important;
+            border-radius: 10px !important;
+            font-weight: 700 !important;
+            padding: 14px 18px !important;
+            font-size: 1rem !important;
+            text-align: {('right' if rtl else 'left')} !important;
+            margin-bottom: 8px !important;
+            transition: all 0.2s ease !important;
+            width: 100% !important;
+        }}
+        div[data-testid="stButton"] button[kind="secondary"]:hover {{
+            background-color: #F5F2EB !important;
+            border-color: #C5A059 !important;
+            transform: translateX({'-3px' if not rtl else '3px'}) !important;
+            box-shadow: 0 4px 12px rgba(197, 160, 89, 0.2) !important;
+        }}
+
         .stTextInput input, .stTextArea textarea,
         .stSelectbox div[data-baseweb="select"] > div {{
             border: 1px solid #C5A059 !important;
@@ -1051,31 +1353,13 @@ def inject_css(lang_dir: str, rtl: bool):
             background-color: #FFFFFF !important;
         }}
 
-        /* Radio buttons styling */
-        div[role="radiogroup"] label {{
-            background: #FDFBF7 !important;
-            border: 1px solid #E8D9B8 !important;
-            border-{('right' if rtl else 'left')}: 4px solid #C5A059 !important;
-            border-radius: 10px !important;
-            padding: 12px 16px !important;
-            margin-bottom: 8px !important;
-            cursor: pointer !important;
-            transition: all 0.2s ease !important;
-            width: 100% !important;
-        }}
-        div[role="radiogroup"] label:hover {{
-            background: #F5F2EB !important;
-            border-color: #C5A059 !important;
-            transform: translateX({'-3px' if not rtl else '3px'}) !important;
-        }}
-
         @media (max-width: 900px) {{
             .block-container {{
                 padding-left: 0.7rem !important;
                 padding-right: 0.7rem !important;
             }}
-            .mubeen-header {{ padding: 18px 14px; min-height: 130px; }}
-            .mubeen-header .mubeen-logo-banner {{ height: 100px; }}
+            .mubeen-header {{ padding: 22px 16px; min-height: 180px; }}
+            .mubeen-header .mubeen-logo-banner {{ height: 133px; }}
             h2 {{ font-size: 1.3rem !important; }}
             .mubeen-ai-answer .ai-body {{ font-size: 0.95rem; }}
         }}
@@ -1086,7 +1370,7 @@ def inject_css(lang_dir: str, rtl: bool):
 
 
 # ---------------------------------------------------------------------------
-# 11. HELPER: Markdown formatter
+# 13. HELPER: Markdown formatter
 # ---------------------------------------------------------------------------
 def format_answer_markdown(text: str) -> str:
     import html as html_lib
@@ -1113,22 +1397,35 @@ def format_answer_markdown(text: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# 12. QUIZ RENDERER
+# 14. QUIZ RENDERER
 # ---------------------------------------------------------------------------
 def render_quiz(t: dict, rtl: bool, lang_dir: str, lang: str):
     """يعرض الاختبار التفاعلي."""
-    ql = QUIZ_LABELS.get(lang, QUIZ_LABELS["en"])
-    total = len(QUIZ_QUESTIONS)
+    ql = QUIZ_LABELS.get(lang, QUIZ_LABELS.get("en", QUIZ_LABELS["ar"]))
+    total = 10
+
+    # ---- زر الخروج في الأعلى ----
+    col_exit, col_spacer, col_info = st.columns([1, 2, 1])
+    with col_exit:
+        if st.button(ql["exit_button"], key="exit_quiz_btn", use_container_width=True):
+            st.session_state.quiz_started = False
+            st.session_state.quiz_finished = False
+            st.session_state.quiz_current = 0
+            st.session_state.quiz_score = 0
+            st.session_state.quiz_selected = None
+            st.session_state.quiz_answered = False
+            st.session_state.current_page = "home"
+            st.session_state.close_menu = True
+            st.rerun()
 
     # ---- شاشة البداية ----
     if not st.session_state.quiz_started and not st.session_state.quiz_finished:
         st.markdown(
             f"""
             <div class="mubeen-card" dir="{lang_dir}" style="border-color:#1B4D3E; text-align:center; padding:30px;">
-                <div style="font-size:3rem; margin-bottom:14px;">🎴</div>
+                <div style="font-size:3rem; margin-bottom:14px;">📝</div>
                 <h2 style="color:#1B4D3E; font-family:'Amiri', serif; margin:8px 0;">{ql['quiz_title']}</h2>
                 <p style="color:#555; font-size:1rem; line-height:1.8; margin-top:14px;">{ql['quiz_intro']}</p>
-                <p style="color:#C5A059; font-weight:700; margin-top:14px;">{total} {ql['questions']}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -1136,6 +1433,8 @@ def render_quiz(t: dict, rtl: bool, lang_dir: str, lang: str):
         col_a, col_b, col_c = st.columns([1, 1, 1])
         with col_b:
             if st.button(ql["start_button"], key="start_quiz_btn", use_container_width=True):
+                # اختيار 10 أسئلة عشوائية من البنك
+                st.session_state.quiz_questions = random.sample(QUIZ_BANK, 10)
                 st.session_state.quiz_started = True
                 st.session_state.quiz_current = 0
                 st.session_state.quiz_score = 0
@@ -1191,7 +1490,8 @@ def render_quiz(t: dict, rtl: bool, lang_dir: str, lang: str):
         col_x, col_y, col_z = st.columns([1, 1, 1])
         with col_y:
             if st.button(ql["restart_button"], key="restart_quiz_btn", use_container_width=True):
-                st.session_state.quiz_started = False
+                st.session_state.quiz_questions = random.sample(QUIZ_BANK, 10)
+                st.session_state.quiz_started = True
                 st.session_state.quiz_finished = False
                 st.session_state.quiz_current = 0
                 st.session_state.quiz_score = 0
@@ -1206,7 +1506,15 @@ def render_quiz(t: dict, rtl: bool, lang_dir: str, lang: str):
         st.session_state.quiz_finished = True
         st.rerun()
 
-    q = QUIZ_QUESTIONS[idx]
+    q_ar = st.session_state.quiz_questions[idx]
+
+    # ترجمة السؤال للغة الحالية
+    if lang != "ar":
+        with st.spinner(ql["translating"]):
+            q = translate_quiz_question(q_ar, lang)
+    else:
+        q = q_ar
+
     progress_pct = int(((idx) / total) * 100)
 
     # شريط التقدم
@@ -1241,19 +1549,59 @@ def render_quiz(t: dict, rtl: bool, lang_dir: str, lang: str):
         unsafe_allow_html=True,
     )
 
-    # الخيارات
-    selected = st.radio(
-        ql["select_answer"],
-        options=list(range(len(q["options"]))),
-        format_func=lambda i: f"{chr(65 + i)}. {q['options'][i]}",
-        index=None if st.session_state.quiz_selected is None else st.session_state.quiz_selected,
-        key=f"q_radio_{idx}",
-        label_visibility="collapsed",
-        disabled=st.session_state.quiz_answered,
-    )
+    # ===== الخيارات كأزرار واضحة =====
+    letters = ["A", "B", "C", "D"]
 
-    if selected is not None and not st.session_state.quiz_answered:
-        st.session_state.quiz_selected = selected
+    for i, opt in enumerate(q["options"]):
+        if st.session_state.quiz_answered:
+            if i == q["answer"]:
+                badge = "✅"
+            elif i == st.session_state.quiz_selected:
+                badge = "❌"
+            else:
+                badge = "⚪"
+        else:
+            if i == st.session_state.quiz_selected:
+                badge = "🟡"
+            else:
+                badge = "⚪"
+
+        if not st.session_state.quiz_answered:
+            if st.button(
+                f"{badge}  {letters[i]}. {opt}",
+                key=f"opt_{idx}_{i}",
+                use_container_width=True,
+            ):
+                st.session_state.quiz_selected = i
+                st.rerun()
+        else:
+            if i == q["answer"]:
+                bg_color = "#E8F5E9"
+                border_color = "#1B4D3E"
+            elif i == st.session_state.quiz_selected:
+                bg_color = "#FFEBEE"
+                border_color = "#C62828"
+            else:
+                bg_color = "#FDFBF7"
+                border_color = "#E8D9B8"
+
+            st.markdown(
+                f"""
+                <div dir="{lang_dir}" style="
+                    background:{bg_color};
+                    border:2px solid {border_color};
+                    border-radius:10px;
+                    padding:14px 18px;
+                    margin-bottom:8px;
+                    font-weight:600;
+                    color:#1B4D3E;
+                    font-size:1rem;
+                    text-align:{'right' if rtl else 'left'};">
+                    {badge}  {letters[i]}. {opt}
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
     # التحقق من الإجابة
     if not st.session_state.quiz_answered:
@@ -1275,7 +1623,7 @@ def render_quiz(t: dict, rtl: bool, lang_dir: str, lang: str):
             st.error(ql["wrong"])
             st.info(
                 f"**{ql['correct_answer']}**: "
-                f"{chr(65 + q['answer'])}. {q['options'][q['answer']]}"
+                f"{letters[q['answer']]}. {q['options'][q['answer']]}"
             )
 
         st.markdown(
@@ -1305,7 +1653,30 @@ def render_quiz(t: dict, rtl: bool, lang_dir: str, lang: str):
 
 
 # ---------------------------------------------------------------------------
-# 13. MAIN APP
+# 15. MENU EXPANDER — CLOSE ON NAVIGATE
+# ---------------------------------------------------------------------------
+def close_menu_js():
+    """يغلق القائمة المنسدلة بعد التنقل."""
+    st.markdown(
+        """
+        <script>
+        (function() {
+            const closeAll = () => {
+                const doc = window.parent.document;
+                doc.querySelectorAll('[data-testid="stExpander"] details[open]').forEach(d => {
+                    d.removeAttribute('open');
+                });
+            };
+            setTimeout(closeAll, 200);
+        })();
+        </script>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+# ---------------------------------------------------------------------------
+# 16. MAIN APP
 # ---------------------------------------------------------------------------
 def main():
     t = UI_TEXT[st.session_state.lang]
@@ -1314,9 +1685,13 @@ def main():
 
     inject_css(lang_dir, rtl)
 
+    # إذا كان المستخدم قد طلب إغلاق القائمة
+    if st.session_state.close_menu:
+        close_menu_js()
+        st.session_state.close_menu = False
+
     # ===== القائمة المنسدلة =====
     with st.expander(t["menu"], expanded=False):
-        # الترحيب
         st.markdown(
             f"""
             <div style="background:#F5F2EB; border:2px solid #1B4D3E;
@@ -1330,16 +1705,18 @@ def main():
             unsafe_allow_html=True,
         )
 
-        # ===== التنقل بين الصفحات =====
-        ql = QUIZ_LABELS.get(st.session_state.lang, QUIZ_LABELS["en"])
+        # أزرار التنقل
+        ql = QUIZ_LABELS.get(st.session_state.lang, QUIZ_LABELS["ar"])
         nav_col1, nav_col2 = st.columns(2)
         with nav_col1:
             if st.button(ql["page_home"], key="nav_home", use_container_width=True):
                 st.session_state.current_page = "home"
+                st.session_state.close_menu = True
                 st.rerun()
         with nav_col2:
             if st.button(ql["page_quiz"], key="nav_quiz", use_container_width=True):
                 st.session_state.current_page = "quiz"
+                st.session_state.close_menu = True
                 st.rerun()
 
         st.markdown(
@@ -1371,7 +1748,6 @@ def main():
             unsafe_allow_html=True,
         )
 
-        # عن الموقع
         st.markdown(
             f"<h4 style='color:#1B4D3E; font-family:Amiri, serif; font-size:1.05rem; margin-bottom:6px;'>{t['about_title']}</h4>",
             unsafe_allow_html=True,
@@ -1397,7 +1773,7 @@ def main():
         unsafe_allow_html=True,
     )
 
-    # ===== عرض الصفحة حسب الاختيار =====
+    # ===== عرض الصفحة =====
     if st.session_state.current_page == "quiz":
         render_quiz(t, rtl, lang_dir, st.session_state.lang)
         return
