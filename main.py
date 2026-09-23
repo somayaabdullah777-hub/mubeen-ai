@@ -1,8 +1,9 @@
 """
 Mubeen AI (مُبين AI) — Smart platform for the Prophetic Seerah in world languages.
-Gemini + Groq — Smooth, fast, and reliable UI.
+Smooth expander menu at the top — clean textual branding inside the menu.
 """
 
+import base64
 import os
 from typing import Optional
 
@@ -12,15 +13,37 @@ import streamlit as st
 # ---------------------------------------------------------------------------
 # 1. PAGE CONFIG
 # ---------------------------------------------------------------------------
+def _load_favicon():
+    for path in ["assets/logo_favicon.png", "assets/logo.png"]:
+        try:
+            with open(path, "rb") as f:
+                return f.read()
+        except Exception:
+            continue
+    return "🕌"
+
+
 st.set_page_config(
     page_title="Mubeen AI | مُبين AI",
-    page_icon="🕌",
+    page_icon=_load_favicon(),
     layout="wide",
     initial_sidebar_state="collapsed",
 )
 
 # ---------------------------------------------------------------------------
-# 2. LOCATIONS DATABASE
+# 2. LOGO LOADER (for banner only)
+# ---------------------------------------------------------------------------
+@st.cache_data(show_spinner=False)
+def get_logo_base64(path: str = "assets/logo.png") -> str:
+    try:
+        with open(path, "rb") as f:
+            return base64.b64encode(f.read()).decode()
+    except Exception:
+        return ""
+
+
+# ---------------------------------------------------------------------------
+# 3. LOCATIONS DATABASE
 # ---------------------------------------------------------------------------
 LOCATIONS = [
     {"key": "makkah", "name": {"ar": "مكة المكرمة", "en": "Makkah", "ur": "مکہ مکرمہ",
@@ -287,7 +310,7 @@ LOCATIONS = [
 ]
 
 # ---------------------------------------------------------------------------
-# 3. TRANSLATIONS — مع النصوص المحدثة
+# 4. TRANSLATIONS
 # ---------------------------------------------------------------------------
 UI_TEXT = {
     "ar": {"app_name": "مُبين AI",
@@ -303,8 +326,7 @@ UI_TEXT = {
            "about_text": "موقع يعتمد على كتاب «الرحيق المختوم» للشيخ صفي الرحمن المباركفوري، ويقدم تجربة تفاعلية لاستكشاف أحداث السيرة النبوية بلغات متعددة.",
            "events_hint": "اختر حدثاً من القائمة لقراءة نبذة عنه، أو اسأل مُبين AI مباشرة.",
            "suggestions": "💡 اقتراحات سريعة",
-           "menu": "القائمة",
-           "close_menu": "إغلاق",
+           "menu": "☰ القائمة",
            "rtl": True, "dir": "rtl"},
     "en": {"app_name": "Mubeen AI",
            "tagline": "A smart platform serving the Prophetic Seerah in world languages",
@@ -319,8 +341,7 @@ UI_TEXT = {
            "about_text": "A site grounded in 'The Sealed Nectar' by Safiur Rahman Mubarakpuri, offering an interactive experience to explore the events of the Prophetic Seerah in multiple languages.",
            "events_hint": "Select an event to read an excerpt, or ask Mubeen AI directly.",
            "suggestions": "💡 Quick prompts",
-           "menu": "Menu",
-           "close_menu": "Close",
+           "menu": "☰ Menu",
            "rtl": False, "dir": "ltr"},
     "ur": {"app_name": "مبین AI",
            "tagline": "عالمی زبانوں میں سیرت نبوی کی خدمت کرنے والا ذہین پلیٹ فارم",
@@ -335,8 +356,7 @@ UI_TEXT = {
            "about_text": "یہ سائٹ شیخ صفی الرحمن مبارکپوری کی کتاب «الرحيق المختوم» پر مبنی ہے، اور کثیر زبانوں میں سیرت نبوی کے واقعات کو دریافت کرنے کا ایک تفاعلی تجربہ پیش کرتی ہے۔",
            "events_hint": "کوئی واقعہ منتخب کریں یا مبین AI سے براہِ راست پوچھیں۔",
            "suggestions": "💡 فوری تجاویز",
-           "menu": "مینو",
-           "close_menu": "بند کریں",
+           "menu": "☰ مینو",
            "rtl": True, "dir": "rtl"},
     "id": {"app_name": "Mubeen AI",
            "tagline": "Platform cerdas yang melayani Sirah Nabawiyah dalam bahasa dunia",
@@ -351,8 +371,7 @@ UI_TEXT = {
            "about_text": "Situs yang bersumber dari 'The Sealed Nectar' karya Safiur Rahman Mubarakpuri, menawarkan pengalaman interaktif untuk menjelajahi peristiwa Sirah Nabawiyah dalam berbagai bahasa.",
            "events_hint": "Pilih peristiwa atau tanya Mubeen AI langsung.",
            "suggestions": "💡 Saran cepat",
-           "menu": "Menu",
-           "close_menu": "Tutup",
+           "menu": "☰ Menu",
            "rtl": False, "dir": "ltr"},
     "tr": {"app_name": "Mubeen AI",
            "tagline": "Siyer-i Nebi'ye dünya dillerinde hizmet eden akıllı platform",
@@ -367,8 +386,7 @@ UI_TEXT = {
            "about_text": "Safiur Rahman Mubarakpuri'nin 'The Sealed Nectar' eserine dayanan, Siyer-i Nebi olaylarını birden çok dilde keşfetmek için etkileşimli deneyim sunan bir site.",
            "events_hint": "Bir olay seçin veya Mubeen AI'ya sorun.",
            "suggestions": "💡 Hızlı öneriler",
-           "menu": "Menü",
-           "close_menu": "Kapat",
+           "menu": "☰ Menü",
            "rtl": False, "dir": "ltr"},
     "fr": {"app_name": "Mubeen AI",
            "tagline": "Plateforme intelligente au service de la Sîra dans les langues du monde",
@@ -383,8 +401,7 @@ UI_TEXT = {
            "about_text": "Un site basé sur 'The Sealed Nectar' de Safiur Rahman Mubarakpuri, offrant une expérience interactive pour explorer les événements de la Sîra en plusieurs langues.",
            "events_hint": "Sélectionnez un événement ou demandez à Mubeen AI.",
            "suggestions": "💡 Suggestions rapides",
-           "menu": "Menu",
-           "close_menu": "Fermer",
+           "menu": "☰ Menu",
            "rtl": False, "dir": "ltr"},
     "es": {"app_name": "Mubeen AI",
            "tagline": "Plataforma inteligente al servicio de la Sira en los idiomas del mundo",
@@ -399,8 +416,7 @@ UI_TEXT = {
            "about_text": "Un sitio basado en 'The Sealed Nectar' de Safiur Rahman Mubarakpuri, que ofrece una experiencia interactiva para explorar los eventos de la Sira en varios idiomas.",
            "events_hint": "Selecciona un evento o pregunta a Mubeen AI.",
            "suggestions": "💡 Sugerencias rápidas",
-           "menu": "Menú",
-           "close_menu": "Cerrar",
+           "menu": "☰ Menú",
            "rtl": False, "dir": "ltr"},
     "ru": {"app_name": "Mubeen AI",
            "tagline": "Умная платформа, служащая Сире на языках мира",
@@ -415,8 +431,7 @@ UI_TEXT = {
            "about_text": "Сайт основан на книге 'The Sealed Nectar' Сафиура Рахмана Мубаракпури и предлагает интерактивный опыт изучения событий Сиры на разных языках.",
            "events_hint": "Выберите событие или спросите Mubeen AI.",
            "suggestions": "💡 Быстрые подсказки",
-           "menu": "Меню",
-           "close_menu": "Закрыть",
+           "menu": "☰ Меню",
            "rtl": False, "dir": "ltr"},
     "zh": {"app_name": "Mubeen AI",
            "tagline": "以世界多种语言服务先知传记的智能平台",
@@ -431,8 +446,7 @@ UI_TEXT = {
            "about_text": "本站基于 Safiur Rahman Mubarakpuri 的《The Sealed Nectar》，提供多语言互动体验，探索先知传记的事件。",
            "events_hint": "选择事件或直接询问 Mubeen AI。",
            "suggestions": "💡 快速提示",
-           "menu": "菜单",
-           "close_menu": "关闭",
+           "menu": "☰ 菜单",
            "rtl": False, "dir": "ltr"},
     "hi": {"app_name": "Mubeen AI",
            "tagline": "विश्व की भाषाओं में सीरत की सेवा करने वाला स्मार्ट प्लेटफ़ॉर्म",
@@ -447,8 +461,7 @@ UI_TEXT = {
            "about_text": "यह साइट सफ़ीउर रहमान मुबारकपुरी की 'The Sealed Nectar' पर आधारित है, और कई भाषाओं में सीरत की घटनाओं को जानने का इंटरैक्टिव अनुभव प्रदान करती है।",
            "events_hint": "कोई घटना चुनें या Mubeen AI से पूछें।",
            "suggestions": "💡 त्वरित सुझाव",
-           "menu": "मेनू",
-           "close_menu": "बंद करें",
+           "menu": "☰ मेनू",
            "rtl": False, "dir": "ltr"},
 }
 
@@ -499,7 +512,7 @@ SUGGESTIONS = {
 }
 
 # ---------------------------------------------------------------------------
-# 4. SESSION STATE
+# 5. SESSION STATE
 # ---------------------------------------------------------------------------
 if "lang" not in st.session_state:
     st.session_state.lang = "ar"
@@ -509,11 +522,9 @@ if "selected_key" not in st.session_state:
     st.session_state.selected_key = LOCATIONS[0]["key"]
 if "pending_prompt" not in st.session_state:
     st.session_state.pending_prompt = None
-if "menu_open" not in st.session_state:
-    st.session_state.menu_open = False
 
 # ---------------------------------------------------------------------------
-# 5. HELPERS
+# 6. HELPERS
 # ---------------------------------------------------------------------------
 def location_name(loc: dict, lang: str) -> str:
     return loc["name"].get(lang, loc["name"]["en"])
@@ -541,7 +552,7 @@ def _get_secret(name: str) -> Optional[str]:
 
 
 # ---------------------------------------------------------------------------
-# 6. AI — Gemini + Groq fallback
+# 7. AI
 # ---------------------------------------------------------------------------
 @st.cache_resource(show_spinner=False)
 def get_gemini_client():
@@ -644,7 +655,7 @@ def call_ai(prompt: str, system_instruction: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# 7. SYSTEM INSTRUCTION
+# 8. SYSTEM INSTRUCTION
 # ---------------------------------------------------------------------------
 def build_system_instruction(lang_code: str) -> str:
     target_lang = LANG_NAMES_FOR_PROMPT.get(lang_code, "Arabic (العربية)")
@@ -688,7 +699,7 @@ def build_user_prompt(lang_code: str, question: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# 8. CSS
+# 9. CSS
 # ---------------------------------------------------------------------------
 def inject_css(lang_dir: str, rtl: bool):
     align = "right" if rtl else "left"
@@ -717,29 +728,75 @@ def inject_css(lang_dir: str, rtl: bool):
             font-family: 'Cairo', 'Amiri', sans-serif !important;
         }}
 
+        /* إخفاء الشريط الجانبي والهيدر */
         section[data-testid="stSidebar"] {{
             display: none !important;
         }}
-
+        header[data-testid="stHeader"] {{
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+        }}
+        header[data-testid="stHeader"] * {{
+            display: none !important;
+            visibility: hidden !important;
+        }}
         [data-testid="stSidebarCollapsedControl"],
         [data-testid="collapsedControl"],
         [data-testid="stSidebarCollapseButton"] {{
             display: none !important;
         }}
-
         #MainMenu, footer {{ visibility: hidden; }}
         [data-testid="stDecoration"], [data-testid="stStatusWidget"] {{
             display: none !important;
         }}
-        header[data-testid="stHeader"] {{
-            background: transparent !important;
-            height: 0 !important;
-        }}
-        header[data-testid="stHeader"] * {{
-            font-size: 0 !important;
-            visibility: hidden !important;
+
+        /* =========================================================
+           st.expander — القائمة المنسدلة
+           ========================================================= */
+        div[data-testid="stExpander"] {{
+            border: 2px solid #1B4D3E !important;
+            border-radius: 14px !important;
+            background-color: #FFFFFF !important;
+            margin-bottom: 18px !important;
+            box-shadow: 0 6px 20px rgba(27, 77, 62, 0.12) !important;
+            overflow: hidden !important;
         }}
 
+        div[data-testid="stExpander"] summary {{
+            background-color: #1B4D3E !important;
+            color: #FFFFFF !important;
+            font-weight: 700 !important;
+            font-size: 1.1rem !important;
+            padding: 16px 22px !important;
+            cursor: pointer !important;
+            border-radius: 0 !important;
+        }}
+
+        div[data-testid="stExpander"] summary:hover {{
+            background-color: #143a2e !important;
+        }}
+
+        div[data-testid="stExpander"] summary p {{
+            color: #FFFFFF !important;
+            font-weight: 700 !important;
+            margin: 0 !important;
+            font-size: 1.1rem !important;
+            letter-spacing: 0.3px !important;
+        }}
+
+        div[data-testid="stExpander"] svg {{
+            fill: #FFFFFF !important;
+            color: #FFFFFF !important;
+        }}
+
+        div[data-testid="stExpander"] > div {{
+            padding: 20px !important;
+        }}
+
+        /* =========================================================
+           البطاقات
+           ========================================================= */
         .mubeen-card {{
             background: #FFFFFF;
             border: 1px solid #C5A059;
@@ -822,22 +879,20 @@ def inject_css(lang_dir: str, rtl: bool):
             background: linear-gradient(90deg, #1B4D3E 0%, #2c6a58 100%);
             border: 2px solid #C5A059;
             border-radius: 14px;
-            padding: 18px 22px;
-            color: #FFFFFF;
+            padding: 24px 22px;
             margin-bottom: 18px;
             box-shadow: 0 10px 26px rgba(27, 77, 62, 0.25);
-            text-align: {align};
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 180px;
         }}
-        .mubeen-header h1 {{
-            color: #FFFFFF !important;
-            margin: 0;
-            font-family: 'Amiri', serif;
-            font-size: 2rem;
-        }}
-        .mubeen-header p {{
-            color: #F3EBD8;
-            margin: 6px 0 0 0;
-            font-size: 0.95rem;
+
+        .mubeen-header .mubeen-logo-banner {{
+            height: 140px;
+            width: auto;
+            max-width: 100%;
+            filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.35));
         }}
 
         .mubeen-hint {{
@@ -851,8 +906,8 @@ def inject_css(lang_dir: str, rtl: bool):
             text-align: {align};
         }}
 
-        /* أزرار */
-        .stButton > button {{
+        .stFormSubmitButton > button,
+        div[data-testid="stButton"] button {{
             background-color: #1B4D3E !important;
             color: #FFFFFF !important;
             border: 1px solid #C5A059 !important;
@@ -861,16 +916,9 @@ def inject_css(lang_dir: str, rtl: bool):
             padding: 0.6rem 1rem !important;
             width: 100%;
         }}
-        .stButton > button:hover {{
+        .stFormSubmitButton > button:hover,
+        div[data-testid="stButton"] button:hover {{
             background-color: #143a2e !important;
-        }}
-        .stFormSubmitButton > button {{
-            background-color: #1B4D3E !important;
-            color: #FFFFFF !important;
-            border: 1px solid #C5A059 !important;
-            border-radius: 10px !important;
-            font-weight: 700 !important;
-            padding: 0.6rem 1rem !important;
         }}
 
         .stTextInput input, .stTextArea textarea,
@@ -880,20 +928,18 @@ def inject_css(lang_dir: str, rtl: bool):
             background-color: #FFFFFF !important;
         }}
 
-        /* Checkbox تنسيق أنيق */
-        div[data-testid="stCheckbox"] label {{
-            color: #1B4D3E !important;
-            font-weight: 700 !important;
-            font-size: 1rem !important;
-        }}
-
         @media (max-width: 900px) {{
             .block-container {{
                 padding-left: 0.7rem !important;
                 padding-right: 0.7rem !important;
             }}
-            .mubeen-header h1 {{ font-size: 1.5rem !important; }}
-            .mubeen-header p {{ font-size: 0.82rem !important; }}
+            .mubeen-header {{
+                padding: 18px 14px;
+                min-height: 130px;
+            }}
+            .mubeen-header .mubeen-logo-banner {{
+                height: 100px;
+            }}
             h2 {{ font-size: 1.3rem !important; }}
             .mubeen-ai-answer .ai-body {{ font-size: 0.95rem; }}
         }}
@@ -901,78 +947,6 @@ def inject_css(lang_dir: str, rtl: bool):
         """,
         unsafe_allow_html=True,
     )
-
-
-# ---------------------------------------------------------------------------
-# 9. SIDEBAR — باستخدام checkbox (سريع، بدون rerun)
-# ---------------------------------------------------------------------------
-def render_inline_menu(t: dict):
-    """قائمة مدمجة تستخدم checkbox للفتح/الإغلاق السريع (بدون rerun)."""
-
-    # checkbox يعمل بدون st.rerun - سريع جداً
-    menu_open = st.checkbox(
-        f"☰  {t['menu']}" if not st.session_state.menu_open else f"✕  {t['close_menu']}",
-        value=st.session_state.menu_open,
-        key="menu_checkbox",
-    )
-
-    # تحديث الحالة (Streamlit يتعامل مع التغيير تلقائياً)
-    if menu_open != st.session_state.menu_open:
-        st.session_state.menu_open = menu_open
-
-    # إذا القائمة مفتوحة — نعرضها كعمود جانبي
-    if st.session_state.menu_open:
-        col_side, col_main = st.columns([1, 3], gap="large")
-
-        with col_side:
-            st.markdown(
-                f"""
-                <div style="background:#F5F2EB; border:3px solid #1B4D3E;
-                            border-radius:14px; padding:18px 16px; margin-top:12px;
-                            text-align:center;">
-                    <h1 style="color:#1B4D3E; font-family:'Amiri', serif;
-                               margin:0; font-size:1.5rem;">{t['app_name']}</h1>
-                    <p style="color:#C5A059; font-size:0.8rem; margin-top:4px;">{t['tagline']}</p>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-
-            st.markdown(
-                f"<label style='color:#1B4D3E; font-weight:700; font-size:0.95rem; margin-top:14px; display:block;'>{t['select_lang']}</label>",
-                unsafe_allow_html=True,
-            )
-            current_index = list(LANG_LABELS.keys()).index(st.session_state.lang)
-            chosen = st.selectbox(
-                label=t["select_lang"],
-                options=list(LANG_LABELS.keys()),
-                format_func=lambda code: LANG_LABELS[code],
-                index=current_index,
-                label_visibility="collapsed",
-                key="lang_selector",
-            )
-            if chosen != st.session_state.lang:
-                st.session_state.lang = chosen
-                st.session_state.chat_history = []
-                st.rerun()
-
-            st.markdown(
-                "<hr style='border: 1px solid #C5A059; opacity:0.4; margin: 14px 0;'>",
-                unsafe_allow_html=True,
-            )
-
-            st.markdown(
-                f"<h4 style='color:#1B4D3E; font-family:Amiri, serif; font-size:1rem; margin-bottom:6px;'>{t['about_title']}</h4>",
-                unsafe_allow_html=True,
-            )
-            st.markdown(
-                f"<p style='font-size:0.82rem; color:#555; line-height:1.6; margin-top:0;'>{t['about_text']}</p>",
-                unsafe_allow_html=True,
-            )
-
-        return col_main
-
-    return st.container()
 
 
 # ---------------------------------------------------------------------------
@@ -1010,146 +984,199 @@ def main():
     rtl = t["rtl"]
     lang_dir = t["dir"]
 
-    inject_css(lang_dir, rtl)
+    inject_css(lang_dir, rtl)  # ty:ignore[invalid-argument-type]
 
-    main_area = render_inline_menu(t)
-
-    with main_area:
+    # ===== القائمة المنسدلة =====
+    with st.expander(t["menu"], expanded=False):  # ty:ignore[invalid-argument-type]
+        # الترحيب بالاسم - بدون صورة
         st.markdown(
             f"""
-            <div class="mubeen-header" dir="{lang_dir}">
-                <h1>{t['app_name']}</h1>
-                <p>{t['tagline']}</p>
+            <div style="background:#F5F2EB; border:2px solid #1B4D3E;
+                        border-radius:10px; padding:22px 18px; text-align:center;
+                        margin-bottom:14px;">
+                <h1 style="color:#1B4D3E; font-family:'Amiri', serif;
+                           margin:0; font-size:1.7rem; font-weight:700;">{t['app_name']}</h1>
+                <p style="color:#C5A059; font-size:0.9rem; margin-top:8px;">{t['tagline']}</p>
             </div>
             """,
             unsafe_allow_html=True,
         )
 
+        # اختيار اللغة
         st.markdown(
-            f"""<div class="mubeen-hint" dir="{lang_dir}">{t['events_hint']}</div>""",
+            f"<label style='color:#1B4D3E; font-weight:700; font-size:1rem;'>{t['select_lang']}</label>",
             unsafe_allow_html=True,
         )
-
-        st.markdown(
-            f"<h2 style='font-family:Amiri, serif; color:#1B4D3E; text-align:{'right' if rtl else 'left'};'>{t['events_title']}</h2>",
-            unsafe_allow_html=True,
-        )
-
-        event_options = {
-            loc["key"]: f"{i+1}. {location_name(loc, st.session_state.lang)}"
-            for i, loc in enumerate(LOCATIONS)
-        }
-
-        default_index = 0
-        if st.session_state.selected_key in event_options:
-            default_index = list(event_options.keys()).index(st.session_state.selected_key)
-
-        chosen_key = st.selectbox(
-            label=t["select_event"],
-            options=list(event_options.keys()),
-            format_func=lambda k: event_options[k],
-            index=default_index,
-            key="event_selector",
-        )
-        st.session_state.selected_key = chosen_key
-
-        selected = next((loc for loc in LOCATIONS if loc["key"] == chosen_key), None)
-        if selected:
-            title = location_name(selected, st.session_state.lang)
-            subtitle = location_subtitle(selected, st.session_state.lang)
-            context = location_context(selected, st.session_state.lang)
-            st.markdown(
-                f"""
-                <div class="mubeen-card" dir="{lang_dir}" style="border-color:#1B4D3E; margin-top:14px;">
-                    <div class="milestone-title">{title}</div>
-                    <div class="milestone-subtitle">{subtitle}</div>
-                    <div class="milestone-desc">{context}</div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-
-        st.markdown(
-            "<hr style='border:1px solid #C5A059; opacity:0.4; margin-top:20px;'>",
-            unsafe_allow_html=True,
-        )
-
-        st.markdown(
-            f"<h2 style='font-family:Amiri, serif; color:#1B4D3E; text-align:{'right' if rtl else 'left'};'>{t['chat_title']}</h2>",
-            unsafe_allow_html=True,
-        )
-
-        if st.session_state.pending_prompt:
-            prompt_text = st.session_state.pending_prompt
-            st.session_state.pending_prompt = None
-            st.session_state.chat_history.append(
-                {"role": "user", "content": prompt_text}
-            )
-            with st.spinner(t["spinner"]):
-                system_instruction = build_system_instruction(st.session_state.lang)
-                prompt = build_user_prompt(st.session_state.lang, prompt_text)
-                answer = call_ai(prompt, system_instruction)
-            st.session_state.chat_history.append(
-                {"role": "assistant", "content": answer}
-            )
-            st.rerun()
-
-        if st.session_state.chat_history:
-            for msg in st.session_state.chat_history:
-                if msg["role"] == "user":
-                    st.markdown(
-                        f"""
-                        <div class="mubeen-user-msg" dir="{lang_dir}">
-                            👤 {msg['content']}
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
-                else:
-                    formatted = format_answer_markdown(msg["content"])
-                    st.markdown(
-                        f"""
-                        <div class="mubeen-ai-answer" dir="{lang_dir}">
-                            <div class="ai-label">Mubeen AI</div>
-                            <div class="ai-body">{formatted}</div>
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
-
-        with st.form(key="chat_form", clear_on_submit=True):
-            user_input = st.text_input(
-                t["chat_title"],
-                placeholder=t["chat_placeholder"],
-                label_visibility="collapsed",
-            )
-            submitted = st.form_submit_button(t["chat_button"])
-
-        if submitted and user_input.strip():
-            st.session_state.chat_history.append(
-                {"role": "user", "content": user_input.strip()}
-            )
-            with st.spinner(t["spinner"]):
-                system_instruction = build_system_instruction(st.session_state.lang)
-                prompt = build_user_prompt(st.session_state.lang, user_input.strip())
-                answer = call_ai(prompt, system_instruction)
-            st.session_state.chat_history.append(
-                {"role": "assistant", "content": answer}
-            )
+        current_index = list(LANG_LABELS.keys()).index(st.session_state.lang)
+        chosen = st.selectbox(
+            label=t["select_lang"],
+            options=list(LANG_LABELS.keys()),
+            format_func=lambda code: LANG_LABELS[code],
+            index=current_index,
+            label_visibility="collapsed",
+            key="lang_selector",
+        )  # ty:ignore[no-matching-overload]
+        if chosen != st.session_state.lang:
+            st.session_state.lang = chosen
+            st.session_state.chat_history = []
             st.rerun()
 
         st.markdown(
-            f"<p style='color:#666; font-size:0.9rem; text-align:{'right' if rtl else 'left'}; margin-top:18px; margin-bottom:8px;'>{t['suggestions']}</p>",
+            "<hr style='border: 1px solid #C5A059; opacity:0.4; margin: 14px 0;'>",
             unsafe_allow_html=True,
         )
 
-        sugg_list = SUGGESTIONS.get(st.session_state.lang, SUGGESTIONS["en"])
-        cols = st.columns(2)
-        for i, sug in enumerate(sugg_list):
-            with cols[i % 2]:
-                if st.button(sug, key=f"sug_{i}", use_container_width=True):
-                    st.session_state.pending_prompt = sug
-                    st.rerun()
+        # عن الموقع
+        st.markdown(
+            f"<h4 style='color:#1B4D3E; font-family:Amiri, serif; font-size:1.05rem; margin-bottom:6px;'>{t['about_title']}</h4>",
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            f"<p style='font-size:0.9rem; color:#555; line-height:1.75; margin-top:0;'>{t['about_text']}</p>",
+            unsafe_allow_html=True,
+        )
+
+    # ===== البانر الرئيسي - اللوقو =====
+    _logo_b64 = get_logo_base64("assets/logo.png")
+    _logo_banner_html = (
+        f'<img class="mubeen-logo-banner" src="data:image/png;base64,{_logo_b64}" alt="Mubeen AI" />'
+        if _logo_b64 else f'<h1 style="color:#fff; font-size:2rem;">{t["app_name"]}</h1>'
+    )
+
+    st.markdown(
+        f"""
+        <div class="mubeen-header" dir="{lang_dir}">
+            {_logo_banner_html}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        f"""<div class="mubeen-hint" dir="{lang_dir}">{t['events_hint']}</div>""",
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        f"<h2 style='font-family:Amiri, serif; color:#1B4D3E; text-align:{'right' if rtl else 'left'};'>{t['events_title']}</h2>",
+        unsafe_allow_html=True,
+    )
+
+    event_options = {
+        loc["key"]: f"{i+1}. {location_name(loc, st.session_state.lang)}"
+        for i, loc in enumerate(LOCATIONS)
+    }
+
+    default_index = 0
+    if st.session_state.selected_key in event_options:
+        default_index = list(event_options.keys()).index(st.session_state.selected_key)
+
+    chosen_key = st.selectbox(
+        label=t["select_event"],
+        options=list(event_options.keys()),
+        format_func=lambda k: event_options[k],
+        index=default_index,
+        key="event_selector",
+    )  # ty:ignore[no-matching-overload]
+    st.session_state.selected_key = chosen_key
+
+    selected = next((loc for loc in LOCATIONS if loc["key"] == chosen_key), None)
+    if selected:
+        title = location_name(selected, st.session_state.lang)
+        subtitle = location_subtitle(selected, st.session_state.lang)
+        context = location_context(selected, st.session_state.lang)
+        st.markdown(
+            f"""
+            <div class="mubeen-card" dir="{lang_dir}" style="border-color:#1B4D3E; margin-top:14px;">
+                <div class="milestone-title">{title}</div>
+                <div class="milestone-subtitle">{subtitle}</div>
+                <div class="milestone-desc">{context}</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    st.markdown(
+        "<hr style='border:1px solid #C5A059; opacity:0.4; margin-top:20px;'>",
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        f"<h2 style='font-family:Amiri, serif; color:#1B4D3E; text-align:{'right' if rtl else 'left'};'>{t['chat_title']}</h2>",
+        unsafe_allow_html=True,
+    )
+
+    if st.session_state.pending_prompt:
+        prompt_text = st.session_state.pending_prompt
+        st.session_state.pending_prompt = None
+        st.session_state.chat_history.append(
+            {"role": "user", "content": prompt_text}
+        )
+        with st.spinner(t["spinner"]):  # ty:ignore[invalid-argument-type]
+            system_instruction = build_system_instruction(st.session_state.lang)
+            prompt = build_user_prompt(st.session_state.lang, prompt_text)
+            answer = call_ai(prompt, system_instruction)
+        st.session_state.chat_history.append(
+            {"role": "assistant", "content": answer}
+        )
+        st.rerun()
+
+    if st.session_state.chat_history:
+        for msg in st.session_state.chat_history:
+            if msg["role"] == "user":
+                st.markdown(
+                    f"""
+                    <div class="mubeen-user-msg" dir="{lang_dir}">
+                        👤 {msg['content']}
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+            else:
+                formatted = format_answer_markdown(msg["content"])
+                st.markdown(
+                    f"""
+                    <div class="mubeen-ai-answer" dir="{lang_dir}">
+                        <div class="ai-label">Mubeen AI</div>
+                        <div class="ai-body">{formatted}</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+    with st.form(key="chat_form", clear_on_submit=True):
+        user_input = st.text_input(
+            t["chat_title"],
+            placeholder=t["chat_placeholder"],
+            label_visibility="collapsed",
+        )  # ty:ignore[no-matching-overload]
+        submitted = st.form_submit_button(t["chat_button"])  # ty:ignore[invalid-argument-type]
+
+    if submitted and user_input.strip():
+        st.session_state.chat_history.append(
+            {"role": "user", "content": user_input.strip()}
+        )
+        with st.spinner(t["spinner"]):  # ty:ignore[invalid-argument-type]
+            system_instruction = build_system_instruction(st.session_state.lang)
+            prompt = build_user_prompt(st.session_state.lang, user_input.strip())
+            answer = call_ai(prompt, system_instruction)
+        st.session_state.chat_history.append(
+            {"role": "assistant", "content": answer}
+        )
+        st.rerun()
+
+    st.markdown(
+        f"<p style='color:#666; font-size:0.9rem; text-align:{'right' if rtl else 'left'}; margin-top:18px; margin-bottom:8px;'>{t['suggestions']}</p>",
+        unsafe_allow_html=True,
+    )
+
+    sugg_list = SUGGESTIONS.get(st.session_state.lang, SUGGESTIONS["en"])
+    cols = st.columns(2)
+    for i, sug in enumerate(sugg_list):
+        with cols[i % 2]:
+            if st.button(sug, key=f"sug_{i}", use_container_width=True):
+                st.session_state.pending_prompt = sug
+                st.rerun()
 
 
 if __name__ == "__main__":
