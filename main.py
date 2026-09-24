@@ -1870,7 +1870,7 @@ def inject_css(lang_dir, rtl):
         /* Secondary (quiz options) — تباين عالٍ */
         div[data-testid="stButton"] button[kind="secondary"] {{
             background-color: #FFFFFF !important;
-            color: var(--deep-green-dark) !important;
+            color: #FFFFFF !important;
             border: 2px solid var(--matte-gold) !important;
             border-{side_border}: 6px solid var(--deep-green) !important;
             border-radius: 12px !important;
