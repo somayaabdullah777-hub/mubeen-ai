@@ -1197,13 +1197,13 @@ LANG_NAMES_FOR_PROMPT = {
 
 SUGGESTIONS = {
     "ar": ["ما هي فوائد غزوة بدر؟", "ما الدروس المستفادة من صلح الحديبية؟",
-           "ما العبر من غزوة أحد؟", "كيف كانت أخلاق النبي ﷺ مع أهل مكة؟"],
+‎           "ما العبر من غزوة أحد؟", "كيف كانت أخلاق النبي ﷺ مع أهل مكة؟"],
     "en": ["What are the lessons from the Battle of Badr?",
            "What wisdom is found in the Treaty of Hudaybiyyah?",
            "What lessons came from the Battle of Uhud?",
            "How was the Prophet's ﷺ character with the people of Makkah?"],
     "ur": ["غزوۂ بدر کے فوائد کیا ہیں؟", "صلح حدیبیہ سے کیا سبق ملتا ہے؟",
-           "غزوۂ اُحد سے کیا عبرت ہے؟", "نبی ﷺ کا اخلاق اہلِ مکہ کے ساتھ کیسا تھا؟"],
+‎           "غزوۂ اُحد سے کیا عبرت ہے؟", "نبی ﷺ کا اخلاق اہلِ مکہ کے ساتھ کیسا تھا؟"],
     "id": ["Apa pelajaran dari Perang Badar?", "Apa hikmah dari Perjanjian Hudaibiyah?",
            "Apa pelajaran dari Perang Uhud?", "Bagaimana akhlak Nabi ﷺ terhadap penduduk Makkah?"],
     "tr": ["Bedir Savaşı'ndan çıkarılacak dersler nelerdir?",
@@ -1500,30 +1500,30 @@ def build_system_instruction(lang_code):
     target_lang = LANG_NAMES_FOR_PROMPT.get(lang_code, "Arabic (العربية)")
     return f"""أنت "مُبين AI" — مساعد متخصص في السيرة النبوية، ومصدرك الأساسي هو كتاب «الرحيق المختوم» للشيخ صفي الرحمن المباركفوري.
 
-📖 قواعد الدقة:
-1. اعتمد على المعلومات الموثقة من «الرحيق المختوم» وكتب السيرة المعتمدة.
-2. إذا لم تكن المعلومة موجودة، قل بوضوح: "هذه المعلومة ليست في المصدر الذي أعتمد عليه".
-3. لا تخترع أحداثاً أو تواريخ أو أسماء.
+‎📖 قواعد الدقة:
+‎1. اعتمد على المعلومات الموثقة من «الرحيق المختوم» وكتب السيرة المعتمدة.
+‎2. إذا لم تكن المعلومة موجودة، قل بوضوح: "هذه المعلومة ليست في المصدر الذي أعتمد عليه".
+‎3. لا تخترع أحداثاً أو تواريخ أو أسماء.
 
-📝 قواعد التنسيق:
-- ابدأ بجواب مباشر في سطر واحد.
-- استخدم عناوين فرعية بصيغة `**العنوان**`.
-- اترك سطراً فارغاً بين كل فقرة.
+‎📝 قواعد التنسيق:
+‎- ابدأ بجواب مباشر في سطر واحد.
+‎- استخدم عناوين فرعية بصيغة `**العنوان**`.
+‎- اترك سطراً فارغاً بين كل فقرة.
 
-🌍 اللغة: أجب بالكامل بلغة **{target_lang}**.
-🚫 ممنوعات: لا تخترع أحاديث أو أسانيد."""
+‎🌍 اللغة: أجب بالكامل بلغة **{target_lang}**.
+‎🚫 ممنوعات: لا تخترع أحاديث أو أسانيد."""
 
 
 def build_user_prompt(lang_code, question):
     target_lang = LANG_NAMES_FOR_PROMPT.get(lang_code, "Arabic (العربية)")
     return f"""أجب على السؤال التالي باللغة {target_lang} بدقة عالية:
 
-السؤال: {question}
+‎السؤال: {question}
 
-تذكير:
-- ابدأ بجواب مباشر.
-- استخدم عناوين ونقاط منظمة.
-- إذا لم تجد المعلومة، اعترف بذلك بوضوح."""
+‎تذكير:
+‎- ابدأ بجواب مباشر.
+‎- استخدم عناوين ونقاط منظمة.
+‎- إذا لم تجد المعلومة، اعترف بذلك بوضوح."""
 
 # ---------------------------------------------------------------------------
 # 10. CSS — Awwwards-level redesign (colors/fonts locked)
@@ -1535,17 +1535,21 @@ def inject_css(lang_dir, rtl):
     st.markdown(
         f"""
         <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&family=Amiri:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap');
 
         :root {{
-            --deep-green: #1B4D3E;
-            --deep-green-dark: #143a2e;
-            --green-mid: #2c6a58;
-            --matte-gold: #C5A059;
-            --gold-light: #E8D9B8;
-            --gold-dark: #A67C3A;
-            --cream: #FDFBF7;
-            --cream-deep: #F5F2EB;
+            --deep-green: #0F4C3A;
+            --deep-green-dark: #0A3527;
+            --green-mid: #1E6E52;
+            --matte-gold: #C9A227;
+            --gold-light: #EFDFA6;
+            --gold-dark: #8A6914;
+            --gold-soft-bg: #FBF3DC;
+            --cream: #FAF7F0;
+            --cream-deep: #F1EAD8;
+            --marble: #FFFFFF;
+            --text-dark: #20281F;
+            --text-mid: #45514A;
         }}
 
         html, body, [class*="css"], .stApp {{
@@ -1554,8 +1558,8 @@ def inject_css(lang_dir, rtl):
         }}
         .stApp {{
             background-image:
-                radial-gradient(circle at 10% 10%, rgba(197,160,89,0.06) 0%, transparent 40%),
-                radial-gradient(circle at 90% 90%, rgba(27,77,62,0.05) 0%, transparent 40%);
+                radial-gradient(circle at 8% 8%, rgba(201,162,39,0.07) 0%, transparent 38%),
+                radial-gradient(circle at 92% 92%, rgba(15,76,58,0.06) 0%, transparent 38%);
         }}
         .block-container {{
             padding-top: 1rem !important;
@@ -1568,6 +1572,9 @@ def inject_css(lang_dir, rtl):
         }}
         p, span, div, label, li, a, button, input, textarea, select {{
             font-family: 'Cairo', 'Amiri', sans-serif !important;
+        }}
+        p, li {{
+            color: var(--text-dark) !important;
         }}
 
         section[data-testid="stSidebar"] {{ display: none !important; }}
@@ -1589,41 +1596,52 @@ def inject_css(lang_dir, rtl):
             from {{ opacity: 0; transform: translateY(10px); }}
             to   {{ opacity: 1; transform: translateY(0); }}
         }}
-        @keyframes shimmerGold {{
-            0%   {{ background-position: 0% 50%; }}
-            100% {{ background-position: 200% 50%; }}
+        @keyframes glowPulse {{
+            0%, 100% {{ opacity: 0.55; }}
+            50% {{ opacity: 1; }}
         }}
         @keyframes starPulse {{
             0%, 100% {{ transform: scale(1); opacity: 1; }}
             50% {{ transform: scale(1.15); opacity: 0.85; }}
         }}
 
+        /* ===================== Mosaic divider strip (used on cards/hero) ===================== */
+        .mubeen-mosaic-strip {{
+            height: 6px;
+            width: 100%;
+            background: repeating-linear-gradient(
+                45deg,
+                var(--matte-gold) 0px, var(--matte-gold) 8px,
+                var(--deep-green) 8px, var(--deep-green) 16px
+            );
+        }}
+
         /* ===================== Expander / Menu ===================== */
         div[data-testid="stExpander"] {{
             border: 2px solid var(--matte-gold) !important;
             border-radius: 16px !important;
-            background-color: #FFFFFF !important;
+            background-color: var(--marble) !important;
             margin-bottom: 18px !important;
-            box-shadow: 0 8px 30px rgba(27, 77, 62, 0.15) !important;
+            box-shadow: 0 8px 30px rgba(15, 76, 58, 0.18) !important;
             overflow: hidden !important;
             animation: fadeInUp 0.4s ease-out;
         }}
         div[data-testid="stExpander"] summary {{
-            background: linear-gradient(135deg, var(--deep-green) 0%, var(--green-mid) 100%) !important;
+            background: linear-gradient(135deg, var(--deep-green-dark) 0%, var(--deep-green) 55%, var(--green-mid) 100%) !important;
             color: #FFFFFF !important;
             font-weight: 700 !important;
             font-size: 1.1rem !important;
             padding: 16px 22px !important;
             cursor: pointer !important;
-            border-bottom: 2px solid var(--matte-gold) !important;
+            border-bottom: 3px solid var(--matte-gold) !important;
             transition: filter 0.2s ease !important;
         }}
-        div[data-testid="stExpander"] summary:hover {{ filter: brightness(1.08); }}
+        div[data-testid="stExpander"] summary:hover {{ filter: brightness(1.1); }}
         div[data-testid="stExpander"] summary p {{
             color: #FFFFFF !important; font-weight: 700 !important; margin: 0 !important; font-size: 1.1rem !important;
         }}
         div[data-testid="stExpander"] svg {{ fill: var(--gold-light) !important; color: var(--gold-light) !important; }}
-        div[data-testid="stExpander"] > div {{ padding: 20px !important; background: #FFFFFF !important; }}
+        div[data-testid="stExpander"] > div {{ padding: 20px !important; background: var(--marble) !important; }}
 
         div[data-testid="stExpander"] summary span[data-testid*="stIcon"] {{
             font-size: 0 !important; color: transparent !important;
@@ -1631,120 +1649,144 @@ def inject_css(lang_dir, rtl):
         div[data-testid="stExpander"] summary span[data-testid*="stIcon"]::after {{
             content: "▼" !important;
             font-size: 13px !important;
-            color: var(--matte-gold) !important;
+            color: var(--gold-light) !important;
             font-weight: 700 !important;
             display: inline-block !important;
             margin-{('left' if not rtl else 'right')}: 8px !important;
             vertical-align: middle !important;
         }}
 
-        /* ===================== Hero / Banner ===================== */
+        /* ===================== Hero — evokes the Green Dome at dusk ===================== */
         .mubeen-header {{
             position: relative;
-            background: linear-gradient(135deg, var(--deep-green) 0%, var(--green-mid) 50%, var(--deep-green) 100%);
+            background: linear-gradient(180deg, var(--deep-green-dark) 0%, var(--deep-green) 55%, var(--green-mid) 100%);
             border: 2px solid var(--matte-gold);
-            border-radius: 18px;
-            padding: 32px 28px;
-            margin-bottom: 22px;
+            border-radius: 20px;
+            padding: 40px 28px 54px 28px;
+            margin-bottom: 24px;
             box-shadow:
-                0 16px 40px rgba(27, 77, 62, 0.32),
-                inset 0 0 0 1px rgba(232, 217, 184, 0.15);
+                0 18px 44px rgba(10, 53, 39, 0.4),
+                inset 0 0 0 1px rgba(239, 223, 166, 0.18);
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 240px;
+            min-height: 260px;
             overflow: hidden;
+            text-align: center;
         }}
+        /* faint geometric star lattice overlay */
         .mubeen-header::before {{
             content: "";
             position: absolute;
             inset: 0;
-            opacity: 0.08;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23C5A059' stroke-width='1.5'%3E%3Cpath d='M60 10 L96 35 L84 78 L36 78 L24 35 Z'/%3E%3Ccircle cx='60' cy='60' r='46'/%3E%3Cpath d='M60 10 L60 110 M10 60 L110 60'/%3E%3C/g%3E%3C/svg%3E");
-            background-size: 140px 140px;
+            opacity: 0.10;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23EFDFA6' stroke-width='1.4'%3E%3Cpath d='M60 8 L98 34 L84 80 L36 80 L22 34 Z'/%3E%3Ccircle cx='60' cy='60' r='48'/%3E%3Cpath d='M60 8 L60 112 M8 60 L112 60'/%3E%3C/g%3E%3C/svg%3E");
+            background-size: 130px 130px;
             pointer-events: none;
+        }}
+        /* dome + minaret silhouette, gold line-art, glowing softly */
+        .mubeen-header::after {{
+            content: "";
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 260px;
+            height: 96px;
+            opacity: 0.9;
+            animation: glowPulse 4.5s ease-in-out infinite;
+            background-repeat: no-repeat;
+            background-position: bottom center;
+            background-size: contain;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='150' viewBox='0 0 400 150'%3E%3Cg fill='none' stroke='%23C9A227' stroke-width='2.2' stroke-linecap='round'%3E%3Cline x1='40' y1='150' x2='40' y2='55'/%3E%3Crect x='30' y='40' width='20' height='16' rx='2'/%3E%3Ccircle cx='40' cy='34' r='5'/%3E%3Cline x1='360' y1='150' x2='360' y2='55'/%3E%3Crect x='350' y='40' width='20' height='16' rx='2'/%3E%3Ccircle cx='360' cy='34' r='5'/%3E%3Cpath d='M140 150 L140 90 Q140 55 200 55 Q260 55 260 90 L260 150 Z'/%3E%3Cpath d='M170 55 Q200 15 230 55'/%3E%3Ccircle cx='200' cy='18' r='6'/%3E%3Cline x1='200' y1='18' x2='200' y2='4'/%3E%3Cpath d='M60 150 L60 120 L80 120 L80 100 L110 100 L110 150'/%3E%3Cpath d='M290 150 L290 120 L310 120 L310 100 L340 100 L340 150'/%3E%3C/g%3E%3C/svg%3E");
         }}
         .mubeen-header .mubeen-logo-banner {{
             position: relative;
             z-index: 1;
-            height: 186px;
+            height: 150px;
             width: auto;
             max-width: 100%;
-            filter: drop-shadow(0 0 20px rgba(197, 160, 89, 0.45));
+            filter: drop-shadow(0 0 22px rgba(201, 162, 39, 0.5));
             animation: fadeInLogo 0.8s ease-out;
+            margin-bottom: 6px;
         }}
         .mubeen-header .mubeen-app-title {{
             position: relative;
             z-index: 1;
             font-family: 'Amiri', serif;
-            font-size: 2.1rem;
+            font-size: 2.15rem;
             font-weight: 700;
-            background: linear-gradient(90deg, var(--matte-gold), var(--gold-light), var(--matte-gold));
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: shimmerGold 4s linear infinite;
+            color: #FFFFFF;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.35);
+            margin: 4px 0 2px 0;
+        }}
+        .mubeen-header .mubeen-app-rule {{
+            position: relative;
+            z-index: 1;
+            width: 130px;
+            height: 3px;
+            margin: 8px auto 4px auto;
+            background: linear-gradient(90deg, transparent, var(--matte-gold), transparent);
+            border-radius: 2px;
+        }}
+        .mubeen-header .mubeen-app-tagline {{
+            position: relative;
+            z-index: 1;
+            color: var(--gold-light);
+            font-size: 0.98rem;
+            font-weight: 600;
+            letter-spacing: 0.2px;
         }}
 
         /* ===================== Hint bar ===================== */
         .mubeen-hint {{
-            background: rgba(255,255,255,0.85);
-            backdrop-filter: blur(8px);
+            background: var(--marble);
             border: 1px solid var(--matte-gold);
             border-radius: 12px;
             padding: 10px 16px;
             margin-bottom: 16px;
-            color: #666;
-            font-size: 0.9rem;
+            color: var(--text-mid) !important;
+            font-size: 0.92rem;
+            font-weight: 600;
         }}
+        .mubeen-hint * {{ color: var(--text-mid) !important; }}
 
-        /* ===================== Event / Milestone Cards ===================== */
+        /* ===================== Event / Milestone Cards — mihrab-arch style ===================== */
         .mubeen-card {{
             position: relative;
-            background: rgba(255, 255, 255, 0.88);
-            backdrop-filter: blur(10px);
-            border: 2px solid transparent;
-            background-image:
-                linear-gradient(#fff, #fff),
-                linear-gradient(135deg, var(--matte-gold), var(--gold-light), var(--matte-gold));
-            background-origin: border-box;
-            background-clip: padding-box, border-box;
-            border-radius: 14px;
-            padding: 18px 20px 18px 26px;
-            margin-bottom: 14px;
-            box-shadow: 0 6px 20px rgba(197, 160, 89, 0.14);
+            background: var(--marble);
+            border: 2px solid var(--matte-gold);
+            border-radius: 48px 48px 14px 14px;
+            padding: 0 0 18px 0;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 24px rgba(201, 160, 39, 0.16);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             animation: fadeInUp 0.4s ease-out;
-        }}
-        .mubeen-card::before {{
-            content: "";
-            position: absolute;
-            top: 0; bottom: 0;
-            {side_border}: 0;
-            width: 5px;
-            border-radius: 14px 0 0 14px;
-            background: linear-gradient(180deg, var(--matte-gold), var(--gold-dark));
+            overflow: hidden;
         }}
         .mubeen-card:hover {{
             transform: translateY(-4px);
-            box-shadow: 0 14px 34px rgba(197, 160, 89, 0.28);
+            box-shadow: 0 16px 36px rgba(15, 76, 58, 0.22);
+        }}
+        .mubeen-card .milestone-body {{
+            padding: 16px 24px 0 24px;
         }}
         .mubeen-card .milestone-title {{
-            color: var(--deep-green);
+            color: var(--deep-green) !important;
             font-family: 'Amiri', serif;
-            font-size: 1.32rem;
+            font-size: 1.38rem;
             font-weight: 700;
         }}
         .mubeen-card .milestone-subtitle {{
-            color: var(--matte-gold);
-            font-size: 0.95rem;
-            margin-top: 4px;
-            font-weight: 600;
+            color: var(--gold-dark) !important;
+            font-size: 0.97rem;
+            margin-top: 5px;
+            font-weight: 700;
         }}
         .mubeen-card .milestone-desc {{
-            color: #2a2a2a;
-            font-size: 1rem;
+            color: var(--text-dark) !important;
+            font-size: 1.02rem;
             margin-top: 12px;
             line-height: 2;
         }}
@@ -1758,27 +1800,26 @@ def inject_css(lang_dir, rtl):
             border-radius: 14px;
             padding: 12px 18px;
             margin: 10px 0;
-            color: var(--deep-green);
-            font-weight: 600;
+            color: var(--deep-green) !important;
+            font-weight: 700;
             font-size: 1rem;
             animation: fadeInUp 0.35s ease-out;
         }}
+        .mubeen-user-msg * {{ color: var(--deep-green) !important; }}
         .mubeen-ai-answer {{
             position: relative;
-            background: linear-gradient(135deg, #FFFFFF 0%, #FBF7EC 100%);
+            background: var(--marble);
             border: 2px solid var(--matte-gold);
             border-{side_border}: 6px solid var(--deep-green);
             border-radius: 14px;
             padding: 18px 22px;
             margin: 10px 0 20px 0;
-            box-shadow:
-                inset 0 1px 3px rgba(255,255,255,0.8),
-                0 8px 24px rgba(197, 160, 89, 0.18);
+            box-shadow: 0 8px 24px rgba(201, 160, 39, 0.16);
             animation: fadeInUp 0.4s ease-out;
         }}
         .mubeen-ai-answer .ai-label {{
-            color: var(--deep-green);
-            font-weight: 700;
+            color: var(--deep-green) !important;
+            font-weight: 800;
             font-size: 1rem;
             display: inline-block;
             margin-bottom: 12px;
@@ -1787,41 +1828,41 @@ def inject_css(lang_dir, rtl):
         }}
         .mubeen-ai-answer .ai-label::before {{ content: "🕌 "; }}
         .mubeen-ai-answer .ai-body {{
-            color: #1a1a1a;
-            font-size: 1.02rem;
-            line-height: 2.1;
+            color: var(--text-dark) !important;
+            font-size: 1.03rem;
+            line-height: 2.15;
         }}
         .mubeen-ai-answer .ai-body strong {{
-            color: var(--deep-green);
-            font-weight: 700;
+            color: var(--deep-green) !important;
+            font-weight: 800;
             font-size: 1.05rem;
         }}
 
         /* ===================== Buttons ===================== */
         .stFormSubmitButton > button,
         div[data-testid="stButton"] button {{
-            background: linear-gradient(135deg, var(--deep-green) 0%, var(--green-mid) 100%) !important;
+            background: linear-gradient(135deg, var(--deep-green-dark) 0%, var(--deep-green) 60%, var(--green-mid) 100%) !important;
             color: #FFFFFF !important;
-            border: 1px solid var(--matte-gold) !important;
+            border: 1.5px solid var(--matte-gold) !important;
             border-radius: 10px !important;
             font-weight: 700 !important;
-            padding: 0.6rem 1rem !important;
+            padding: 0.65rem 1rem !important;
             width: 100%;
-            box-shadow: 0 4px 12px rgba(27, 77, 62, 0.2) !important;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease !important;
+            box-shadow: 0 4px 12px rgba(15, 76, 58, 0.22) !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease !important;
         }}
         .stFormSubmitButton > button:hover,
         div[data-testid="stButton"] button:hover {{
-            background: linear-gradient(135deg, var(--deep-green-dark) 0%, var(--deep-green) 100%) !important;
+            filter: brightness(1.12);
             transform: translateY(-2px);
-            box-shadow: 0 8px 22px rgba(197, 160, 89, 0.35) !important;
+            box-shadow: 0 8px 22px rgba(201, 162, 39, 0.38) !important;
         }}
         .stFormSubmitButton > button:active,
         div[data-testid="stButton"] button:active {{ transform: scale(0.98); }}
 
         /* Secondary (quiz options) */
         div[data-testid="stButton"] button[kind="secondary"] {{
-            background-color: var(--cream) !important;
+            background-color: var(--marble) !important;
             color: var(--deep-green) !important;
             border: 2px solid var(--gold-light) !important;
             border-{side_border}: 5px solid var(--matte-gold) !important;
@@ -1835,7 +1876,7 @@ def inject_css(lang_dir, rtl):
             transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease !important;
         }}
         div[data-testid="stButton"] button[kind="secondary"]:hover {{
-            background-color: var(--cream-deep) !important;
+            background-color: var(--gold-soft-bg) !important;
             border-color: var(--matte-gold) !important;
             transform: translateX({'3px' if rtl else '-3px'});
         }}
@@ -1845,17 +1886,17 @@ def inject_css(lang_dir, rtl):
             position: fixed !important;
             bottom: 0 !important; left: 0 !important; right: 0 !important;
             z-index: 999999 !important;
-            background: linear-gradient(180deg, rgba(253, 251, 247, 0.5) 0%, rgba(253,251,247,0.96) 45%) !important;
+            background: linear-gradient(180deg, rgba(250, 247, 240, 0.5) 0%, rgba(250,247,240,0.97) 45%) !important;
             padding: 12px 16px 16px 16px !important;
             border-top: 2px solid var(--matte-gold) !important;
-            box-shadow: 0 -6px 24px rgba(197, 160, 89, 0.18) !important;
+            box-shadow: 0 -6px 24px rgba(201, 162, 39, 0.2) !important;
             backdrop-filter: blur(15px) !important;
         }}
         div[data-testid="stChatInput"] textarea {{
-            background-color: rgba(255,255,255,0.9) !important;
+            background-color: var(--marble) !important;
             border: 2px solid var(--matte-gold) !important;
             border-radius: 12px !important;
-            color: var(--deep-green) !important;
+            color: var(--text-dark) !important;
             font-size: 16px !important;
             padding: 14px 16px !important;
             min-height: 52px !important;
@@ -1865,10 +1906,10 @@ def inject_css(lang_dir, rtl):
         }}
         div[data-testid="stChatInput"] textarea:focus {{
             border-color: var(--deep-green) !important;
-            box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.2), 0 4px 20px rgba(197, 160, 89, 0.15) !important;
+            box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.22), 0 4px 20px rgba(201, 162, 39, 0.16) !important;
             outline: none !important;
         }}
-        div[data-testid="stChatInput"] textarea::placeholder {{ color: #999 !important; opacity: 1 !important; }}
+        div[data-testid="stChatInput"] textarea::placeholder {{ color: #7a7a7a !important; opacity: 1 !important; }}
         div[data-testid="stChatInput"] button {{
             background: linear-gradient(135deg, var(--deep-green) 0%, var(--green-mid) 100%) !important;
             color: #FFFFFF !important;
@@ -1876,7 +1917,7 @@ def inject_css(lang_dir, rtl):
             border-radius: 10px !important;
             transition: filter 0.2s ease !important;
         }}
-        div[data-testid="stChatInput"] button:hover {{ filter: brightness(1.1); }}
+        div[data-testid="stChatInput"] button:hover {{ filter: brightness(1.12); }}
         div[data-testid="stChatInput"] button svg {{ fill: #FFFFFF !important; color: #FFFFFF !important; }}
 
         /* ===================== Inputs ===================== */
@@ -1884,10 +1925,12 @@ def inject_css(lang_dir, rtl):
         .stSelectbox div[data-baseweb="select"] > div {{
             border: 1px solid var(--matte-gold) !important;
             border-radius: 10px !important;
-            background-color: #FFFFFF !important;
-            color: var(--deep-green) !important;
+            background-color: var(--marble) !important;
+            color: var(--text-dark) !important;
             font-size: 16px !important;
+            font-weight: 600 !important;
         }}
+        .stSelectbox label, .stSelectbox p {{ color: var(--deep-green) !important; font-weight: 700 !important; }}
 
         /* ===================== Quiz progress bar ===================== */
         .mubeen-progress-track {{
@@ -1915,10 +1958,12 @@ def inject_css(lang_dir, rtl):
                 padding-right: 0.7rem !important;
                 padding-bottom: 7rem !important;
             }}
-            .mubeen-header {{ padding: 22px 16px; min-height: 180px; }}
-            .mubeen-header .mubeen-logo-banner {{ height: 133px; }}
+            .mubeen-header {{ padding: 26px 16px 46px 16px; min-height: 200px; }}
+            .mubeen-header .mubeen-logo-banner {{ height: 110px; }}
+            .mubeen-header .mubeen-app-title {{ font-size: 1.6rem; }}
+            .mubeen-header::after {{ width: 190px; height: 70px; }}
             h2 {{ font-size: 1.3rem !important; }}
-            .mubeen-ai-answer .ai-body {{ font-size: 0.95rem; }}
+            .mubeen-ai-answer .ai-body {{ font-size: 0.97rem; }}
             div[data-testid="stChatInput"] {{ padding: 10px 12px 14px 12px !important; }}
             div[data-testid="stChatInput"] textarea {{
                 font-size: 16px !important; min-height: 50px !important; padding: 12px 14px !important;
@@ -1928,6 +1973,7 @@ def inject_css(lang_dir, rtl):
         """,
         unsafe_allow_html=True,
     )
+
 
 # ---------------------------------------------------------------------------
 # 11. Markdown Formatter
@@ -1975,10 +2021,10 @@ def render_quiz(t, rtl, lang_dir, lang):
     if not st.session_state.quiz_started and not st.session_state.quiz_finished:
         st.markdown(
             f"""
-            <div class="mubeen-card" dir="{lang_dir}" style="border-color:#1B4D3E; text-align:center; padding:30px;">
+            <div class="mubeen-card" dir="{lang_dir}" style="border-color:#0F4C3A; text-align:center; padding:34px 30px;">
                 <div style="font-size:3rem; margin-bottom:14px;">📝</div>
-                <h2 style="color:#1B4D3E; font-family:'Amiri', serif; margin:8px 0;">{ql['quiz_title']}</h2>
-                <p style="color:#555; font-size:1rem; line-height:1.8; margin-top:14px;">{ql['quiz_intro']}</p>
+                <h2 style="color:#0F4C3A; font-family:'Amiri', serif; margin:8px 0;">{ql['quiz_title']}</h2>
+                <p style="color:#20281F; font-weight:600; font-size:1.02rem; line-height:1.9; margin-top:14px;">{ql['quiz_intro']}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -2007,24 +2053,24 @@ def render_quiz(t, rtl, lang_dir, lang):
         elif percentage >= 70:
             feedback = ql["very_good"]; color = "#2c6a58"; emoji = "🌟"
         elif percentage >= 50:
-            feedback = ql["good"]; color = "#C5A059"; emoji = "👍"
+            feedback = ql["good"]; color = "#8A6914"; emoji = "👍"
         else:
-            feedback = ql["try_again"]; color = "#8B4513"; emoji = "📚"
+            feedback = ql["try_again"]; color = "#7A3B12"; emoji = "📚"
 
         st.markdown(
             f"""
             <div class="mubeen-card" dir="{lang_dir}" style="border-color:{color};
-                        text-align:center; padding:30px; margin-top:20px;">
+                        text-align:center; padding:34px 30px; margin-top:20px;">
                 <div class="mubeen-score-star" style="font-size:4rem; margin-bottom:10px;">{emoji}</div>
                 <h2 style="color:{color}; font-family:'Amiri', serif;
                            margin:8px 0; font-size:1.8rem;">{ql['your_score']}</h2>
-                <div style="font-size:3rem; font-weight:700; color:{color};
+                <div style="font-size:3rem; font-weight:800; color:{color};
                             font-family:'Amiri', serif; margin:14px 0;">
                     {score} / {total_q}
                 </div>
-                <div style="font-size:1.3rem; color:#666; margin:8px 0;">({percentage}%)</div>
-                <p style="color:#555; font-size:1rem; line-height:1.8;
-                          margin-top:20px; font-weight:600;">{feedback}</p>
+                <div style="font-size:1.3rem; color:#20281F; font-weight:600; margin:8px 0;">({percentage}%)</div>
+                <p style="color:#20281F; font-size:1.05rem; line-height:1.9;
+                          margin-top:20px; font-weight:700;">{feedback}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -2068,10 +2114,10 @@ def render_quiz(t, rtl, lang_dir, lang):
 
     st.markdown(
         f"""
-        <div class="mubeen-card" dir="{lang_dir}" style="border-color:#1B4D3E;
-                    padding:22px; margin-bottom:14px;">
-            <div style="color:#1B4D3E; font-family:'Amiri', serif;
-                        font-size:1.25rem; font-weight:700; line-height:1.7;">
+        <div class="mubeen-card" dir="{lang_dir}" style="border-color:#0F4C3A;
+                    padding:28px 24px 22px 24px; margin-bottom:14px;">
+            <div style="color:#0F4C3A; font-family:'Amiri', serif;
+                        font-size:1.28rem; font-weight:700; line-height:1.75;">
                 {q['q']}
             </div>
         </div>
@@ -2091,8 +2137,8 @@ def render_quiz(t, rtl, lang_dir, lang):
                 st.session_state.quiz_selected = i
                 st.rerun()
         else:
-            bg_color = "#E8F5E9" if i == q["answer"] else ("#FFEBEE" if i == st.session_state.quiz_selected else "#FDFBF7")
-            border_color = "#1B4D3E" if i == q["answer"] else ("#C62828" if i == st.session_state.quiz_selected else "#E8D9B8")
+            bg_color = "#E4F4EA" if i == q["answer"] else ("#FBE4E4" if i == st.session_state.quiz_selected else "#FAF7F0")
+            border_color = "#0F4C3A" if i == q["answer"] else ("#B23A3A" if i == st.session_state.quiz_selected else "#EFDFA6")
             st.markdown(
                 f"""
                 <div dir="{lang_dir}" style="
@@ -2101,9 +2147,9 @@ def render_quiz(t, rtl, lang_dir, lang):
                     border-radius:10px;
                     padding:14px 18px;
                     margin-bottom:8px;
-                    font-weight:600;
-                    color:#1B4D3E;
-                    font-size:1rem;
+                    font-weight:700;
+                    color:#20281F;
+                    font-size:1.02rem;
                     text-align:{'right' if rtl else 'left'};">
                     {badge}  {letters[i]}. {opt}
                 </div>
@@ -2126,10 +2172,10 @@ def render_quiz(t, rtl, lang_dir, lang):
         st.markdown(
             f"""
             <div class="mubeen-card" dir="{lang_dir}"
-                 style="border-color:#C5A059; background:#FBF7EC; margin-top:14px;">
-                <div style="color:#C5A059; font-weight:700; font-size:1rem;
+                 style="border-color:#C9A227; background:#FBF3DC; margin-top:14px; padding:26px 24px 22px 24px;">
+                <div style="color:#8A6914; font-weight:800; font-size:1.02rem;
                             margin-bottom:8px;">{ql['explanation_label']}</div>
-                <div style="color:#333; font-size:1rem; line-height:1.9;">
+                <div style="color:#20281F; font-weight:500; font-size:1.02rem; line-height:2;">
                     {q['explanation']}
                 </div>
             </div>
@@ -2238,20 +2284,23 @@ def main():
             unsafe_allow_html=True,
         )
         st.markdown(
-            f"<p style='font-size:0.9rem; color:#555; line-height:1.75; margin-top:0;'>{t['about_text']}</p>",
+            f"<p style='font-size:0.92rem; color:#45514A; font-weight:600; line-height:1.85; margin-top:0;'>{t['about_text']}</p>",
             unsafe_allow_html=True,
         )
 
     _logo_b64 = get_logo_base64("assets/logo.png")
-    if _logo_b64:
-        _logo_banner_html = f'<img class="mubeen-logo-banner" src="data:image/png;base64,{_logo_b64}" alt="Mubeen AI" />'
-    else:
-        _logo_banner_html = f'<h1 class="mubeen-app-title">{t["app_name"]}</h1>'
+    _logo_img_html = (
+        f'<img class="mubeen-logo-banner" src="data:image/png;base64,{_logo_b64}" alt="Mubeen AI" />'
+        if _logo_b64 else ""
+    )
 
     st.markdown(
         f"""
         <div class="mubeen-header" dir="{lang_dir}">
-            {_logo_banner_html}
+            {_logo_img_html}
+            <div class="mubeen-app-title">{t['app_name']}</div>
+            <div class="mubeen-app-rule"></div>
+            <div class="mubeen-app-tagline">{t['tagline']}</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -2294,9 +2343,12 @@ def main():
         st.markdown(
             f"""
             <div class="mubeen-card" dir="{lang_dir}" style="margin-top:14px;">
-                <div class="milestone-title">{location_name(selected, st.session_state.lang)}</div>
-                <div class="milestone-subtitle">{location_subtitle(selected, st.session_state.lang)}</div>
-                <div class="milestone-desc">{location_context(selected, st.session_state.lang)}</div>
+                <div class="mubeen-mosaic-strip"></div>
+                <div class="milestone-body">
+                    <div class="milestone-title">{location_name(selected, st.session_state.lang)}</div>
+                    <div class="milestone-subtitle">{location_subtitle(selected, st.session_state.lang)}</div>
+                    <div class="milestone-desc">{location_context(selected, st.session_state.lang)}</div>
+                </div>
             </div>
             """,
             unsafe_allow_html=True,
@@ -2345,7 +2397,7 @@ def main():
                 )
 
     st.markdown(
-        f"<p style='color:#666; font-size:0.9rem; text-align:{'right' if rtl else 'left'}; margin-top:18px; margin-bottom:8px;'>{t['suggestions']}</p>",
+        f"<p style='color:#45514A; font-weight:700; font-size:0.92rem; text-align:{'right' if rtl else 'left'}; margin-top:18px; margin-bottom:8px;'>{t['suggestions']}</p>",
         unsafe_allow_html=True,
     )
 
