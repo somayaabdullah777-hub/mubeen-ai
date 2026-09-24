@@ -1546,7 +1546,7 @@ def inject_css(lang_dir, rtl):
             --gold-bright: #FFD966;
             --gold-dark: #8A6914;
             --gold-soft-bg: #FBF3DC;
-            --cream: #FAF7F0;
+            --cream: FFF7E6;
             --cream-deep: #F1EAD8;
             --marble: #FFFFFF;
             --text-dark: #1A1F1A;
