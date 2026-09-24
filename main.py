@@ -249,7 +249,7 @@ QUIZ_BANK = {
          "options": ["ابو بکر", "عمر", "سلمان فارسی", "علی"], "answer": 2,
          "explanation": "سلمان فارسی رضی اللہ عنہ۔"},
         {"q": "صلح حدیبیہ کس ہجری سال میں ہوا؟",
-         "options": ["چوتھا", "پانچواں", "چھٹا", "ساتواں"], "answer": 2,
+         "options": ["چوتھا", "پاچواں", "چھٹا", "ساتواں"], "answer": 2,
          "explanation": "چھٹے ہجری میں۔"},
         {"q": "اللہ نے قرآن میں صلح حدیبیہ کو کیا کہا؟",
          "options": ["عظیم فتح", "فتح مبین", "بڑی نصرت", "وسیع رحمت"], "answer": 1,
@@ -270,7 +270,7 @@ QUIZ_BANK = {
          "options": ["60 سال", "62 سال", "63 سال", "65 سال"], "answer": 2,
          "explanation": "ترسٹھ سال۔"},
         {"q": "نبی ﷺ کی سب سے چھوٹی بیٹی کون ہیں؟",
-         "options": ["زینب", "رقیہ", "ام کلثوم", "فاطمہ"], "answer": 3,
+         "options": ["ذینب", "رقیہ", "ام کلثوم", "فاطمہ"], "answer": 3,
          "explanation": "فاطمہ زہراء رضی اللہ عنہا۔"},
         {"q": "ابو بکر صدیق کا لقب کیا ہے؟",
          "options": ["فاروق", "صدیق", "ذو النورین", "سیف اللہ"], "answer": 1,
@@ -1526,18 +1526,36 @@ def build_user_prompt(lang_code, question):
 - إذا لم تجد المعلومة، اعترف بذلك بوضوح."""
 
 # ---------------------------------------------------------------------------
-# 10. CSS
+# 10. CSS — Awwwards-level redesign (colors/fonts locked)
 # ---------------------------------------------------------------------------
 def inject_css(lang_dir, rtl):
     align = "right" if rtl else "left"
+    side_border = "right" if rtl else "left"
+    opp_side = "left" if rtl else "right"
     st.markdown(
         f"""
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&family=Amiri:wght@400;700&display=swap');
 
+        :root {{
+            --deep-green: #1B4D3E;
+            --deep-green-dark: #143a2e;
+            --green-mid: #2c6a58;
+            --matte-gold: #C5A059;
+            --gold-light: #E8D9B8;
+            --gold-dark: #A67C3A;
+            --cream: #FDFBF7;
+            --cream-deep: #F5F2EB;
+        }}
+
         html, body, [class*="css"], .stApp {{
-            background-color: #FDFBF7 !important;
+            background-color: var(--cream) !important;
             font-family: 'Cairo', 'Amiri', sans-serif !important;
+        }}
+        .stApp {{
+            background-image:
+                radial-gradient(circle at 10% 10%, rgba(197,160,89,0.06) 0%, transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(27,77,62,0.05) 0%, transparent 40%);
         }}
         .block-container {{
             padding-top: 1rem !important;
@@ -1546,7 +1564,7 @@ def inject_css(lang_dir, rtl):
         }}
         h1, h2, h3, h4, h5, h6 {{
             font-family: 'Amiri', 'Cairo', serif !important;
-            color: #1B4D3E !important;
+            color: var(--deep-green) !important;
         }}
         p, span, div, label, li, a, button, input, textarea, select {{
             font-family: 'Cairo', 'Amiri', sans-serif !important;
@@ -1554,85 +1572,175 @@ def inject_css(lang_dir, rtl):
 
         section[data-testid="stSidebar"] {{ display: none !important; }}
         header[data-testid="stHeader"] {{
-            display: none !important;
-            visibility: hidden !important;
-            height: 0 !important;
+            display: none !important; visibility: hidden !important; height: 0 !important;
         }}
-        header[data-testid="stHeader"] * {{
-            display: none !important;
-            visibility: hidden !important;
-        }}
+        header[data-testid="stHeader"] * {{ display: none !important; visibility: hidden !important; }}
         [data-testid="stSidebarCollapsedControl"],
         [data-testid="collapsedControl"],
         [data-testid="stSidebarCollapseButton"] {{ display: none !important; }}
         #MainMenu, footer {{ visibility: hidden; }}
         [data-testid="stDecoration"], [data-testid="stStatusWidget"] {{ display: none !important; }}
 
-        /* Expander */
+        @keyframes fadeInLogo {{
+            from {{ opacity: 0; transform: translateY(-10px) scale(0.97); }}
+            to   {{ opacity: 1; transform: translateY(0) scale(1); }}
+        }}
+        @keyframes fadeInUp {{
+            from {{ opacity: 0; transform: translateY(10px); }}
+            to   {{ opacity: 1; transform: translateY(0); }}
+        }}
+        @keyframes shimmerGold {{
+            0%   {{ background-position: 0% 50%; }}
+            100% {{ background-position: 200% 50%; }}
+        }}
+        @keyframes starPulse {{
+            0%, 100% {{ transform: scale(1); opacity: 1; }}
+            50% {{ transform: scale(1.15); opacity: 0.85; }}
+        }}
+
+        /* ===================== Expander / Menu ===================== */
         div[data-testid="stExpander"] {{
-            border: 2px solid #1B4D3E !important;
-            border-radius: 14px !important;
+            border: 2px solid var(--matte-gold) !important;
+            border-radius: 16px !important;
             background-color: #FFFFFF !important;
             margin-bottom: 18px !important;
-            box-shadow: 0 6px 20px rgba(27, 77, 62, 0.12) !important;
+            box-shadow: 0 8px 30px rgba(27, 77, 62, 0.15) !important;
             overflow: hidden !important;
+            animation: fadeInUp 0.4s ease-out;
         }}
         div[data-testid="stExpander"] summary {{
-            background-color: #1B4D3E !important;
+            background: linear-gradient(135deg, var(--deep-green) 0%, var(--green-mid) 100%) !important;
             color: #FFFFFF !important;
             font-weight: 700 !important;
             font-size: 1.1rem !important;
             padding: 16px 22px !important;
             cursor: pointer !important;
+            border-bottom: 2px solid var(--matte-gold) !important;
+            transition: filter 0.2s ease !important;
         }}
-        div[data-testid="stExpander"] summary:hover {{ background-color: #143a2e !important; }}
+        div[data-testid="stExpander"] summary:hover {{ filter: brightness(1.08); }}
         div[data-testid="stExpander"] summary p {{
-            color: #FFFFFF !important;
-            font-weight: 700 !important;
-            margin: 0 !important;
-            font-size: 1.1rem !important;
+            color: #FFFFFF !important; font-weight: 700 !important; margin: 0 !important; font-size: 1.1rem !important;
         }}
-        div[data-testid="stExpander"] svg {{
-            fill: #FFFFFF !important;
-            color: #FFFFFF !important;
-        }}
-        div[data-testid="stExpander"] > div {{ padding: 20px !important; }}
+        div[data-testid="stExpander"] svg {{ fill: var(--gold-light) !important; color: var(--gold-light) !important; }}
+        div[data-testid="stExpander"] > div {{ padding: 20px !important; background: #FFFFFF !important; }}
 
-        /* إخفاء نص arrow */
         div[data-testid="stExpander"] summary span[data-testid*="stIcon"] {{
-            font-size: 0 !important;
-            color: transparent !important;
+            font-size: 0 !important; color: transparent !important;
         }}
         div[data-testid="stExpander"] summary span[data-testid*="stIcon"]::after {{
             content: "▼" !important;
-            font-size: 14px !important;
-            color: #FFFFFF !important;
+            font-size: 13px !important;
+            color: var(--matte-gold) !important;
             font-weight: 700 !important;
             display: inline-block !important;
             margin-{('left' if not rtl else 'right')}: 8px !important;
             vertical-align: middle !important;
         }}
 
-        /* Cards */
-        .mubeen-card {{
-            background: #FFFFFF;
-            border: 1px solid #C5A059;
+        /* ===================== Hero / Banner ===================== */
+        .mubeen-header {{
+            position: relative;
+            background: linear-gradient(135deg, var(--deep-green) 0%, var(--green-mid) 50%, var(--deep-green) 100%);
+            border: 2px solid var(--matte-gold);
+            border-radius: 18px;
+            padding: 32px 28px;
+            margin-bottom: 22px;
+            box-shadow:
+                0 16px 40px rgba(27, 77, 62, 0.32),
+                inset 0 0 0 1px rgba(232, 217, 184, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 240px;
+            overflow: hidden;
+        }}
+        .mubeen-header::before {{
+            content: "";
+            position: absolute;
+            inset: 0;
+            opacity: 0.08;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23C5A059' stroke-width='1.5'%3E%3Cpath d='M60 10 L96 35 L84 78 L36 78 L24 35 Z'/%3E%3Ccircle cx='60' cy='60' r='46'/%3E%3Cpath d='M60 10 L60 110 M10 60 L110 60'/%3E%3C/g%3E%3C/svg%3E");
+            background-size: 140px 140px;
+            pointer-events: none;
+        }}
+        .mubeen-header .mubeen-logo-banner {{
+            position: relative;
+            z-index: 1;
+            height: 186px;
+            width: auto;
+            max-width: 100%;
+            filter: drop-shadow(0 0 20px rgba(197, 160, 89, 0.45));
+            animation: fadeInLogo 0.8s ease-out;
+        }}
+        .mubeen-header .mubeen-app-title {{
+            position: relative;
+            z-index: 1;
+            font-family: 'Amiri', serif;
+            font-size: 2.1rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--matte-gold), var(--gold-light), var(--matte-gold));
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmerGold 4s linear infinite;
+        }}
+
+        /* ===================== Hint bar ===================== */
+        .mubeen-hint {{
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--matte-gold);
             border-radius: 12px;
-            padding: 16px 18px;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 14px rgba(197, 160, 89, 0.12);
-            text-align: {align};
+            padding: 10px 16px;
+            margin-bottom: 16px;
+            color: #666;
+            font-size: 0.9rem;
+        }}
+
+        /* ===================== Event / Milestone Cards ===================== */
+        .mubeen-card {{
+            position: relative;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(10px);
+            border: 2px solid transparent;
+            background-image:
+                linear-gradient(#fff, #fff),
+                linear-gradient(135deg, var(--matte-gold), var(--gold-light), var(--matte-gold));
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            border-radius: 14px;
+            padding: 18px 20px 18px 26px;
+            margin-bottom: 14px;
+            box-shadow: 0 6px 20px rgba(197, 160, 89, 0.14);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeInUp 0.4s ease-out;
+        }}
+        .mubeen-card::before {{
+            content: "";
+            position: absolute;
+            top: 0; bottom: 0;
+            {side_border}: 0;
+            width: 5px;
+            border-radius: 14px 0 0 14px;
+            background: linear-gradient(180deg, var(--matte-gold), var(--gold-dark));
+        }}
+        .mubeen-card:hover {{
+            transform: translateY(-4px);
+            box-shadow: 0 14px 34px rgba(197, 160, 89, 0.28);
         }}
         .mubeen-card .milestone-title {{
-            color: #1B4D3E;
+            color: var(--deep-green);
             font-family: 'Amiri', serif;
-            font-size: 1.3rem;
+            font-size: 1.32rem;
             font-weight: 700;
         }}
         .mubeen-card .milestone-subtitle {{
-            color: #C5A059;
+            color: var(--matte-gold);
             font-size: 0.95rem;
             margin-top: 4px;
+            font-weight: 600;
         }}
         .mubeen-card .milestone-desc {{
             color: #2a2a2a;
@@ -1641,173 +1749,164 @@ def inject_css(lang_dir, rtl):
             line-height: 2;
         }}
 
+        /* ===================== Chat messages ===================== */
         .mubeen-user-msg {{
-            background: #F5F2EB;
-            border: 1px solid #C5A059;
-            border-right: 6px solid #C5A059;
+            position: relative;
+            background: var(--cream-deep);
+            border: 1px solid var(--matte-gold);
+            border-{side_border}: 6px solid var(--matte-gold);
             border-radius: 14px;
             padding: 12px 18px;
-            margin: 8px 0;
-            text-align: {align};
-            color: #1B4D3E;
+            margin: 10px 0;
+            color: var(--deep-green);
             font-weight: 600;
             font-size: 1rem;
+            animation: fadeInUp 0.35s ease-out;
         }}
         .mubeen-ai-answer {{
+            position: relative;
             background: linear-gradient(135deg, #FFFFFF 0%, #FBF7EC 100%);
-            border: 2px solid #C5A059;
-            border-right: 6px solid #1B4D3E;
+            border: 2px solid var(--matte-gold);
+            border-{side_border}: 6px solid var(--deep-green);
             border-radius: 14px;
             padding: 18px 22px;
-            margin: 8px 0 18px 0;
-            box-shadow: 0 6px 18px rgba(197, 160, 89, 0.15);
-            text-align: {align};
+            margin: 10px 0 20px 0;
+            box-shadow:
+                inset 0 1px 3px rgba(255,255,255,0.8),
+                0 8px 24px rgba(197, 160, 89, 0.18);
+            animation: fadeInUp 0.4s ease-out;
         }}
         .mubeen-ai-answer .ai-label {{
-            color: #1B4D3E;
+            color: var(--deep-green);
             font-weight: 700;
             font-size: 1rem;
             display: inline-block;
             margin-bottom: 12px;
             padding-bottom: 6px;
-            border-bottom: 2px solid #C5A059;
+            border-bottom: 2px solid var(--matte-gold);
         }}
+        .mubeen-ai-answer .ai-label::before {{ content: "🕌 "; }}
         .mubeen-ai-answer .ai-body {{
             color: #1a1a1a;
             font-size: 1.02rem;
             line-height: 2.1;
         }}
         .mubeen-ai-answer .ai-body strong {{
-            color: #1B4D3E;
+            color: var(--deep-green);
             font-weight: 700;
             font-size: 1.05rem;
         }}
 
-        .mubeen-header {{
-            background: linear-gradient(90deg, #1B4D3E 0%, #2c6a58 100%);
-            border: 2px solid #C5A059;
-            border-radius: 14px;
-            padding: 32px 28px;
-            margin-bottom: 20px;
-            box-shadow: 0 12px 30px rgba(27, 77, 62, 0.28);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 240px;
-        }}
-        .mubeen-header .mubeen-logo-banner {{
-            height: 186px;
-            width: auto;
-            max-width: 100%;
-            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.4));
-        }}
-
-        .mubeen-hint {{
-            background: #FFFFFF;
-            border: 1px solid #C5A059;
-            border-radius: 10px;
-            padding: 10px 14px;
-            margin-bottom: 14px;
-            color: #666;
-            font-size: 0.9rem;
-            text-align: {align};
-        }}
-
-        /* Buttons */
+        /* ===================== Buttons ===================== */
         .stFormSubmitButton > button,
         div[data-testid="stButton"] button {{
-            background-color: #1B4D3E !important;
+            background: linear-gradient(135deg, var(--deep-green) 0%, var(--green-mid) 100%) !important;
             color: #FFFFFF !important;
-            border: 1px solid #C5A059 !important;
+            border: 1px solid var(--matte-gold) !important;
             border-radius: 10px !important;
             font-weight: 700 !important;
             padding: 0.6rem 1rem !important;
             width: 100%;
+            box-shadow: 0 4px 12px rgba(27, 77, 62, 0.2) !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease !important;
         }}
         .stFormSubmitButton > button:hover,
         div[data-testid="stButton"] button:hover {{
-            background-color: #143a2e !important;
+            background: linear-gradient(135deg, var(--deep-green-dark) 0%, var(--deep-green) 100%) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 22px rgba(197, 160, 89, 0.35) !important;
         }}
+        .stFormSubmitButton > button:active,
+        div[data-testid="stButton"] button:active {{ transform: scale(0.98); }}
 
         /* Secondary (quiz options) */
         div[data-testid="stButton"] button[kind="secondary"] {{
-            background-color: #FDFBF7 !important;
-            color: #1B4D3E !important;
-            border: 2px solid #E8D9B8 !important;
-            border-{('right' if rtl else 'left')}: 5px solid #C5A059 !important;
+            background-color: var(--cream) !important;
+            color: var(--deep-green) !important;
+            border: 2px solid var(--gold-light) !important;
+            border-{side_border}: 5px solid var(--matte-gold) !important;
             border-radius: 10px !important;
             font-weight: 700 !important;
             padding: 14px 18px !important;
             font-size: 1rem !important;
-            text-align: {('right' if rtl else 'left')} !important;
+            text-align: {align} !important;
             margin-bottom: 8px !important;
+            box-shadow: none !important;
+            transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease !important;
         }}
         div[data-testid="stButton"] button[kind="secondary"]:hover {{
-            background-color: #F5F2EB !important;
-            border-color: #C5A059 !important;
+            background-color: var(--cream-deep) !important;
+            border-color: var(--matte-gold) !important;
+            transform: translateX({'3px' if rtl else '-3px'});
         }}
 
-        /* Chat Input (mobile-optimized) */
+        /* ===================== Chat Input ===================== */
         div[data-testid="stChatInput"] {{
             position: fixed !important;
-            bottom: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
+            bottom: 0 !important; left: 0 !important; right: 0 !important;
             z-index: 999999 !important;
-            background: linear-gradient(180deg, rgba(253, 251, 247, 0.6) 0%, #FDFBF7 40%) !important;
+            background: linear-gradient(180deg, rgba(253, 251, 247, 0.5) 0%, rgba(253,251,247,0.96) 45%) !important;
             padding: 12px 16px 16px 16px !important;
-            border-top: 2px solid #C5A059 !important;
-            box-shadow: 0 -4px 20px rgba(197, 160, 89, 0.15) !important;
-            backdrop-filter: blur(10px) !important;
+            border-top: 2px solid var(--matte-gold) !important;
+            box-shadow: 0 -6px 24px rgba(197, 160, 89, 0.18) !important;
+            backdrop-filter: blur(15px) !important;
         }}
-
         div[data-testid="stChatInput"] textarea {{
-            background-color: #FFFFFF !important;
-            border: 2px solid #C5A059 !important;
+            background-color: rgba(255,255,255,0.9) !important;
+            border: 2px solid var(--matte-gold) !important;
             border-radius: 12px !important;
-            color: #1B4D3E !important;
+            color: var(--deep-green) !important;
             font-size: 16px !important;
             padding: 14px 16px !important;
             min-height: 52px !important;
             line-height: 1.5 !important;
             text-indent: 0 !important;
+            transition: box-shadow 0.2s ease, border-color 0.2s ease !important;
         }}
-
         div[data-testid="stChatInput"] textarea:focus {{
-            border-color: #1B4D3E !important;
-            box-shadow: 0 0 0 3px rgba(27, 77, 62, 0.15) !important;
+            border-color: var(--deep-green) !important;
+            box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.2), 0 4px 20px rgba(197, 160, 89, 0.15) !important;
             outline: none !important;
         }}
-
-        div[data-testid="stChatInput"] textarea::placeholder {{
-            color: #999 !important;
-            opacity: 1 !important;
-        }}
-
-        /* زر الإرسال */
+        div[data-testid="stChatInput"] textarea::placeholder {{ color: #999 !important; opacity: 1 !important; }}
         div[data-testid="stChatInput"] button {{
-            background-color: #1B4D3E !important;
+            background: linear-gradient(135deg, var(--deep-green) 0%, var(--green-mid) 100%) !important;
             color: #FFFFFF !important;
-            border: 1px solid #C5A059 !important;
+            border: 1px solid var(--matte-gold) !important;
             border-radius: 10px !important;
+            transition: filter 0.2s ease !important;
         }}
+        div[data-testid="stChatInput"] button:hover {{ filter: brightness(1.1); }}
+        div[data-testid="stChatInput"] button svg {{ fill: #FFFFFF !important; color: #FFFFFF !important; }}
 
-        div[data-testid="stChatInput"] button:hover {{
-            background-color: #143a2e !important;
-        }}
-
-        div[data-testid="stChatInput"] button svg {{
-            fill: #FFFFFF !important;
-            color: #FFFFFF !important;
-        }}
-
-        /* Inputs */
+        /* ===================== Inputs ===================== */
         .stTextInput input, .stTextArea textarea,
         .stSelectbox div[data-baseweb="select"] > div {{
-            border: 1px solid #C5A059 !important;
+            border: 1px solid var(--matte-gold) !important;
             border-radius: 10px !important;
             background-color: #FFFFFF !important;
-            color: #1B4D3E !important;
+            color: var(--deep-green) !important;
+            font-size: 16px !important;
+        }}
+
+        /* ===================== Quiz progress bar ===================== */
+        .mubeen-progress-track {{
+            background: var(--cream-deep);
+            border-radius: 10px;
+            height: 14px;
+            overflow: hidden;
+            border: 1px solid var(--matte-gold);
+        }}
+        .mubeen-progress-fill {{
+            background: linear-gradient(90deg, var(--deep-green) 0%, var(--matte-gold) 100%);
+            height: 100%;
+            transition: width 0.4s ease;
+        }}
+
+        /* ===================== Score card ===================== */
+        .mubeen-score-star {{
+            display: inline-block;
+            animation: starPulse 1.6s ease-in-out infinite;
         }}
 
         @media (max-width: 900px) {{
@@ -1820,15 +1919,9 @@ def inject_css(lang_dir, rtl):
             .mubeen-header .mubeen-logo-banner {{ height: 133px; }}
             h2 {{ font-size: 1.3rem !important; }}
             .mubeen-ai-answer .ai-body {{ font-size: 0.95rem; }}
-
-            div[data-testid="stChatInput"] {{
-                padding: 10px 12px 14px 12px !important;
-            }}
-
+            div[data-testid="stChatInput"] {{ padding: 10px 12px 14px 12px !important; }}
             div[data-testid="stChatInput"] textarea {{
-                font-size: 16px !important;
-                min-height: 50px !important;
-                padding: 12px 14px !important;
+                font-size: 16px !important; min-height: 50px !important; padding: 12px 14px !important;
             }}
         }}
         </style>
@@ -1922,7 +2015,7 @@ def render_quiz(t, rtl, lang_dir, lang):
             f"""
             <div class="mubeen-card" dir="{lang_dir}" style="border-color:{color};
                         text-align:center; padding:30px; margin-top:20px;">
-                <div style="font-size:4rem; margin-bottom:10px;">{emoji}</div>
+                <div class="mubeen-score-star" style="font-size:4rem; margin-bottom:10px;">{emoji}</div>
                 <h2 style="color:{color}; font-family:'Amiri', serif;
                            margin:8px 0; font-size:1.8rem;">{ql['your_score']}</h2>
                 <div style="font-size:3rem; font-weight:700; color:{color};
@@ -1965,10 +2058,8 @@ def render_quiz(t, rtl, lang_dir, lang):
             <div style="color:#1B4D3E; font-weight:700; font-size:1rem; margin-bottom:8px;">
                 {ql['question_of'].format(current=idx + 1, total=total_q)}
             </div>
-            <div style="background:#F5F2EB; border-radius:10px; height:14px;
-                        overflow:hidden; border:1px solid #C5A059;">
-                <div style="background:linear-gradient(90deg, #1B4D3E 0%, #C5A059 100%);
-                            height:100%; width:{progress_pct}%;"></div>
+            <div class="mubeen-progress-track">
+                <div class="mubeen-progress-fill" style="width:{progress_pct}%;"></div>
             </div>
         </div>
         """,
@@ -2152,10 +2243,10 @@ def main():
         )
 
     _logo_b64 = get_logo_base64("assets/logo.png")
-    _logo_banner_html = (
-        f'<img class="mubeen-logo-banner" src="data:image/png;base64,{_logo_b64}" alt="Mubeen AI" />'
-        if _logo_b64 else f'<h1 style="color:#fff; font-size:2rem;">{t["app_name"]}</h1>'
-    )
+    if _logo_b64:
+        _logo_banner_html = f'<img class="mubeen-logo-banner" src="data:image/png;base64,{_logo_b64}" alt="Mubeen AI" />'
+    else:
+        _logo_banner_html = f'<h1 class="mubeen-app-title">{t["app_name"]}</h1>'
 
     st.markdown(
         f"""
@@ -2172,7 +2263,7 @@ def main():
 
     # ===== Home Page =====
     st.markdown(
-        f"""<div class="mubeen-hint" dir="{lang_dir}">{t['events_hint']}</div>""",
+        f"""<div class="mubeen-hint" dir="{lang_dir}">✦ {t['events_hint']}</div>""",
         unsafe_allow_html=True,
     )
 
@@ -2202,7 +2293,7 @@ def main():
     if selected:
         st.markdown(
             f"""
-            <div class="mubeen-card" dir="{lang_dir}" style="border-color:#1B4D3E; margin-top:14px;">
+            <div class="mubeen-card" dir="{lang_dir}" style="margin-top:14px;">
                 <div class="milestone-title">{location_name(selected, st.session_state.lang)}</div>
                 <div class="milestone-subtitle">{location_subtitle(selected, st.session_state.lang)}</div>
                 <div class="milestone-desc">{location_context(selected, st.session_state.lang)}</div>
