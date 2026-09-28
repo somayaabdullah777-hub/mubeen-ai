@@ -1891,14 +1891,15 @@ def inject_css(lang_dir, rtl):
         }}
 
         /* ===================== زر التحقق من الإجابة (Check Answer) ===================== */
-        div[data-testid="stButton"] button[kind="primary"] {{
+        /* تم استخدام st.form_submit_button مع type="primary" لتطبيق هذا اللون */
+        div[data-testid="stFormSubmitButton"] button {{
             background: linear-gradient(135deg, #C9A227 0%, #8A6914 100%) !important;
             color: #FFFFFF !important;
             border: 2px solid #0F4C3A !important; /* حدود خضراء */
             font-weight: 800 !important;
             box-shadow: 0 4px 15px rgba(201, 162, 39, 0.4) !important;
         }}
-        div[data-testid="stButton"] button[kind="primary"]:hover {{
+        div[data-testid="stFormSubmitButton"] button:hover {{
             filter: brightness(1.2);
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(201, 162, 39, 0.6) !important;
@@ -2186,8 +2187,10 @@ def render_quiz(t, rtl, lang_dir, lang):
     if not st.session_state.quiz_answered:
         col_a, col_b, col_c = st.columns([1, 1, 1])
         with col_b:
-            # تغيير نوع الزر إلى primary لتطبيق اللون الذهبي
-            if st.button(ql["check_button"], key=f"check_{idx}", use_container_width=True, type="primary"):
+            # استخدام st.form لجعل الزر primary وتطبيق اللون الذهبي
+            with st.form(key=f"check_form_{idx}", clear_on_submit=False):
+                submitted = st.form_submit_button(ql["check_button"], use_container_width=True, type="primary")
+            if submitted:
                 if st.session_state.quiz_selected is not None:
                     st.session_state.quiz_answered = True
                     if st.session_state.quiz_selected == q["answer"]:
