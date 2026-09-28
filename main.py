@@ -1847,7 +1847,7 @@ def inject_css(lang_dir, rtl):
         .stFormSubmitButton > button,
         div[data-testid="stButton"] button {{
             background: linear-gradient(135deg, var(--deep-green-dark) 0%, var(--deep-green) 60%, var(--green-mid) 100%) !important;
-            color: #FFF8E1 !important;
+            color: #FFFFFF !important; /* تم التغيير إلى الأبيض */
             border: 2px solid var(--matte-gold) !important;
             border-radius: 10px !important;
             font-weight: 700 !important;
@@ -1869,8 +1869,8 @@ def inject_css(lang_dir, rtl):
 
         /* Secondary (quiz options) — تباين عالٍ */
         div[data-testid="stButton"] button[kind="secondary"] {{
-            background-color: #FFFFFF !important;
-            color: #FFFFFF !important;
+            background-color: #1B4D3E !important; /* خلفية خضراء داكنة */
+            color: #FFFFFF !important; /* نص أبيض */
             border: 2px solid var(--matte-gold) !important;
             border-{side_border}: 6px solid var(--deep-green) !important;
             border-radius: 12px !important;
@@ -1884,10 +1884,24 @@ def inject_css(lang_dir, rtl):
             transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease !important;
         }}
         div[data-testid="stButton"] button[kind="secondary"]:hover {{
-            background-color: var(--gold-soft-bg) !important;
+            background-color: #2A6E54 !important;
             border-{side_border}: 6px solid var(--matte-gold) !important;
             transform: translateX({'3px' if rtl else '-3px'});
             box-shadow: 0 4px 14px rgba(201, 162, 39, 0.3) !important;
+        }}
+
+        /* ===================== زر التحقق من الإجابة (Check Answer) ===================== */
+        div[data-testid="stButton"] button[kind="primary"] {{
+            background: linear-gradient(135deg, #C9A227 0%, #8A6914 100%) !important;
+            color: #FFFFFF !important;
+            border: 2px solid #0F4C3A !important; /* حدود خضراء */
+            font-weight: 800 !important;
+            box-shadow: 0 4px 15px rgba(201, 162, 39, 0.4) !important;
+        }}
+        div[data-testid="stButton"] button[kind="primary"]:hover {{
+            filter: brightness(1.2);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(201, 162, 39, 0.6) !important;
         }}
 
         /* ===================== Chat Input ===================== */
@@ -2172,7 +2186,8 @@ def render_quiz(t, rtl, lang_dir, lang):
     if not st.session_state.quiz_answered:
         col_a, col_b, col_c = st.columns([1, 1, 1])
         with col_b:
-            if st.button(ql["check_button"], key=f"check_{idx}", use_container_width=True):
+            # تغيير نوع الزر إلى primary لتطبيق اللون الذهبي
+            if st.button(ql["check_button"], key=f"check_{idx}", use_container_width=True, type="primary"):
                 if st.session_state.quiz_selected is not None:
                     st.session_state.quiz_answered = True
                     if st.session_state.quiz_selected == q["answer"]:
